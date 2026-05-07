@@ -1,0 +1,2382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BaxleyCommons" />
+  <title>BaxleyCommons — HACHI Idea Cloud</title>
+  <!--
+    HACHI Codex — BaxleyCommons Splash Shell
+    Status: EDGE (not LOCK) · single static file · no backend, no DB, no auth
+    Spec parents:
+      - HACHI Idea Ecology Principles
+      - HACHI Idea Sigils + Red String System
+      - Field Notes Intake Layer
+      - Voice Capture Rule (Commons / ELCO)
+      - HACHI Daily Note Distillation Framework
+  -->
+  <style>
+    :root {
+      /* Structure (compat names retained) */
+      --bg: #09090b;
+      --surface: #18181b;
+      --surface-2: #27272a;
+      --surface-3: #3f3f46;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --dim: #71717a;
+      --faint: #52525b;
+      --border: #3f3f46;
+      --border-soft: #27272a;
+      --accent: #f43f5e;
+      --accent-dim: #9f1239;
+      /* Semantic color routing (held across themes) */
+      --amber: #fbbf24;       /* Compass / orientation */
+      --rose: #f43f5e;        /* Red Strings / tension */
+      --purple: #a855f7;      /* Claude / builder */
+      --cream: #fef3c7;       /* Active pull / selection */
+      --seed-green: #4ade80;  /* Field Notes / new growth */
+      /* Compass overlay */
+      --overlay: rgba(0,0,0,0.75);
+      --maze-line: rgba(250,250,250,0.045);
+      /* Geometry */
+      --radius: 14px;
+      --tap: 44px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+
+    /* ── Themes (atmosphere only — semantic routing held) ─────────────────── */
+    /* CMYK FORGE — true K-black surfaces, neutral grays, full C/M/Y accent pop */
+    [data-theme="cmyk-forge"] {
+      --bg: #000000; --surface: #0a0a0a; --surface-2: #161616; --surface-3: #232323;
+      --text: #fafafa; --muted: #b8b8b8; --dim: #808080; --faint: #555555;
+      --border: #2e2e2e; --border-soft: #1a1a1a;
+      --accent: #e879f9; --accent-dim: #a21caf;
+      --amber: #facc15; --rose: #e879f9; --purple: #22d3ee;
+      --cream: #fffbe6; --seed-green: #4ade80;
+      --overlay: rgba(0,0,0,0.85); --maze-line: rgba(34,211,238,0.05);
+    }
+    /* GOLD LEANING — pure rich black + brilliant metallic gold + cream */
+    [data-theme="gold-leaning"] {
+      --bg: #050505; --surface: #11100a; --surface-2: #1c1a11; --surface-3: #2c281b;
+      --text: #fdf8e1; --muted: #d4be7e; --dim: #8c7d4d; --faint: #54472a;
+      --border: #3d3422; --border-soft: #1f1b12;
+      --accent: #fb7185; --accent-dim: #9f1239;
+      --amber: #fbbf24; --rose: #fb7185; --purple: #c4b5fd;
+      --cream: #fff6d3; --seed-green: #86efac;
+      --overlay: rgba(5,5,5,0.85); --maze-line: rgba(251,191,36,0.05);
+    }
+    /* ALABASTER LIGHT — paper white + readable dark text + visible maze on body */
+    [data-theme="alabaster-light"] {
+      --bg: #f5f3ee; --surface: #ebe8e0; --surface-2: #ddd9cf; --surface-3: #c8c2b3;
+      --text: #18171a; --muted: #4a443a; --dim: #6f685c; --faint: #9c9388;
+      --border: #b8b0a3; --border-soft: #d4cdc0;
+      --accent: #be123c; --accent-dim: #9f1239;
+      --amber: #b45309; --rose: #be123c; --purple: #6d28d9;
+      --cream: #fef3c7; --seed-green: #15803d;
+      --overlay: rgba(180,170,150,0.75); --maze-line: rgba(60,50,30,0.07);
+    }
+    /* PENUMBRA DARK — deep indigo void, luminous violet, soft glow */
+    [data-theme="penumbra-dark"] {
+      --bg: #050511; --surface: #0e0a26; --surface-2: #18103a; --surface-3: #2a1f55;
+      --text: #ede9fe; --muted: #b3a8e0; --dim: #7c70a8; --faint: #4a3f70;
+      --border: #3d2e6e; --border-soft: #1f1745;
+      --accent: #fb7185; --accent-dim: #9f1239;
+      --amber: #fcd34d; --rose: #fb7185; --purple: #c4b5fd;
+      --cream: #fef3c7; --seed-green: #86efac;
+      --overlay: rgba(0,0,15,0.82); --maze-line: rgba(196,181,253,0.06);
+    }
+    /* MEDITATION — cool sage/stone, muted, minimal glow */
+    [data-theme="meditation"] {
+      --bg: #161a18; --surface: #1f2522; --surface-2: #2a322d; --surface-3: #38423b;
+      --text: #d8e0d6; --muted: #95a499; --dim: #6b7670; --faint: #4a544e;
+      --border: #3a443e; --border-soft: #2a322d;
+      --accent: #c1727a; --accent-dim: #7a3e44;
+      --amber: #ca8a04; --rose: #c1727a; --purple: #94a3b8;
+      --cream: #f0f4ec; --seed-green: #65a965;
+      --overlay: rgba(20,28,24,0.72); --maze-line: rgba(216,224,214,0.03);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+    body {
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      min-height: 100vh;
+      overscroll-behavior-y: contain;
+      padding-bottom: calc(72px + var(--safe-bottom));
+      background-image:
+        repeating-linear-gradient(45deg, transparent 0 24px, var(--maze-line) 24px 25px),
+        repeating-linear-gradient(-45deg, transparent 0 36px, var(--maze-line) 36px 37px);
+      background-attachment: fixed;
+    }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .uc { text-transform: uppercase; letter-spacing: 0.18em; }
+
+    /* Top bar with status pill + global compass */
+    .topbar {
+      position: sticky; top: 0; z-index: 5;
+      padding: calc(10px + var(--safe-top)) 14px 10px;
+      background: linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 92%, transparent) 70%, transparent);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .topbar .brand {
+      font-size: 11px; color: var(--muted); letter-spacing: 0.22em; text-transform: uppercase;
+      flex: 1; padding: 6px 0; margin: 0; text-align: left;
+      border-radius: 6px;
+      transition: color 0.12s ease;
+    }
+    .topbar .brand:active { color: var(--text); }
+    .pill { font-size: 9px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; }
+    .pill.edge { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); }
+
+    main { padding: 0 16px 24px; }
+
+    /* Splash header */
+    .splash {
+      padding: 14px 0 20px;
+      border-bottom: 1px solid var(--border-soft);
+      margin-bottom: 18px;
+      position: relative;
+    }
+    .splash h1 { margin: 0 0 4px; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+    .splash h2 { margin: 0; font-size: 14px; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
+    .splash p { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+
+    /* Compass rose launcher (global, lives in topbar) */
+    .compass-btn {
+      position: relative;
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      flex-shrink: 0;
+      animation: compass-pulse 4.6s ease-in-out infinite alternate;
+    }
+    .compass-btn:active { background: color-mix(in srgb, var(--text) 6%, transparent); }
+    .compass-btn.open { animation: none; filter: drop-shadow(0 0 7px color-mix(in srgb, var(--amber) 55%, transparent)); }
+    .compass-rose { display: block; width: 30px; height: 30px; }
+    .compass-rose .cr-bg     { fill: var(--surface); stroke: var(--border); }
+    .compass-rose .cr-n      { fill: var(--text); }
+    .compass-rose .cr-n-shade{ fill: var(--muted); }
+    .compass-rose .cr-s      { fill: var(--faint); }
+    .compass-rose .cr-s-shade{ fill: var(--border); }
+    .compass-rose .cr-ew     { fill: var(--dim); }
+    .compass-rose .cr-ew-shade{ fill: var(--faint); }
+    .compass-rose .cr-inter  { fill: var(--border); }
+    .compass-rose .cr-hub    { fill: var(--surface-2); stroke: var(--amber); }
+    .compass-rose .cr-pin    { fill: var(--amber); }
+    @keyframes compass-pulse {
+      from { filter: drop-shadow(0 0 1px color-mix(in srgb, var(--amber) 18%, transparent)); }
+      to   { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--amber) 38%, transparent)); }
+    }
+
+    /* Compass menu */
+    #compass-scrim {
+      z-index: 22;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          transparent 0px,
+          transparent 11px,
+          var(--maze-line) 11px,
+          var(--maze-line) 12px
+        ),
+        var(--overlay);
+    }
+    /* Compass menu shell — vertical-stack only; GW containers own internal layout */
+    .compass-menu {
+      position: fixed;
+      /* JS sets top + right at open time */
+      z-index: 23;
+      display: flex; flex-direction: column;
+      gap: 8px;
+      width: 288px;
+      max-width: calc(100vw - 16px);
+      box-sizing: border-box;
+      opacity: 0;
+      transform: scale(0.88) translateY(-6px);
+      transform-origin: top right;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+    .compass-menu.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+
+    /* Generic GW container — anchors a Compass zone with its own surface, border, and overflow control */
+    .cm-zone {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.32);
+      overflow: hidden;
+    }
+
+    /* GW-01 Intent — 2x2 directional grid */
+    .cm-zone-intent { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .cm-item {
+      padding: 12px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: transparent;
+      display: flex; flex-direction: column; gap: 3px;
+      text-align: left;
+      transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+      min-height: var(--tap);
+      min-width: 0;
+      overflow: hidden;
+    }
+    .cm-item:active { transform: scale(0.96); background: var(--surface-2); border-color: var(--muted); }
+    .cm-dir { font-size: 13px; color: var(--dim); margin-bottom: 1px; }
+    .cm-label { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .cm-hint { font-size: 10px; color: var(--dim); }
+    .cm-item.is-claude { border-color: color-mix(in srgb, var(--purple) 32%, transparent); }
+    .cm-item.is-claude .cm-dir { color: var(--purple); }
+
+    /* GW-02 Function — 2x2 sub-menu */
+    .cm-zone-fn { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .cm-fn {
+      padding: 10px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: transparent;
+      font-size: 12px; font-weight: 600;
+      color: var(--text);
+      display: flex; align-items: center; justify-content: flex-start;
+      min-height: 40px; text-align: left;
+      min-width: 0;
+      overflow: hidden;
+      transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+    }
+    .cm-fn:active { transform: scale(0.97); background: var(--surface-2); border-color: var(--muted); }
+
+    /* GW-03 Account — 2x2 utility grid (was 4-across; switched to 2x2 to prevent mobile drift) */
+    .cm-zone-account { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .cm-sys {
+      padding: 10px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: transparent;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 38px;
+      min-width: 0;
+      overflow: hidden;
+      transition: transform 0.08s ease, color 0.1s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+    .cm-sys:active { transform: scale(0.96); color: var(--text); border-color: var(--muted); background: var(--surface-2); }
+    .cm-sys.is-active { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); }
+
+    /* Settings sheet */
+    #settings-sheet { max-height: 80vh; overflow-y: auto; }
+    .settings-section { margin-top: 6px; }
+    .settings-section-title {
+      font-size: 10px; color: var(--dim);
+      letter-spacing: 0.22em; text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+    .theme-list { display: flex; flex-direction: column; gap: 6px; }
+    .theme-row {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg);
+      display: flex; align-items: center; gap: 12px;
+      transition: transform 0.08s ease, border-color 0.12s ease, background 0.12s ease;
+      text-align: left;
+    }
+    .theme-row:active { transform: scale(0.99); background: var(--surface-2); }
+    .theme-row.is-active { border-color: var(--amber); background: var(--surface); }
+    .theme-row .tr-body { flex: 1; min-width: 0; }
+    .theme-row .tr-name {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .theme-row .tr-hint { font-size: 11px; color: var(--dim); margin-top: 2px; }
+    .theme-row .tr-check {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--bg);
+      flex-shrink: 0;
+    }
+    .theme-row.is-active .tr-check {
+      background: var(--amber); border-color: var(--amber);
+    }
+    .theme-row .tr-swatches {
+      display: flex; gap: 0; flex-shrink: 0;
+      border-radius: 6px; overflow: hidden;
+      border: 1px solid var(--border-soft);
+    }
+    .theme-row .tr-swatch { width: 14px; height: 28px; }
+    .settings-meta {
+      margin-top: 16px; padding-top: 12px;
+      border-top: 1px solid var(--border-soft);
+      font-size: 10px; color: var(--faint);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* Primary actions grid */
+    .actions {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      margin-bottom: 22px;
+    }
+    .action {
+      min-height: 84px;
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; flex-direction: column; justify-content: space-between;
+      text-align: left;
+      transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .action:active { transform: scale(0.98); background: var(--surface-2); }
+    .action .glyph { font-size: 18px; }
+    .action .label { font-size: 14px; font-weight: 600; }
+    .action .hint { font-size: 11px; color: var(--dim); }
+    .action.primary { border-color: var(--text); background: var(--text); color: var(--bg); }
+    .action.primary .hint { color: color-mix(in srgb, var(--bg) 58%, transparent); }
+
+    /* Module cards */
+    .module {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .module header {
+      padding: 12px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .module header .title { font-size: 11px; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; }
+    .module header .meta { font-size: 10px; color: var(--dim); letter-spacing: 0.18em; text-transform: uppercase; }
+    .module header.is-link {
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+    .module header.is-link:active { background: var(--surface-2); }
+    .module header.is-link .meta {
+      color: var(--amber);
+      border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent);
+      padding: 3px 8px 3px 10px; border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .module header.is-link .meta::after { content: "›"; font-size: 13px; line-height: 1; }
+    .module .body { padding: 12px 14px; }
+
+    /* Cloud preview SVG */
+    .cloud-preview {
+      background: var(--surface-2); border-radius: 10px; padding: 6px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .cloud-preview:active { background: var(--surface-3); }
+    .cloud-preview svg { display: block; width: 100%; height: auto; }
+    .cloud-preview svg .ast-body { fill: var(--surface-3); stroke: var(--border); }
+    .cloud-preview svg .ast-body.is-hot { fill: var(--cream); stroke: var(--text); }
+    .cloud-preview svg .ast-id { fill: var(--muted); }
+    .cloud-preview svg .ast-id.is-hot { fill: var(--bg); }
+    .cloud-preview svg .ast-glyph { fill: var(--dim); }
+    .cloud-preview svg .ast-glyph.is-hot { fill: color-mix(in srgb, var(--bg) 80%, transparent); }
+    .cloud-preview svg .ast-crack { stroke: color-mix(in srgb, var(--muted) 50%, transparent); }
+    .cloud-preview svg .ast-crack.is-hot { stroke: color-mix(in srgb, var(--bg) 50%, transparent); }
+    .cloud-preview svg .red-string { stroke: var(--rose); }
+    .cloud-preview svg .drifter {
+      transform-origin: center;
+      animation: asteroid-drift var(--dur, 10s) ease-in-out var(--delay, 0s) infinite alternate;
+      will-change: transform;
+    }
+    @keyframes asteroid-drift {
+      from { transform: rotate(calc(var(--rot, 2deg) * -1)) translate(calc(var(--dx, 0px) * -1), calc(var(--dy, 0px) * -1)); }
+      to   { transform: rotate(var(--rot, 2deg)) translate(var(--dx, 0px), var(--dy, 0px)); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cloud-preview svg .drifter { animation: none; }
+      .compass-btn { animation: none; }
+    }
+
+    /* Field notes list */
+    .fn-list, .lt-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+    .fn-item {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 12px; row-gap: 4px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--border-soft);
+    }
+    .fn-list .fn-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .fn-time {
+      font-size: 11px; color: var(--muted); letter-spacing: 0.08em;
+      grid-column: 1; grid-row: 1; align-self: center;
+    }
+    .fn-domain {
+      font-size: 9px; color: var(--text); border: 1px solid var(--border);
+      padding: 2px 6px; border-radius: 999px;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      grid-column: 1; grid-row: 2; justify-self: start; align-self: start;
+    }
+    .fn-text {
+      font-size: 14px; color: var(--text);
+      grid-column: 2; grid-row: 1 / 3;
+      line-height: 1.45; text-align: left;
+    }
+
+    /* Loose threads */
+    .lt-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border-soft);
+    }
+    .lt-item:last-child { border-bottom: 0; }
+    .lt-marker { font-size: 13px; color: var(--accent); width: 18px; text-align: center; }
+    .lt-body .lt-title { font-size: 13px; color: var(--text); }
+    .lt-body .lt-status { font-size: 10px; color: var(--dim); margin-top: 2px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* Challenge tray */
+    .challenge { padding: 4px 0; }
+    .challenge .ch-line { font-size: 14px; color: var(--text); margin-bottom: 8px; }
+    .challenge .ch-ids { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ch-id {
+      font-size: 11px; padding: 3px 8px;
+      border: 1px solid var(--border); border-radius: 999px;
+      color: var(--muted);
+    }
+    .ch-id.hot { border-color: var(--text); color: var(--text); background: rgba(255,255,255,0.04); }
+    .ch-id { transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.2s ease; }
+    .ch-id:active { transform: scale(0.94); background: var(--surface-2); border-color: var(--muted); }
+
+    /* Flow View — structural map / redline surface */
+    .flow-grid { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; }
+    .flow-card {
+      display: block; width: 100%; text-align: left;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.2s ease;
+    }
+    .flow-card:active { transform: scale(0.99); background: var(--surface-2); border-color: var(--muted); }
+    .flow-card-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin-bottom: 6px;
+    }
+    .flow-card-title { font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+    .flow-card-purpose { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .flow-status {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid;
+      flex-shrink: 0;
+    }
+    .flow-status-live    { color: var(--seed-green); border-color: color-mix(in srgb, var(--seed-green) 50%, transparent); }
+    .flow-status-partial { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 50%, transparent); }
+    .flow-status-define  { color: var(--muted); border-color: var(--border); }
+    .flow-status-stub    { color: var(--faint); border-color: var(--border-soft); }
+
+    /* Flow drawer — separate from note drawer */
+    .flow-drawer-title { margin: 4px 0 6px; font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .flow-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+    .flow-list li {
+      font-size: 13px; color: var(--text); line-height: 1.45;
+      padding-left: 14px; position: relative;
+    }
+    .flow-list li::before { content: "—"; position: absolute; left: 0; color: var(--dim); }
+    .flow-drawer-next { font-size: 13px; color: var(--text); line-height: 1.45; margin: 0; font-style: italic; }
+
+    /* Flow View export trigger button */
+    .flow-export-row { display: flex; gap: 8px; padding: 0 12px 12px; flex-wrap: wrap; }
+    .flow-export-trigger {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--amber) 35%, var(--border));
+      background: color-mix(in srgb, var(--amber) 8%, var(--surface));
+      color: var(--amber);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.08em;
+      transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+    }
+    .flow-export-trigger:active {
+      transform: scale(0.97);
+      background: color-mix(in srgb, var(--amber) 18%, var(--surface));
+    }
+
+    /* Export view — printable redline artifact */
+    .export-page { padding: 6px 4px 0; max-width: 760px; margin: 0 auto; }
+    .export-head { margin-bottom: 18px; }
+    .export-title-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+    .export-title-row h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+    .export-meta {
+      font-size: 10px; color: var(--dim);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .export-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .export-actions .export-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.06em;
+      transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease, transform 0.08s ease;
+    }
+    .export-actions .export-btn:active {
+      color: var(--text); border-color: var(--muted); background: var(--surface-2); transform: scale(0.97);
+    }
+    .export-actions .export-btn-primary {
+      color: var(--bg); background: var(--amber); border-color: var(--amber);
+    }
+    .export-intent { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 0; }
+
+    .export-section { margin: 22px 0; padding-top: 14px; border-top: 1px solid var(--border-soft); }
+    .export-section > h2 {
+      margin: 0 0 14px; font-size: 16px; font-weight: 700;
+      letter-spacing: 0.02em; color: var(--text);
+    }
+    .export-node {
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: var(--surface);
+    }
+    .export-node-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+    .export-node-head h3 { margin: 0; font-size: 16px; font-weight: 600; }
+    .export-status {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 999px; border: 1px solid;
+    }
+    .export-status-live    { color: var(--seed-green); border-color: color-mix(in srgb, var(--seed-green) 50%, transparent); }
+    .export-status-partial { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 50%, transparent); }
+    .export-status-define  { color: var(--muted); border-color: var(--border); }
+    .export-status-stub    { color: var(--faint); border-color: var(--border-soft); }
+    .export-purpose { font-size: 13px; color: var(--muted); line-height: 1.45; margin: 0 0 12px; }
+    .export-screenshot-placeholder {
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      aspect-ratio: 16 / 9;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+      background: color-mix(in srgb, var(--surface-2) 50%, transparent);
+    }
+    .export-screenshot-label {
+      font-size: 10px; color: var(--faint);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0 16px; text-align: center;
+    }
+    .export-block { margin-top: 10px; }
+    .export-block-title {
+      font-size: 10px; color: var(--dim);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .export-block ul { margin: 0; padding-left: 18px; }
+    .export-block li { font-size: 13px; color: var(--text); line-height: 1.4; margin: 2px 0; }
+    .export-block p { margin: 0; font-size: 13px; color: var(--text); line-height: 1.4; font-style: italic; }
+    .export-lineage { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .export-lineage li {
+      padding: 10px 12px;
+      border-left: 2px solid color-mix(in srgb, var(--amber) 40%, transparent);
+      background: color-mix(in srgb, var(--surface-2) 40%, transparent);
+      border-radius: 0 6px 6px 0;
+    }
+    .export-lineage-meta {
+      display: block;
+      font-size: 9px; color: var(--dim);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      margin-bottom: 2px;
+    }
+    .export-lineage strong { display: block; margin-bottom: 4px; font-size: 14px; color: var(--text); }
+    .export-lineage p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+
+    /* Print styles — clean B/W redline export */
+    @media print {
+      :root { color-scheme: light; }
+      body {
+        background: #fff !important;
+        background-image: none !important;
+        color: #000 !important;
+        padding-bottom: 0 !important;
+      }
+      .topbar, .botnav, .compass-btn, .patch-beacon, .scrim, .sheet, .no-print {
+        display: none !important;
+      }
+      main { padding: 0 !important; }
+      .export-page { padding: 0 !important; max-width: none; }
+      .export-head, .export-section { page-break-inside: avoid; }
+      .export-section { padding-top: 18px; border-top: 1px solid #888 !important; }
+      .export-section > h2 { page-break-after: avoid; }
+      .export-node {
+        border: 1px solid #888 !important;
+        background: #fff !important;
+        page-break-inside: avoid;
+        color: #000 !important;
+      }
+      .export-node h3,
+      .export-node-head h3,
+      .export-block li,
+      .export-block p,
+      .export-lineage strong,
+      .export-purpose,
+      .export-intent,
+      .export-title-row h1 {
+        color: #000 !important;
+      }
+      .export-block-title,
+      .export-meta,
+      .export-screenshot-label,
+      .export-lineage-meta,
+      .export-lineage p {
+        color: #444 !important;
+      }
+      .export-status {
+        border-color: #888 !important;
+        background: transparent !important;
+        color: #000 !important;
+      }
+      .export-screenshot-placeholder {
+        border: 1px dashed #888 !important;
+        background: #f5f5f5 !important;
+      }
+      .export-lineage li {
+        border-left: 2px solid #888 !important;
+        background: transparent !important;
+      }
+      *, *::before, *::after { animation: none !important; transition: none !important; box-shadow: none !important; }
+    }
+
+    /* Patch Beacon — "what changed?" notification */
+    .patch-beacon {
+      position: fixed;
+      top: calc(58px + var(--safe-top));
+      left: 8px; right: 8px;
+      max-width: 480px;
+      margin: 0 auto;
+      z-index: 15;
+      padding: 12px 14px 10px;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--amber) 32%, var(--border));
+      background: color-mix(in srgb, var(--surface) 96%, transparent);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(-12px) scale(0.97);
+      pointer-events: none;
+      transition: opacity 0.24s ease, transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .patch-beacon.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .pb-head {
+      font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 6px;
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    }
+    .pb-head .pb-id { font-weight: 600; }
+    .pb-head .pb-close {
+      font-size: 18px; line-height: 1; padding: 0 4px;
+      color: var(--dim);
+      background: none; border: 0;
+    }
+    .pb-head .pb-close:active { color: var(--text); }
+    .pb-summary {
+      font-size: 13px; color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .pb-actions {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .pb-actions button {
+      font-size: 11px; font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: color-mix(in srgb, var(--bg) 80%, transparent);
+      letter-spacing: 0.06em;
+      transition: color 0.12s ease, background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+    }
+    .pb-actions button:active { transform: scale(0.97); color: var(--text); background: var(--surface-2); border-color: var(--muted); }
+    .pb-actions .pb-primary {
+      color: var(--bg); background: var(--amber);
+      border-color: var(--amber);
+    }
+    .pb-actions .pb-primary:active {
+      color: var(--bg); background: color-mix(in srgb, var(--amber) 80%, var(--text));
+    }
+    /* "Show me" highlight pulse */
+    @keyframes patch-flash {
+      0%, 100% { box-shadow: 0 0 0 0 transparent; }
+      50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--amber) 50%, transparent); }
+    }
+    .patch-flash { animation: patch-flash 0.9s ease-in-out 3; }
+    @media (prefers-reduced-motion: reduce) {
+      .patch-beacon, .patch-flash { animation: none; transition: none; }
+    }
+
+    /* Stub view */
+    .stub { padding: 36px 16px; text-align: center; color: var(--dim); }
+    .stub .stub-title { font-size: 12px; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+    .stub .stub-hint { font-size: 13px; max-width: 280px; margin: 0 auto; }
+    .stub .stub-status { font-size: 9px; color: var(--faint); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 18px; }
+
+    /* Bottom nav */
+    .botnav {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding-bottom: var(--safe-bottom);
+      display: grid; grid-template-columns: repeat(5, 1fr);
+    }
+    .botnav button {
+      min-height: var(--tap); padding: 10px 0 8px;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      color: var(--muted);
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .botnav button .dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; }
+    .botnav button[aria-selected="true"] { color: var(--text); }
+    .botnav button[aria-selected="true"] .dot { background: var(--amber); }
+    .botnav button:active { background: color-mix(in srgb, var(--text) 6%, transparent); }
+
+    /* Capture sheet */
+    .scrim {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      opacity: 0; pointer-events: none; transition: opacity 0.18s ease;
+      z-index: 20;
+    }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+    .sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 21;
+      background: var(--surface);
+      border-top-left-radius: 18px; border-top-right-radius: 18px;
+      padding: 16px 16px calc(16px + var(--safe-bottom));
+      transform: translateY(110%);
+      transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+    }
+    .sheet.open { transform: translateY(0); }
+    .sheet-handle { width: 40px; height: 4px; background: var(--border); border-radius: 4px; margin: 0 auto 14px; }
+    .sheet h3 { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .sheet .sheet-hint { font-size: 12px; color: var(--dim); margin: 0 0 12px; }
+    .sheet textarea {
+      width: 100%; min-height: 120px;
+      padding: 12px; font: inherit; color: var(--text);
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+      resize: vertical;
+    }
+    .sheet textarea:focus { outline: none; border-color: var(--text); }
+    .sheet-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .sheet-actions button {
+      flex: 1; min-height: var(--tap); border-radius: 10px;
+      border: 1px solid var(--border); color: var(--text); font-weight: 600;
+    }
+    .sheet-actions .save { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+    /* Drawer (note detail — Detail Focus) */
+    .drawer-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; margin-bottom: 10px;
+    }
+    .drawer-meta { font-size: 10px; color: var(--dim); letter-spacing: 0.18em; text-transform: uppercase; }
+    .drawer-text { margin: 0; font-size: 15px; line-height: 1.5; color: var(--text); }
+    .drawer-section { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-soft); }
+    .drawer-section-title { font-size: 10px; color: var(--dim); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+    .drawer-sigils { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .drawer-sigil {
+      font-size: 11px; padding: 3px 9px; border-radius: 999px;
+      border: 1px solid var(--border); background: var(--bg); color: var(--muted);
+    }
+    .drawer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .drawer-links li { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: baseline; }
+    .drawer-links .ds-pair { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text); }
+    .drawer-links .ds-type {
+      font-size: 9px; padding: 2px 7px; border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--rose) 50%, transparent);
+      color: var(--rose);
+      letter-spacing: 0.16em; text-transform: uppercase;
+    }
+    .drawer-links .ds-strength { font-size: 9px; color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase; }
+    .drawer-links .ds-why {
+      font-size: 10px; color: var(--muted);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 3px 9px;
+      transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+    .drawer-links .ds-why:active { background: var(--surface-2); }
+    .drawer-links .ds-why[aria-expanded="true"] { color: var(--text); border-color: var(--muted); background: var(--surface-2); }
+    .drawer-links .ds-reason {
+      color: var(--muted); flex-basis: 100%;
+      font-size: 12px; line-height: 1.45;
+      padding: 6px 10px; border-left: 2px solid color-mix(in srgb, var(--rose) 40%, transparent);
+      background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+      border-radius: 0 6px 6px 0;
+    }
+    .drawer-links .ds-reason[hidden] { display: none; }
+    .drawer-links .ds-empty { font-size: 12px; color: var(--muted); }
+    .drawer-actions {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      margin-top: 14px;
+    }
+    .drawer-actions button {
+      min-height: var(--tap); border-radius: 10px;
+      border: 1px solid var(--border); color: var(--text); font-weight: 600; font-size: 13px;
+      background: var(--surface);
+      transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+    }
+    .drawer-actions button:active { transform: scale(0.98); background: var(--surface-2); border-color: var(--muted); }
+    .drawer-meta-grid { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: 12px; }
+    .drawer-meta-grid .k { color: var(--dim); letter-spacing: 0.14em; text-transform: uppercase; font-size: 10px; }
+    .drawer-meta-grid .v { color: var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+
+    /* Demo / seed pill */
+    .demo-pill {
+      font-size: 9px; padding: 1px 6px; border-radius: 999px;
+      border: 1px dashed var(--border); color: var(--faint);
+      letter-spacing: 0.18em; text-transform: uppercase; margin-left: 6px;
+    }
+
+    /* Tappable cloud asteroid */
+    .cloud-preview svg .hit { cursor: pointer; }
+
+    /* List view */
+    .list-section { margin-bottom: 14px; }
+    .list-section .body { padding: 0; }
+    .list-row {
+      display: block; width: 100%; text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-soft);
+      background: transparent;
+    }
+    .list-row:last-child { border-bottom: 0; }
+    .list-row:active { background: var(--surface-2); }
+    .list-row-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .list-row-domain {
+      font-size: 9px; color: var(--muted); border: 1px solid var(--border);
+      padding: 1px 6px; border-radius: 999px; letter-spacing: 0.2em; text-transform: uppercase;
+    }
+    .list-row-time { font-size: 10px; color: var(--faint); letter-spacing: 0.12em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .list-row-id { font-size: 10px; color: var(--faint); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-left: auto; }
+    .list-row-text { font-size: 13px; color: var(--text); line-height: 1.4; }
+    .list-row-sigils { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+    .list-row-sigil { font-size: 10px; color: var(--dim); }
+
+    /* Toast */
+    .toast {
+      position: fixed; left: 50%; bottom: calc(96px + var(--safe-bottom)); transform: translate(-50%, 12px);
+      background: var(--text); color: var(--bg);
+      padding: 10px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 30;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* Footer signature */
+    .sig { padding: 8px 0 4px; font-size: 9px; color: var(--faint); text-align: center; letter-spacing: 0.22em; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <button class="brand" id="brand-home" aria-label="Go to Home">BaxleyCommons</button>
+    <div class="pill edge">Edge · v0</div>
+    <button class="compass-btn" id="compass-trigger" aria-label="Open actions" aria-haspopup="true" aria-expanded="false">
+      <svg class="compass-rose" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle class="cr-bg" cx="18" cy="18" r="16.5" stroke-width="0.8"/>
+        <g transform="translate(18 18)">
+          <path class="cr-n"       d="M0,-15 L2,-7 L0,-9 L-2,-7 Z"/>
+          <path class="cr-n-shade" d="M0,-15 L0,-9 L-2,-7 Z"/>
+          <g transform="rotate(180)">
+            <path class="cr-s"       d="M0,-15 L2,-7 L0,-9 L-2,-7 Z"/>
+            <path class="cr-s-shade" d="M0,-15 L0,-9 L-2,-7 Z"/>
+          </g>
+          <g transform="rotate(90)">
+            <path class="cr-ew"       d="M0,-14 L1.6,-7.5 L0,-9 L-1.6,-7.5 Z"/>
+            <path class="cr-ew-shade" d="M0,-14 L0,-9 L-1.6,-7.5 Z"/>
+          </g>
+          <g transform="rotate(270)">
+            <path class="cr-ew"       d="M0,-14 L1.6,-7.5 L0,-9 L-1.6,-7.5 Z"/>
+            <path class="cr-ew-shade" d="M0,-14 L0,-9 L-1.6,-7.5 Z"/>
+          </g>
+          <g transform="rotate(45)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"/></g>
+          <g transform="rotate(135)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"/></g>
+          <g transform="rotate(225)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"/></g>
+          <g transform="rotate(315)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"/></g>
+          <circle class="cr-hub" r="2.8" stroke-width="0.7"/>
+          <circle class="cr-pin" r="1.1"/>
+        </g>
+      </svg>
+    </button>
+  </div>
+
+  <main id="app"></main>
+
+  <nav class="botnav" id="botnav" role="tablist" aria-label="Primary navigation">
+    <button data-view="home" aria-selected="true"><span class="dot"></span>Home</button>
+    <button data-view="cloud" aria-selected="false"><span class="dot"></span>Cloud</button>
+    <button data-view="list" aria-selected="false"><span class="dot"></span>List</button>
+    <button data-view="capture" aria-selected="false"><span class="dot"></span>Capture</button>
+    <button data-view="distill" aria-selected="false"><span class="dot"></span>Distill</button>
+  </nav>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet-handle"></div>
+    <h3 id="sheet-title">Add Note</h3>
+    <p class="sheet-hint" id="sheet-hint">Capture first. Distill later.</p>
+    <textarea id="sheet-text" placeholder="What just happened, or what just occurred to you?"></textarea>
+    <div class="sheet-actions">
+      <button id="sheet-cancel">Cancel</button>
+      <button id="sheet-save" class="save">Save</button>
+    </div>
+  </aside>
+
+  <div class="scrim" id="drawer-scrim"></div>
+  <aside class="sheet" id="drawer" aria-hidden="true">
+    <div class="sheet-handle"></div>
+    <div class="drawer-head">
+      <span class="fn-domain" id="drawer-domain">DOMAIN</span>
+      <span class="drawer-meta" id="drawer-meta"></span>
+    </div>
+    <p class="drawer-text" id="drawer-text"></p>
+    <div class="drawer-sigils" id="drawer-sigils"></div>
+    <div class="drawer-section" id="drawer-links-section">
+      <div class="drawer-section-title">Red Strings</div>
+      <ul class="drawer-links" id="drawer-links"></ul>
+    </div>
+    <div class="drawer-section" id="drawer-source-section">
+      <div class="drawer-section-title">Source</div>
+      <div class="drawer-meta-grid" id="drawer-source"></div>
+    </div>
+    <div class="drawer-actions">
+      <button id="drawer-add-from">＋ Add note from this</button>
+      <button id="drawer-status">Change status</button>
+    </div>
+    <div class="sheet-actions">
+      <button id="drawer-close">Close</button>
+    </div>
+  </aside>
+
+  <div class="scrim" id="settings-scrim"></div>
+  <aside class="sheet" id="settings-sheet" aria-hidden="true">
+    <div class="sheet-handle"></div>
+    <h3>Settings</h3>
+    <p class="sheet-hint">Atmosphere only — semantic routing is held across all themes.</p>
+    <div class="settings-section">
+      <div class="settings-section-title">Theme</div>
+      <div class="theme-list" id="theme-list"></div>
+    </div>
+    <div class="settings-meta">EDGE · v0 · Settings</div>
+    <div class="sheet-actions">
+      <button id="settings-close">Close</button>
+    </div>
+  </aside>
+
+  <div class="scrim" id="flow-drawer-scrim"></div>
+  <aside class="sheet" id="flow-drawer" aria-hidden="true">
+    <div class="sheet-handle"></div>
+    <div class="drawer-head">
+      <span class="fn-domain" id="flow-drawer-status">LIVE</span>
+      <span class="drawer-meta" id="flow-drawer-meta">page</span>
+    </div>
+    <h3 class="flow-drawer-title" id="flow-drawer-title">Title</h3>
+    <p class="drawer-text" id="flow-drawer-purpose"></p>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Main actions</div>
+      <ul class="flow-list" id="flow-drawer-actions"></ul>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Known issues</div>
+      <ul class="flow-list" id="flow-drawer-issues"></ul>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Next patch candidate</div>
+      <p class="flow-drawer-next" id="flow-drawer-next"></p>
+    </div>
+    <div class="sheet-actions">
+      <button id="flow-drawer-export">Export this page</button>
+      <button id="flow-drawer-close">Close</button>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <aside class="patch-beacon" id="patch-beacon" role="status" aria-live="polite" aria-hidden="true">
+    <div class="pb-head">
+      <span class="pb-id" id="patch-beacon-id">Redline</span>
+      <button class="pb-close" id="patch-beacon-close" aria-label="Dismiss">×</button>
+    </div>
+    <div class="pb-summary" id="patch-beacon-summary"></div>
+    <div class="pb-actions">
+      <button class="pb-primary" id="patch-beacon-got">Got it</button>
+      <button id="patch-beacon-show">Show me</button>
+      <button id="patch-beacon-feedback">Add feedback</button>
+    </div>
+  </aside>
+
+  <div class="scrim" id="compass-scrim"></div>
+  <nav class="compass-menu" id="compass-menu" role="menu" aria-label="Actions">
+    <div class="cm-zone cm-zone-intent" role="group" aria-label="GW-01 Intent">
+      <button class="cm-item is-claude" data-cm="claude" role="menuitem">
+        <span class="cm-dir">↖</span>
+        <span class="cm-label">Claude Note</span>
+        <span class="cm-hint">Bug · idea · instruction</span>
+      </button>
+      <button class="cm-item" data-cm="commons" role="menuitem">
+        <span class="cm-dir">↗</span>
+        <span class="cm-label">Commons Note</span>
+        <span class="cm-hint">Capture · raw</span>
+      </button>
+      <button class="cm-item" data-cm="elco" role="menuitem">
+        <span class="cm-dir">↙</span>
+        <span class="cm-label">ELCO Note</span>
+        <span class="cm-hint">Capture · raw</span>
+      </button>
+      <button class="cm-item" data-cm="dice" role="menuitem">
+        <span class="cm-dir">↘</span>
+        <span class="cm-label">Roll Dice</span>
+        <span class="cm-hint">Force collision</span>
+      </button>
+    </div>
+    <div class="cm-zone cm-zone-fn" role="group" aria-label="GW-02 Function">
+      <button class="cm-fn" data-cm="notes" role="menuitem">Notes</button>
+      <button class="cm-fn" data-cm="parameters" role="menuitem">Parameters</button>
+      <button class="cm-fn" data-cm="flow" role="menuitem">Flow</button>
+      <button class="cm-fn" data-cm="red-threads" role="menuitem">Red Threads</button>
+    </div>
+    <div class="cm-zone cm-zone-account" role="group" aria-label="GW-03 Account">
+      <button class="cm-sys" data-cm="settings" role="menuitem">Settings</button>
+      <button class="cm-sys" data-cm="archive" role="menuitem">Archive</button>
+      <button class="cm-sys" data-cm="profile" role="menuitem">Profile</button>
+      <button class="cm-sys" data-cm="account" role="menuitem">Account</button>
+    </div>
+  </nav>
+
+  <script>
+    // ── Mock data ──────────────────────────────────────────────────────────
+    const NOTES = [
+      { id: 1, domain: "Commons",  text: "A weak idea alone may be noise, but strong in the right context.", sigils: ["seed"] },
+      { id: 2, domain: "Baxley",   text: "K-Plate should define authority before Lux decorates the edge.",   sigils: ["kplate","lux","type"] },
+      { id: 3, domain: "Penumbra", text: "Material studies should reveal pressure, not just surface polish.", sigils: ["material","lux"] },
+      { id: 4, domain: "Hachi",    text: "Random pulls can create creative pressure when boredom appears.",   sigils: ["lab","seed","friction"] },
+      { id: 5, domain: "Forge",    text: "Red strings should stay weak until repeated pressure confirms them.",sigils: ["forge","lab"] },
+      { id: 6, domain: "Baxley",   text: "Typography building needs collisions between rhythm, material, and constraint.", sigils: ["type","material","kplate"] },
+    ];
+
+    const LINKS = [
+      { s: 1, t: 5, type: "thematic",          strength: "weak"   },
+      { s: 2, t: 6, type: "structural",        strength: "medium" },
+      { s: 3, t: 6, type: "material-resonance",strength: "weak"   },
+      { s: 4, t: 5, type: "operational-overlap",strength:"weak"   },
+    ];
+
+    const SIGIL_GLYPH = { seed:"🌱", lab:"⚗", kplate:"K", lux:"L", material:"M", type:"T", forge:"F", friction:"R" };
+    const SIGIL_LABEL = { seed:"Seed", lab:"Alchemist Lab", kplate:"K-Plate", lux:"Lux", material:"Material", type:"Typography", forge:"Forge Tested", friction:"Recurring Friction" };
+
+    // Seed/demo field notes — kept as orientation data, never persisted.
+    const SEED_FIELD_NOTES = [
+      { id: "seed-1", time: "19:42", timestamp: null, domain: "ELCO",    text: "Need to check if Peach Tree lift station easement conflicts with road frontage on east lots.", sigils: [], source: "demo", status: "raw", kind: "seed" },
+      { id: "seed-2", time: "14:18", timestamp: null, domain: "Commons", text: "Splash shell pattern should mirror Penumbra: single file, phone-loadable.", sigils: [], source: "demo", status: "raw", kind: "seed" },
+      { id: "seed-3", time: "09:03", timestamp: null, domain: "ELCO",    text: "Pegram allocation still pending. Don't quote per-lot until confirmed.", sigils: [], source: "demo", status: "raw", kind: "seed" },
+    ];
+
+    // ── Persistence (localStorage) ─────────────────────────────────────────
+    const STORAGE_KEY = "bxc.field-notes";
+    function loadCaptures() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) { return []; }
+    }
+    function saveCaptures(arr) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); return true; }
+      catch (e) { return false; }
+    }
+    function addCapture(domain, text) {
+      const ts = new Date();
+      const item = {
+        id: "cap-" + ts.getTime() + "-" + Math.random().toString(36).slice(2, 6),
+        timestamp: ts.toISOString(),
+        time: ts.toTimeString().slice(0, 5),
+        domain: domain,
+        text: text,
+        sigils: [],
+        source: "mobile",
+        status: "raw",
+        kind: "capture",
+      };
+      userCaptures = [item, ...userCaptures];
+      const ok = saveCaptures(userCaptures);
+      return { item, persisted: ok };
+    }
+    let userCaptures = loadCaptures();
+
+    // Merged feed: user captures (newest first) + seed.
+    function feedItems(limit) {
+      const out = [...userCaptures, ...SEED_FIELD_NOTES];
+      return typeof limit === "number" ? out.slice(0, limit) : out;
+    }
+    function findItem(itemId) {
+      return userCaptures.find(c => c.id === itemId) || SEED_FIELD_NOTES.find(s => s.id === itemId) || null;
+    }
+    function linksForNote(noteId) {
+      return LINKS.filter(l => l.s === noteId || l.t === noteId);
+    }
+
+    const LOOSE_THREADS = [
+      { marker: "🌱", title: "Material study from last week — never paired with K-Plate authority note.", status: "pairing candidate" },
+      { marker: "R",  title: "Review board cadence keeps slipping past the 2-week mark.",                  status: "recurring friction" },
+      { marker: "⛓", title: "Three notes about 'wandering quality' — possible Red String forming.",       status: "worth observing further" },
+    ];
+
+    const CHALLENGE_POOL = [
+      { line: "Combine Seed + Alchemist Lab + Recurring Friction into one usable idea packet.", ids: [1,4,5] },
+      { line: "Combine K-Plate + Typography + Material into one structural prototype.",         ids: [2,6,3] },
+      { line: "Combine Lab + Forge Tested + Lux into one pressure-tested artifact.",            ids: [4,5,3] },
+      { line: "Combine Seed + Material + Typography into one atmospheric study.",               ids: [1,3,6] },
+    ];
+
+    let currentChallenge = CHALLENGE_POOL[0];
+
+    // ── Asteroid shape helpers (deterministic per-id) ──────────────────────
+    function seededRng(seed) {
+      let t = (seed | 0) + 0x6D2B79F5;
+      return function() {
+        t = (t + 0x6D2B79F5) | 0;
+        let r = Math.imul(t ^ (t >>> 15), 1 | t);
+        r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+        return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    function asteroidPath(seed, baseR, jaggedness = 0.34, vertices = 11) {
+      const rng = seededRng(seed * 7919 + 17);
+      let d = "";
+      for (let i = 0; i < vertices; i++) {
+        const angle = (i / vertices) * Math.PI * 2 + (rng() - 0.5) * 0.18;
+        const r = baseR * (1 - jaggedness/2 + rng() * jaggedness);
+        const x = (Math.cos(angle) * r).toFixed(2);
+        const y = (Math.sin(angle) * r).toFixed(2);
+        d += (i === 0 ? "M " : " L ") + x + " " + y;
+      }
+      return d + " Z";
+    }
+    function crackSegments(seed, baseR, count = 2) {
+      const rng = seededRng(seed * 1031 + 53);
+      const segs = [];
+      for (let i = 0; i < count; i++) {
+        const a1 = rng() * Math.PI * 2;
+        const a2 = a1 + (rng() - 0.5) * Math.PI;
+        const r1 = baseR * (0.18 + rng() * 0.42);
+        const r2 = baseR * (0.18 + rng() * 0.42);
+        segs.push({
+          x1: Math.cos(a1) * r1, y1: Math.sin(a1) * r1,
+          x2: Math.cos(a2) * r2, y2: Math.sin(a2) * r2,
+        });
+      }
+      return segs;
+    }
+    function edgeAnchor(from, to, baseR, factor = 0.82) {
+      const dx = to.x - from.x, dy = to.y - from.y;
+      const d = Math.hypot(dx, dy) || 1;
+      return { x: from.x + (dx/d) * baseR * factor, y: from.y + (dy/d) * baseR * factor };
+    }
+
+    // ── Cloud layout (dep-free, deterministic) ─────────────────────────────
+    function computeLayout(notes, links, W = 320, H = 220, iterations = 140) {
+      const N = notes.length;
+      const pos = notes.map((n, i) => ({
+        id: n.id,
+        x: W/2 + Math.cos((i/N)*Math.PI*2) * 80,
+        y: H/2 + Math.sin((i/N)*Math.PI*2) * 70,
+        vx: 0, vy: 0,
+      }));
+      const idx = new Map(pos.map((p,i)=>[p.id,i]));
+      const sigSets = notes.map(n => new Set(n.sigils));
+      const restLen = s => s==="strong" ? 50 : s==="medium" ? 80 : 120;
+      const springK = s => s==="strong" ? 0.06 : s==="medium" ? 0.03 : 0.012;
+
+      for (let iter=0; iter<iterations; iter++) {
+        const fx = new Float64Array(N), fy = new Float64Array(N);
+        for (let i=0; i<N; i++) {
+          for (let j=i+1; j<N; j++) {
+            const dx = pos[j].x - pos[i].x, dy = pos[j].y - pos[i].y;
+            const d2 = dx*dx + dy*dy + 1, d = Math.sqrt(d2);
+            const ux = dx/d, uy = dy/d;
+            const rep = 2200/d2;
+            fx[i] -= ux*rep; fy[i] -= uy*rep;
+            fx[j] += ux*rep; fy[j] += uy*rep;
+            let overlap = 0;
+            sigSets[i].forEach(s => { if (sigSets[j].has(s)) overlap++; });
+            if (overlap > 0) {
+              const a = 0.004*overlap;
+              fx[i] += dx*a; fy[i] += dy*a;
+              fx[j] -= dx*a; fy[j] -= dy*a;
+            }
+          }
+        }
+        for (const l of links) {
+          const i = idx.get(l.s), j = idx.get(l.t);
+          if (i==null || j==null) continue;
+          const dx = pos[j].x - pos[i].x, dy = pos[j].y - pos[i].y;
+          const d = Math.sqrt(dx*dx + dy*dy) + 0.001;
+          const f = (d - restLen(l.strength)) * springK(l.strength);
+          const ux = dx/d, uy = dy/d;
+          fx[i] += ux*f; fy[i] += uy*f;
+          fx[j] -= ux*f; fy[j] -= uy*f;
+        }
+        for (let i=0; i<N; i++) {
+          fx[i] += (W/2 - pos[i].x) * 0.006;
+          fy[i] += (H/2 - pos[i].y) * 0.006;
+        }
+        const damping = 0.82;
+        for (let i=0; i<N; i++) {
+          pos[i].vx = (pos[i].vx + fx[i]) * damping;
+          pos[i].vy = (pos[i].vy + fy[i]) * damping;
+          pos[i].x += pos[i].vx;
+          pos[i].y += pos[i].vy;
+        }
+      }
+      const m = 16;
+      for (const p of pos) {
+        p.x = Math.max(m, Math.min(W-m, p.x));
+        p.y = Math.max(m, Math.min(H-m, p.y));
+      }
+      return pos;
+    }
+
+    function renderCloudSVG({ width = 320, height = 220, hotIds = [] } = {}) {
+      const layout = computeLayout(NOTES, LINKS, width, height);
+      const pmap = new Map(layout.map(p => [p.id, p]));
+      const hot = new Set(hotIds);
+      const strokeFor = s => s==="strong" ? 2.2 : s==="medium" ? 1.4 : 0.9;
+      const opacityFor = s => s==="strong" ? 0.85 : s==="medium" ? 0.6 : 0.32;
+
+      // Z-depth bucket per note (deterministic from id): back / mid / front
+      const zBucket = id => (id % 3 === 0 ? "back" : id % 3 === 1 ? "mid" : "front");
+      const zScale  = { back: 0.78, mid: 0.9,  front: 1.0 };
+      const zOpac   = { back: 0.62, mid: 0.82, front: 1.0 };
+      const baseR   = (z, isHot) => (isHot ? 14 : 11) * z;
+
+      // Red Strings — anchored to asteroid edge seams, not centers.
+      const edges = LINKS.map(l => {
+        const a = pmap.get(l.s), b = pmap.get(l.t);
+        if (!a || !b) return "";
+        const ar = baseR(zScale[zBucket(a.id)], hot.has(a.id));
+        const br = baseR(zScale[zBucket(b.id)], hot.has(b.id));
+        const aA = edgeAnchor(a, b, ar);
+        const bA = edgeAnchor(b, a, br);
+        return `<line class="red-string" x1="${aA.x.toFixed(1)}" y1="${aA.y.toFixed(1)}"
+          x2="${bA.x.toFixed(1)}" y2="${bA.y.toFixed(1)}"
+          stroke-width="${strokeFor(l.strength)}"
+          stroke-opacity="${opacityFor(l.strength)}" stroke-linecap="round" />`;
+      }).join("");
+
+      // Render order: back-first, then mid, then front, then hot — so foreground sits on top.
+      const ordered = [...NOTES].sort((a, b) => {
+        const ah = hot.has(a.id) ? 1 : 0, bh = hot.has(b.id) ? 1 : 0;
+        if (ah !== bh) return ah - bh;
+        return zScale[zBucket(a.id)] - zScale[zBucket(b.id)];
+      });
+
+      const nodes = ordered.map(n => {
+        const p = pmap.get(n.id);
+        if (!p) return "";
+        const isHot = hot.has(n.id);
+        const z = zScale[zBucket(n.id)];
+        const op = isHot ? 1 : zOpac[zBucket(n.id)];
+        const r = baseR(z, isHot);
+        const path = asteroidPath(n.id, r);
+        const cracks = crackSegments(n.id, r);
+        const hotClass = isHot ? " is-hot" : "";
+        const strokeW = isHot ? 1.4 : 0.85;
+        const glyphs = n.sigils.map(s => SIGIL_GLYPH[s] || "").join(" ");
+
+        // Per-asteroid drift parameters (deterministic from id, no jitter on re-render)
+        const dr = seededRng(n.id * 113 + 7);
+        const dur   = (8 + dr() * 6).toFixed(1);
+        const delay = (dr() * -10).toFixed(1);
+        const rot   = (1.5 + dr() * 2.5).toFixed(2);
+        const dx    = (dr() * 1.6 - 0.8).toFixed(2);
+        const dy    = (dr() * 1.6 - 0.8).toFixed(2);
+        const filterAttr = isHot ? ' filter="url(#asteroid-glow)"' : '';
+
+        const crackMarkup = cracks.map(s =>
+          `<line class="ast-crack${hotClass}" x1="${s.x1.toFixed(1)}" y1="${s.y1.toFixed(1)}" x2="${s.x2.toFixed(1)}" y2="${s.y2.toFixed(1)}"
+            stroke-width="0.6" stroke-linecap="round"/>`
+        ).join("");
+
+        const idFontSize    = (7 + z * 2).toFixed(1);
+        const glyphFontSize = (6 + z * 1.6).toFixed(1);
+
+        return `
+          <g class="hit" transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})" opacity="${op}" data-note-id="${n.id}">
+            <circle r="22" fill="transparent" pointer-events="all"/>
+            <g class="drifter" style="--dur:${dur}s;--delay:${delay}s;--rot:${rot}deg;--dx:${dx}px;--dy:${dy}px"${filterAttr}>
+              <path class="ast-body${hotClass}" d="${path}" stroke-width="${strokeW}" stroke-linejoin="round" />
+              ${crackMarkup}
+              <text class="ast-id${hotClass}" text-anchor="middle" y="2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+                font-size="${idFontSize}" opacity="0.95">#${n.id}</text>
+              <text class="ast-glyph${hotClass}" text-anchor="middle" y="${(r - 1.5).toFixed(1)}" font-size="${glyphFontSize}">${glyphs}</text>
+            </g>
+          </g>`;
+      }).join("");
+
+      const defs = `
+        <defs>
+          <filter id="asteroid-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="1.6" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>`;
+
+      return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">${defs}${edges}${nodes}</svg>`;
+    }
+
+    // ── View renderers ─────────────────────────────────────────────────────
+    function viewHome() {
+      const hot = currentChallenge.ids;
+      return `
+        <section class="splash">
+          <h1>HACHI Idea Cloud</h1>
+          <p>Capture first. Distill later.</p>
+        </section>
+
+        <div class="actions">
+          <button class="action primary" data-action="commons">
+            <div class="glyph">＋</div>
+            <div>
+              <div class="label">Add Commons Note</div>
+              <div class="hint">Capture · raw · no inference</div>
+            </div>
+          </button>
+          <button class="action primary" data-action="elco">
+            <div class="glyph">＋</div>
+            <div>
+              <div class="label">Add ELCO Note</div>
+              <div class="hint">Capture · raw · no inference</div>
+            </div>
+          </button>
+          <button class="action" data-action="roll">
+            <div class="glyph">⚄</div>
+            <div>
+              <div class="label">Roll Idea Dice</div>
+              <div class="hint">Force a useful collision</div>
+            </div>
+          </button>
+          <button class="action" data-action="distill">
+            <div class="glyph">◷</div>
+            <div>
+              <div class="label">Distill Today</div>
+              <div class="hint">Today, through a lens</div>
+            </div>
+          </button>
+        </div>
+
+        <div class="module">
+          <header class="is-link" data-action="open-cloud" role="button" tabindex="0" aria-label="Open Cloud view">
+            <span class="title">Idea Cloud</span><span class="meta">Open</span>
+          </header>
+          <div class="body">
+            <div class="cloud-preview" data-action="open-cloud" role="button" tabindex="0" aria-label="Open Cloud view">${renderCloudSVG({ width: 320, height: 200, hotIds: hot })}</div>
+          </div>
+        </div>
+
+        <div class="module list-section">
+          <header><span class="title">Latest Field Notes</span><span class="meta">${userCaptures.length} captured · ${SEED_FIELD_NOTES.length} demo</span></header>
+          <div class="body">
+            ${feedItems(5).map(n => `
+              <button class="list-row" data-item-id="${n.id}">
+                <div class="list-row-head">
+                  <span class="list-row-domain">${n.domain}</span>
+                  <span class="list-row-time">${n.time || ""}</span>
+                  ${n.kind === "seed" ? '<span class="demo-pill">demo</span>' : ""}
+                </div>
+                <div class="list-row-text">${escapeHtml(n.text)}</div>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="module">
+          <header><span class="title">Loose Threads</span><span class="meta">worth observing</span></header>
+          <div class="body">
+            <ul class="lt-list">
+              ${LOOSE_THREADS.map(t => `
+                <li class="lt-item">
+                  <span class="lt-marker">${t.marker}</span>
+                  <div class="lt-body">
+                    <div class="lt-title">${t.title}</div>
+                    <div class="lt-status">${t.status}</div>
+                  </div>
+                </li>
+              `).join("")}
+            </ul>
+          </div>
+        </div>
+
+        <div class="module">
+          <header><span class="title">Challenge Tray</span><span class="meta">current pull</span></header>
+          <div class="body challenge">
+            <div class="ch-line">${currentChallenge.line}</div>
+            <div class="ch-ids">
+              ${NOTES.map(n => `<button class="ch-id ${hot.includes(n.id) ? "hot" : ""}" data-note-id="${n.id}" aria-label="Open note ${n.id}">#${n.id}</button>`).join("")}
+            </div>
+          </div>
+        </div>
+
+        <div class="sig">Hachi Codex · Baxley Commons · Edge build</div>
+      `;
+    }
+
+    function viewCloud() {
+      const hot = currentChallenge.ids;
+      return `
+        <section class="splash">
+          <h1>Cloud</h1>
+          <h2>Idea Cloud — gravity, not frequency</h2>
+          <p>Distance encodes relationship. Strange adjacency is the signal.</p>
+        </section>
+        <div class="module">
+          <header><span class="title">Topology</span><span class="meta">${NOTES.length} notes · ${LINKS.length} red strings</span></header>
+          <div class="body">
+            <div class="cloud-preview">${renderCloudSVG({ width: 320, height: 280, hotIds: hot })}</div>
+          </div>
+        </div>
+        <div class="module list-section">
+          <header><span class="title">Notes</span><span class="meta">tap any row</span></header>
+          <div class="body">
+            ${NOTES.map(n => `
+              <button class="list-row" data-note-id="${n.id}">
+                <div class="list-row-head">
+                  <span class="list-row-domain">${n.domain}</span>
+                  <span class="list-row-id">#${n.id}</span>
+                </div>
+                <div class="list-row-text">${escapeHtml(n.text)}</div>
+                ${n.sigils && n.sigils.length ? `
+                  <div class="list-row-sigils">
+                    ${n.sigils.map(s => `<span class="list-row-sigil">${SIGIL_GLYPH[s] || ""} ${SIGIL_LABEL[s] || s}</span>`).join(" · ")}
+                  </div>` : ""}
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function viewCapture() {
+      return `
+        <section class="splash">
+          <h1>Capture</h1>
+          <h2>Voice + thumb capture</h2>
+          <p>Append raw. No analysis. No inference. The intake stays frictionless.</p>
+        </section>
+        <div class="actions">
+          <button class="action primary" data-action="commons">
+            <div class="glyph">＋</div>
+            <div><div class="label">Add Commons Note</div><div class="hint">routes to Commons list</div></div>
+          </button>
+          <button class="action primary" data-action="elco">
+            <div class="glyph">＋</div>
+            <div><div class="label">Add ELCO Note</div><div class="hint">routes to ELCO list</div></div>
+          </button>
+        </div>
+        <div class="stub">
+          <div class="stub-title">Reminder triggers</div>
+          <div class="stub-hint">"Commons reminder:" / "ELCO reminder:" land here once the reminder layer is wired.</div>
+          <div class="stub-status">Phase pending</div>
+        </div>
+      `;
+    }
+
+    function viewDistill() {
+      return `
+        <section class="splash">
+          <h1>Distill</h1>
+          <h2>Today, through a lens</h2>
+          <p>Re-distilling raw captures through changing filters, pressures, and lenses. Lens toggles pending.</p>
+        </section>
+
+        <div class="module list-section">
+          <header><span class="title">Timeline</span><span class="meta">${userCaptures.length} captured · ${SEED_FIELD_NOTES.length} demo</span></header>
+          <div class="body">
+            ${feedItems().map(n => `
+              <button class="list-row" data-item-id="${n.id}">
+                <div class="list-row-head">
+                  <span class="list-row-domain">${n.domain}</span>
+                  <span class="list-row-time">${n.time || ""}</span>
+                  ${n.kind === "seed" ? '<span class="demo-pill">demo</span>' : ""}
+                </div>
+                <div class="list-row-text">${escapeHtml(n.text)}</div>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="module">
+          <header><span class="title">Open Loops</span><span class="meta">${LOOSE_THREADS.length}</span></header>
+          <div class="body">
+            <ul class="lt-list">
+              ${LOOSE_THREADS.map(t => `
+                <li class="lt-item">
+                  <span class="lt-marker">${t.marker}</span>
+                  <div class="lt-body">
+                    <div class="lt-title">${t.title}</div>
+                    <div class="lt-status">${t.status}</div>
+                  </div>
+                </li>
+              `).join("")}
+            </ul>
+          </div>
+        </div>
+
+        <div class="stub">
+          <div class="stub-title">Routing</div>
+          <div class="stub-hint">Reminders · Email me · Email Mike · Dashboard · Send all. Stub only — backend not wired.</div>
+          <div class="stub-status">Phase pending</div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    }
+
+    function viewList() {
+      const captures = userCaptures;
+      return `
+        <section class="splash">
+          <h1>List</h1>
+          <h2>Detail focus</h2>
+          <p>Sequential view of every note. Tap a row to open its drawer.</p>
+        </section>
+
+        <div class="module list-section">
+          <header><span class="title">Field Notes</span><span class="meta">${captures.length} captured · ${SEED_FIELD_NOTES.length} demo</span></header>
+          <div class="body">
+            ${(captures.length + SEED_FIELD_NOTES.length === 0)
+              ? '<div class="stub"><div class="stub-hint">No notes yet. Capture one from Home.</div></div>'
+              : feedItems().map(n => `
+                <button class="list-row" data-item-id="${n.id}">
+                  <div class="list-row-head">
+                    <span class="list-row-domain">${n.domain}</span>
+                    <span class="list-row-time">${n.time || ""}</span>
+                    ${n.kind === "seed" ? '<span class="demo-pill">demo</span>' : ""}
+                    <span class="list-row-id">${n.id}</span>
+                  </div>
+                  <div class="list-row-text">${escapeHtml(n.text)}</div>
+                  ${n.sigils && n.sigils.length ? `
+                    <div class="list-row-sigils">
+                      ${n.sigils.map(s => `<span class="list-row-sigil">${SIGIL_GLYPH[s] || ""} ${SIGIL_LABEL[s] || s}</span>`).join(" · ")}
+                    </div>` : ""}
+                </button>
+              `).join("")}
+          </div>
+        </div>
+
+        <div class="module list-section">
+          <header><span class="title">Cloud Notes</span><span class="meta">${NOTES.length} seeded</span></header>
+          <div class="body">
+            ${NOTES.map(n => `
+              <button class="list-row" data-note-id="${n.id}">
+                <div class="list-row-head">
+                  <span class="list-row-domain">${n.domain}</span>
+                  <span class="list-row-id">#${n.id}</span>
+                </div>
+                <div class="list-row-text">${escapeHtml(n.text)}</div>
+                <div class="list-row-sigils">
+                  ${n.sigils.map(s => `<span class="list-row-sigil">${SIGIL_GLYPH[s] || ""} ${SIGIL_LABEL[s] || s}</span>`).join(" · ")}
+                </div>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+
+        <p class="sig" style="text-align:left">
+          Aura Focus = Cloud · spatial · gravity &nbsp;&nbsp; · &nbsp;&nbsp; Detail Focus = List · drawer · exact text
+        </p>
+      `;
+    }
+
+    // ── Flow View — structural map / redline surface ─────────────────────
+    const FLOW_NODES = [
+      // Routed pages
+      { id: "home", group: "page", title: "Home", status: "LIVE",
+        purpose: "Entry surface — orientation, recent activity, curiosity surfaces.",
+        actions: [
+          "Action grid (Commons / ELCO / Roll Dice / Distill Today)",
+          "Idea Cloud preview (tap → Cloud)",
+          "Latest Field Notes feed (canonical row, R#02 ✓)",
+          "Loose Threads module",
+          "Challenge Tray chips (tappable → drawer, R#01 ✓)"
+        ],
+        issues: [
+          "Loose Threads still display-only",
+          "Cloud preview is hard route, not 'open the field'",
+          "Capture launchers duplicated here + Compass + Capture page"
+        ],
+        next: "Distill lenses or Capture intake chamber would propagate here next."
+      },
+      { id: "cloud", group: "page", title: "Cloud", status: "PARTIAL",
+        purpose: "Aura Focus — topology, asteroids, Red Strings.",
+        actions: [
+          "Tap any asteroid → drawer (verified)",
+          "Tap any Notes row → drawer (R#02 ✓)",
+          "Z-bucketed depth + force-layout drift"
+        ],
+        issues: [
+          "Asteroids still generic polygon noise (GW/K-Plate spec aspirational)",
+          "No focus glow / drift slow on press",
+          "Open from Home is hard route, not in-place expansion"
+        ],
+        next: "Cloud open-field expansion (smallest patch) or K-Plate seam pass."
+      },
+      { id: "list", group: "page", title: "List", status: "LIVE",
+        purpose: "Detail Focus — sequential view of every note.",
+        actions: [
+          "Field Notes section (captures + seeds)",
+          "Cloud Notes section (#id-tagged)",
+          "Tap any row → drawer (R#02 ✓)"
+        ],
+        issues: [
+          "No filter / sort / search yet",
+          "No status grouping (Mutable Node System DEFINE-only)"
+        ],
+        next: "Filter/grouping deferred — needs Mutable Node schema first."
+      },
+      { id: "capture", group: "page", title: "Capture", status: "PARTIAL",
+        purpose: "Dedicated capture screen — currently duplicates Compass intent.",
+        actions: [
+          "Add Commons Note → capture sheet",
+          "Add ELCO Note → capture sheet",
+          "Reminder Triggers (display stub)"
+        ],
+        issues: [
+          "Duplicates Home action grid + Compass intent zone (3-way redundancy)",
+          "Mode tabs (Raw / Reminder / Voice / Photo) DEFINE-only",
+          "Voice / Photo capture not wired"
+        ],
+        next: "Capture intake chamber conversion — replace launcher with mode tabs."
+      },
+      { id: "distill", group: "page", title: "Distill", status: "PARTIAL",
+        purpose: "Re-distilling raw captures through filters / lenses.",
+        actions: [
+          "Timeline (canonical row, R#02 ✓)",
+          "Open Loops module",
+          "Routing (display stub)"
+        ],
+        issues: [
+          "Lens system DEFINE-only (12 lenses spec'd, 0 built)",
+          "Open Loops should be a lens, not a parallel module",
+          "Routing stub never wired"
+        ],
+        next: "Distill lenses (Today / Pressure / Open Loops) — needs Mutable Node schema first."
+      },
+      // Overlay surfaces
+      { id: "compass", group: "overlay", title: "Compass", status: "LIVE",
+        purpose: "Global action launcher — 3-zone menu.",
+        actions: [
+          "Intent zone (Claude / Commons / ELCO / Roll Dice)",
+          "Function zone (Notes / Parameters / Flow / Red Threads)",
+          "Account zone (Settings / Archive / Profile / Account)",
+          "Maze-overlay scrim with backdrop blur"
+        ],
+        issues: [
+          "Function zone mostly stubbed (Notes / Parameters / Red Threads = Phase pending)",
+          "Account zone mostly stubbed (Archive / Profile / Account)"
+        ],
+        next: "Compass chambers (operational worlds) DEFINE-only — Notes chamber would be smallest."
+      },
+      { id: "settings", group: "overlay", title: "Settings", status: "LIVE",
+        purpose: "Theme picker + future app settings.",
+        actions: [
+          "5 theme rows (CMYK / Gold / Alabaster / Penumbra / Meditation)",
+          "applyTheme on tap with localStorage persistence",
+          "iOS chrome theme-color sync"
+        ],
+        issues: [
+          "Compass Emotional Palette System (4 directions) is the planned successor — DEFINE-only",
+          "Theme swatches don't reflect post-Visual-QA palettes (cosmetic)"
+        ],
+        next: "Compass Emotional Palette migration — replaces 5 themes with 4 directions."
+      },
+      { id: "drawer", group: "overlay", title: "Drawer", status: "PARTIAL",
+        purpose: "Detail Focus inspection chamber for any note.",
+        actions: [
+          "Domain header + #id meta",
+          "Note text body",
+          "Sigils row",
+          "Red Strings + Why connected? expand (verified)",
+          "Source metadata grid",
+          "Add note from this (stub)",
+          "Change status (stub)"
+        ],
+        issues: [
+          "Status picker stub — 7 states defined but not wired (Mutable Node System DEFINE-only)",
+          "Tag editor not built",
+          "Branch action stub (Add note from this)",
+          "No history / provenance trail"
+        ],
+        next: "Mutable Node schema landing → status picker becomes live."
+      },
+      { id: "capture-sheet", group: "overlay", title: "Capture Sheet", status: "LIVE",
+        purpose: "Free-text capture for chosen domain.",
+        actions: [
+          "CLAUDE / Commons / ELCO domains",
+          "Optional prefill text (used by Patch Beacon feedback)",
+          "Save → bxc.field-notes localStorage",
+          "Cursor placement past prefill"
+        ],
+        issues: [
+          "No voice / photo / reminder modes (DEFINE-only)",
+          "No status assignment at capture time"
+        ],
+        next: "Capture mode tabs (Raw / Reminder / Voice / Photo)."
+      },
+      { id: "patch-beacon", group: "overlay", title: "Patch Beacon", status: "LIVE",
+        purpose: "What changed? Self-explaining patch communication.",
+        actions: [
+          "Got it (dismiss + persist last-seen)",
+          "Show me (navigate to surface + 3-cycle amber pulse)",
+          "Add feedback (capture sheet with patch lineage prefill)",
+          "× close"
+        ],
+        issues: [
+          "Lineage is prefill-text only — no structured patchId field on stored notes (v2 DEFINE-only)",
+          "No patch history nav (v2 DEFINE-only)",
+          "Single APP_PATCH known to the app — no archive of past patches"
+        ],
+        next: "v2 — structured patchId field on captured notes for filterable lineage."
+      }
+    ];
+
+    const FLOW_STATUS_SLUG = { LIVE: "live", PARTIAL: "partial", "DEFINE-only": "define", STUB: "stub" };
+
+    // ── Patch Lineage — chronological convergence trail ───────────────────
+    const PATCH_LINEAGE = [
+      { date: "2026-05-06", title: "Distill rename",
+        summary: "Static 'Review' became 'Distill' across nav / title / route / copy. Lens system remains DEFINE-only." },
+      { date: "2026-05-06", title: "Brand button → Home",
+        summary: "CLAUDE-domain field-note 'Baxley logo upper left isn't clickable' triggered the fix. Demonstrates the user-feedback-as-input loop before Patch Beacon was built." },
+      { date: "2026-05-06", title: "Redline #01 — Challenge Tray chips tappable",
+        summary: "Chip elements changed from <span> to <button> with data-note-id wired to drawer. First Flow-Codex-surfaced patch." },
+      { date: "2026-05-06", title: "Patch Beacon v1",
+        summary: "What-changed notification system. Show me + Add feedback with patch lineage prefill. Loop closed end-to-end via captured 'test what this is' field-note." },
+      { date: "2026-05-06", title: "Redline #02 — Feed Row Standard",
+        summary: "Canonical .list-row pattern propagated from List to Home / Cloud / Distill. Idea is now the hero across all 4 feed surfaces." },
+      { date: "2026-05-06", title: "Redline #03 — Flow View v0",
+        summary: "Live structural map inside the app — 10 flow cards (5 pages + 5 overlays) with status badges + flow drawer detail." },
+      { date: "2026-05-07", title: "Redline #04 — Flow Export v0",
+        summary: "Exportable redline artifact — printable B/W view rendering all 10 flow nodes + patch lineage. Per-page export from flow drawer." }
+    ];
+
+    function flowCardHtml(n) {
+      return `
+        <button class="flow-card" data-flow-id="${n.id}">
+          <div class="flow-card-head">
+            <span class="flow-card-title">${n.title}</span>
+            <span class="flow-status flow-status-${FLOW_STATUS_SLUG[n.status] || "stub"}">${n.status}</span>
+          </div>
+          <div class="flow-card-purpose">${escapeHtml(n.purpose)}</div>
+        </button>`;
+    }
+
+    function viewFlow() {
+      const pages = FLOW_NODES.filter(n => n.group === "page");
+      const overlays = FLOW_NODES.filter(n => n.group === "overlay");
+      return `
+        <section class="splash">
+          <h1>Flow</h1>
+          <h2>Structure map</h2>
+          <p>Redline surface. Each card maps a live or planned surface — tap for detail. Not final IA.</p>
+        </section>
+        <div class="flow-export-row">
+          <button class="flow-export-trigger" data-action="export-flow" type="button">↗ Export Flow</button>
+        </div>
+        <div class="module">
+          <header><span class="title">Pages</span><span class="meta">${pages.length} surfaces</span></header>
+          <div class="body" style="padding:0">
+            <div class="flow-grid">${pages.map(flowCardHtml).join("")}</div>
+          </div>
+        </div>
+        <div class="module">
+          <header><span class="title">Overlays</span><span class="meta">${overlays.length} surfaces</span></header>
+          <div class="body" style="padding:0">
+            <div class="flow-grid">${overlays.map(flowCardHtml).join("")}</div>
+          </div>
+        </div>
+        <p class="sig" style="text-align:left">
+          Layer 5 (Patch). Reads the Flow Codex hierarchy from memory · ${FLOW_NODES.length} nodes mapped · ${PATCH_LINEAGE.length} patches landed.
+        </p>
+      `;
+    }
+
+    // ── Flow Export — printable redline artifact ──────────────────────────
+    let exportFilter = null; // null = full export; otherwise a flow node id
+
+    function renderExportNode(n) {
+      const slug = FLOW_STATUS_SLUG[n.status] || "stub";
+      return `
+        <article class="export-node">
+          <header class="export-node-head">
+            <h3>${escapeHtml(n.title)}</h3>
+            <span class="export-status export-status-${slug}">${n.status}</span>
+          </header>
+          <p class="export-purpose">${escapeHtml(n.purpose)}</p>
+          <div class="export-screenshot-placeholder">
+            <div class="export-screenshot-label">Screenshot placeholder — ${escapeHtml(n.title)} (${n.group})</div>
+          </div>
+          <div class="export-block">
+            <div class="export-block-title">Components / Main actions</div>
+            <ul>${n.actions.map(a => `<li>${escapeHtml(a)}</li>`).join("")}</ul>
+          </div>
+          <div class="export-block">
+            <div class="export-block-title">Known issues</div>
+            <ul>${n.issues.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+          </div>
+          <div class="export-block">
+            <div class="export-block-title">Next patch candidate</div>
+            <p>${escapeHtml(n.next)}</p>
+          </div>
+        </article>`;
+    }
+
+    function renderLineageList() {
+      return `
+        <ol class="export-lineage">
+          ${PATCH_LINEAGE.map(p => `
+            <li>
+              <span class="export-lineage-meta">${p.date}</span>
+              <strong>${escapeHtml(p.title)}</strong>
+              <p>${escapeHtml(p.summary)}</p>
+            </li>
+          `).join("")}
+        </ol>`;
+    }
+
+    function viewExport() {
+      const today = new Date().toISOString().slice(0, 10);
+      const totalSurfaces = FLOW_NODES.length;
+      const totalPatches = PATCH_LINEAGE.length;
+      const filtered = exportFilter ? FLOW_NODES.find(n => n.id === exportFilter) : null;
+
+      const head = `
+        <header class="export-head">
+          <div class="export-title-row">
+            <h1>HACHI Flow Export</h1>
+            <span class="export-meta">v0 · ${today} · ${totalSurfaces} surfaces · ${totalPatches} patches</span>
+          </div>
+          <div class="export-actions no-print">
+            <button class="export-btn export-btn-primary" data-action="print-export" type="button">Print / Save as PDF</button>
+            <button class="export-btn" data-action="back-to-flow" type="button">← Back to Flow</button>
+            ${exportFilter ? '<button class="export-btn" data-action="export-flow" type="button">View full export</button>' : ""}
+          </div>
+          <p class="export-intent">Redline artifact. Not final docs. ${exportFilter ? "Single-surface view." : "Each surface listed with status, components, known issues, and next patch candidate."} Use for review, comparison, and missing-implementation analysis.</p>
+        </header>`;
+
+      if (filtered) {
+        const groupLabel = filtered.group === "page" ? "Page" : "Overlay";
+        return `
+          <section class="export-page">
+            ${head}
+            <section class="export-section">
+              <h2>${groupLabel}</h2>
+              ${renderExportNode(filtered)}
+            </section>
+            <section class="export-section">
+              <h2>Patch Lineage</h2>
+              ${renderLineageList()}
+            </section>
+          </section>`;
+      }
+
+      const pages = FLOW_NODES.filter(n => n.group === "page");
+      const overlays = FLOW_NODES.filter(n => n.group === "overlay");
+      return `
+        <section class="export-page">
+          ${head}
+          <section class="export-section">
+            <h2>Pages (${pages.length})</h2>
+            ${pages.map(renderExportNode).join("")}
+          </section>
+          <section class="export-section">
+            <h2>Overlays (${overlays.length})</h2>
+            ${overlays.map(renderExportNode).join("")}
+          </section>
+          <section class="export-section">
+            <h2>Patch Lineage (${PATCH_LINEAGE.length})</h2>
+            ${renderLineageList()}
+          </section>
+        </section>`;
+    }
+
+    function openExport(filterId = null) {
+      exportFilter = filterId;
+      setView("export");
+    }
+
+    const VIEWS = { home: viewHome, cloud: viewCloud, list: viewList, capture: viewCapture, distill: viewDistill, flow: viewFlow, export: viewExport };
+    let activeView = "home";
+
+    // ── Themes ─────────────────────────────────────────────────────────────
+    const THEMES = [
+      { id: "cmyk-forge",      name: "CMYK Forge",  hint: "Brand lab · electric", swatches: ["#030304","#eab308","#e879f9","#22d3ee"] },
+      { id: "gold-leaning",    name: "Gold",        hint: "Warm · production default", swatches: ["#0c0a06","#f59e0b","#f43f5e","#a78bfa"] },
+      { id: "alabaster-light", name: "Alabaster",   hint: "Light · daylight-safe", swatches: ["#f8f7f4","#b45309","#be123c","#7c3aed"] },
+      { id: "penumbra-dark",   name: "Penumbra",    hint: "Void · violet shadow", swatches: ["#07060d","#fbbf24","#f43f5e","#c4b5fd"] },
+      { id: "meditation",      name: "Meditation",  hint: "Soft · low stimulation", swatches: ["#161412","#d97706","#e11d48","#8b5cf6"] },
+    ];
+    const VALID_THEMES = THEMES.map(t => t.id);
+    const DEFAULT_THEME = "gold-leaning";
+    const THEME_KEY = "hachi-theme";
+
+    function getActiveTheme() {
+      return document.documentElement.getAttribute("data-theme") || DEFAULT_THEME;
+    }
+    function applyTheme(name) {
+      const id = VALID_THEMES.includes(name) ? name : DEFAULT_THEME;
+      document.documentElement.setAttribute("data-theme", id);
+      try { localStorage.setItem(THEME_KEY, id); } catch (e) { /* storage unavailable */ }
+      // keep iOS browser chrome in sync with the new void color
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#09090b");
+      renderThemeList();
+    }
+    function initTheme() {
+      let saved = null;
+      try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+      applyTheme(VALID_THEMES.includes(saved) ? saved : DEFAULT_THEME);
+    }
+
+    function renderThemeList() {
+      const list = document.getElementById("theme-list");
+      if (!list) return;
+      const active = getActiveTheme();
+      list.innerHTML = THEMES.map(t => {
+        const isActive = t.id === active;
+        const swatches = t.swatches.map(c => `<span class="tr-swatch" style="background:${c}"></span>`).join("");
+        return `
+          <button class="theme-row ${isActive ? "is-active" : ""}" data-theme-id="${t.id}" role="menuitemradio" aria-checked="${isActive}">
+            <span class="tr-check" aria-hidden="true">${isActive ? "✓" : ""}</span>
+            <span class="tr-body">
+              <span class="tr-name">${t.name}</span>
+              <span class="tr-hint">${t.hint}</span>
+            </span>
+            <span class="tr-swatches" aria-hidden="true">${swatches}</span>
+          </button>`;
+      }).join("");
+    }
+
+    function openSettings() {
+      renderThemeList();
+      document.getElementById("settings-sheet").classList.add("open");
+      document.getElementById("settings-scrim").classList.add("open");
+      document.getElementById("settings-sheet").setAttribute("aria-hidden", "false");
+    }
+    function closeSettings() {
+      document.getElementById("settings-sheet").classList.remove("open");
+      document.getElementById("settings-scrim").classList.remove("open");
+      document.getElementById("settings-sheet").setAttribute("aria-hidden", "true");
+    }
+
+    // ── Patch Beacon ───────────────────────────────────────────────────────
+    const APP_PATCH = {
+      id: "redline-03-1-compass-gw-containers",
+      title: "Redline #03.1",
+      summary: "Compass menu zones are now anchored in GW containers to prevent mobile drift.",
+      surface: "home",
+      surfaceSelectors: [".compass-menu", ".cm-zone"],
+      surfaceLabel: "Compass / GW Containers"
+    };
+    const PATCH_KEY = "bxc.last-seen-patch";
+
+    function getLastSeenPatch() {
+      try { return localStorage.getItem(PATCH_KEY); } catch (e) { return null; }
+    }
+    function markPatchSeen(id) {
+      try { localStorage.setItem(PATCH_KEY, id); } catch (e) {}
+    }
+
+    function showPatchBeacon() {
+      document.getElementById("patch-beacon-id").textContent = APP_PATCH.title;
+      document.getElementById("patch-beacon-summary").textContent = APP_PATCH.summary;
+      const el = document.getElementById("patch-beacon");
+      el.setAttribute("aria-hidden", "false");
+      // double rAF so the appended class triggers the transition
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("show")));
+    }
+    function hidePatchBeacon() {
+      const el = document.getElementById("patch-beacon");
+      el.classList.remove("show");
+      el.setAttribute("aria-hidden", "true");
+    }
+    function dismissPatchBeacon() {
+      markPatchSeen(APP_PATCH.id);
+      hidePatchBeacon();
+    }
+
+    function showMePatchSurface() {
+      // Route to surface, then scroll + flash on next frame after render lands
+      const wasOnSurface = activeView === APP_PATCH.surface;
+      if (!wasOnSurface) setView(APP_PATCH.surface);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const targets = APP_PATCH.surfaceSelectors.flatMap(sel => [...document.querySelectorAll(sel)]);
+        if (targets.length === 0) return;
+        targets[0].scrollIntoView({ behavior: "smooth", block: "center" });
+        targets.forEach(t => {
+          t.classList.remove("patch-flash");
+          // restart animation
+          void t.offsetWidth;
+          t.classList.add("patch-flash");
+          setTimeout(() => t.classList.remove("patch-flash"), 3200);
+        });
+      }));
+      dismissPatchBeacon();
+    }
+
+    function feedbackForPatch() {
+      const prefill = `[${APP_PATCH.title} · ${APP_PATCH.surfaceLabel}] `;
+      dismissPatchBeacon();
+      openSheet("CLAUDE", "Feedback on the patch above. Captured raw to Claude domain.", prefill);
+    }
+
+    function checkPatchBeacon() {
+      if (getLastSeenPatch() !== APP_PATCH.id) {
+        // Slight delay so the beacon doesn't compete with the first paint
+        setTimeout(showPatchBeacon, 600);
+      }
+    }
+
+    // ── Compass menu ───────────────────────────────────────────────────────
+    let compassOpen = false;
+
+    function openCompassMenu() {
+      const btn = document.querySelector(".compass-btn");
+      if (!btn) return;
+      const r = btn.getBoundingClientRect();
+      const menu = document.getElementById("compass-menu");
+      menu.style.right = Math.max(8, window.innerWidth - r.right) + "px";
+      menu.style.top = (r.bottom + 8) + "px";
+      compassOpen = true;
+      btn.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      menu.classList.add("open");
+      document.getElementById("compass-scrim").classList.add("open");
+    }
+
+    function closeCompassMenu() {
+      compassOpen = false;
+      document.querySelector(".compass-btn")?.classList.remove("open");
+      document.querySelector(".compass-btn")?.setAttribute("aria-expanded", "false");
+      document.getElementById("compass-menu")?.classList.remove("open");
+      document.getElementById("compass-scrim")?.classList.remove("open");
+    }
+
+    function render() {
+      closeCompassMenu();
+      const html = (VIEWS[activeView] || VIEWS.home)();
+      document.getElementById("app").innerHTML = html;
+      // sync nav
+      document.querySelectorAll("#botnav button").forEach(btn => {
+        btn.setAttribute("aria-selected", btn.dataset.view === activeView ? "true" : "false");
+      });
+      // wire action buttons inside the view
+      document.querySelectorAll("[data-action]").forEach(btn => {
+        btn.addEventListener("click", () => handleAction(btn.dataset.action));
+      });
+      // Aura Focus → Detail Focus: tappable cloud asteroids (data-note-id on <g>)
+      document.querySelectorAll("svg [data-note-id]").forEach(el => {
+        el.addEventListener("click", () => {
+          const id = parseInt(el.getAttribute("data-note-id"), 10);
+          const note = NOTES.find(n => n.id === id);
+          if (note) openDrawerForNote(note);
+        });
+      });
+      // List rows for cloud notes
+      document.querySelectorAll(".list-row[data-note-id]").forEach(el => {
+        el.addEventListener("click", () => {
+          const id = parseInt(el.getAttribute("data-note-id"), 10);
+          const note = NOTES.find(n => n.id === id);
+          if (note) openDrawerForNote(note);
+        });
+      });
+      // Challenge Tray chips → drawer
+      document.querySelectorAll(".ch-id[data-note-id]").forEach(el => {
+        el.addEventListener("click", () => {
+          const id = parseInt(el.getAttribute("data-note-id"), 10);
+          const note = NOTES.find(n => n.id === id);
+          if (note) openDrawerForNote(note);
+        });
+      });
+      // List rows for field captures + seed items
+      document.querySelectorAll(".list-row[data-item-id]").forEach(el => {
+        el.addEventListener("click", () => {
+          const item = findItem(el.getAttribute("data-item-id"));
+          if (item) openDrawerForItem(item);
+        });
+      });
+      // Flow cards → flow drawer
+      document.querySelectorAll(".flow-card[data-flow-id]").forEach(el => {
+        el.addEventListener("click", () => openFlowDrawer(el.dataset.flowId));
+      });
+      window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+    }
+
+    function setView(v) {
+      if (!VIEWS[v]) return;
+      closeCompassMenu();
+      activeView = v;
+      render();
+    }
+
+    // ── Action handlers ────────────────────────────────────────────────────
+    function handleAction(kind) {
+      if (kind === "commons") openSheet("Commons", "Append raw to Commons list. Lightly cleaned for readability only.");
+      else if (kind === "elco") openSheet("ELCO", "Append raw to ELCO list. Lightly cleaned for readability only.");
+      else if (kind === "roll") rollDice();
+      else if (kind === "distill") setView("distill");
+      else if (kind === "open-cloud") setView("cloud");
+      else if (kind === "export-flow") openExport(null);
+      else if (kind === "print-export") window.print();
+      else if (kind === "back-to-flow") { exportFilter = null; setView("flow"); }
+    }
+
+    function rollDice() {
+      let next;
+      do { next = CHALLENGE_POOL[Math.floor(Math.random() * CHALLENGE_POOL.length)]; }
+      while (CHALLENGE_POOL.length > 1 && next === currentChallenge);
+      currentChallenge = next;
+      render();
+      toast("New pull");
+    }
+
+    // ── Capture sheet ──────────────────────────────────────────────────────
+    let sheetDomain = null;
+    function openSheet(domain, hint, prefillText = "") {
+      sheetDomain = domain;
+      document.getElementById("sheet-title").textContent = "Add " + domain + " Note";
+      document.getElementById("sheet-hint").textContent = hint;
+      const ta = document.getElementById("sheet-text");
+      ta.value = prefillText;
+      document.getElementById("sheet").classList.add("open");
+      document.getElementById("scrim").classList.add("open");
+      document.getElementById("sheet").setAttribute("aria-hidden", "false");
+      setTimeout(() => {
+        ta.focus();
+        // Place cursor at end so the prefill stays visible and the user types after it
+        if (prefillText) { try { ta.setSelectionRange(prefillText.length, prefillText.length); } catch(e) {} }
+      }, 220);
+    }
+    function closeSheet() {
+      document.getElementById("sheet").classList.remove("open");
+      document.getElementById("scrim").classList.remove("open");
+      document.getElementById("sheet").setAttribute("aria-hidden", "true");
+      sheetDomain = null;
+    }
+    function saveSheet() {
+      const text = document.getElementById("sheet-text").value.trim();
+      const domain = sheetDomain;
+      closeSheet();
+      if (!text || !domain) return;
+      const { persisted } = addCapture(domain, text);
+      render();
+      toast(persisted ? ("Captured to " + domain) : ("Captured to " + domain + " · storage unavailable"));
+    }
+
+    // ── Detail drawer (Detail Focus) ───────────────────────────────────────
+    function openDrawerForNote(note) {
+      const links = linksForNote(note.id);
+      const linkHtml = links.length === 0
+        ? '<li class="ds-empty">No red strings yet.</li>'
+        : links.map((l, i) => {
+            const otherId = l.s === note.id ? l.t : l.s;
+            const reason = l.reason || "Reason not yet captured.";
+            const reasonId = `ds-reason-${note.id}-${i}`;
+            return `
+              <li>
+                <span class="ds-pair">#${note.id} ↔ #${otherId}</span>
+                <span class="ds-type">${l.type}</span>
+                <span class="ds-strength">${l.strength}</span>
+                <button class="ds-why" data-why="${reasonId}" aria-expanded="false" aria-controls="${reasonId}">Why connected?</button>
+                <span class="ds-reason" id="${reasonId}" hidden>${escapeHtml(reason)}</span>
+              </li>`;
+          }).join("");
+      openDrawer({
+        domain: note.domain,
+        meta: "#" + note.id + " · cloud note",
+        text: note.text,
+        sigils: note.sigils,
+        linksHtml: linkHtml,
+        showLinks: true,
+        sourceRows: [
+          ["Kind",   "cloud · seeded"],
+          ["Status", "—"],
+          ["Source", "spec · GC-HACHI Idea Sigils + Red String System"],
+        ],
+      });
+    }
+    function openDrawerForItem(item) {
+      openDrawer({
+        domain: item.domain,
+        meta: (item.kind === "seed" ? "demo capture" : "field capture"),
+        text: item.text,
+        sigils: item.sigils || [],
+        linksHtml: "",
+        showLinks: false,
+        sourceRows: [
+          ["Time",   item.time || "—"],
+          ["Stamp",  item.timestamp || "—"],
+          ["Source", item.source || "—"],
+          ["Status", item.status || "—"],
+          ["ID",     item.id],
+        ],
+      });
+    }
+    function openDrawer({ domain, meta, text, sigils, linksHtml, showLinks, sourceRows }) {
+      document.getElementById("drawer-domain").textContent = domain;
+      document.getElementById("drawer-meta").textContent = meta;
+      document.getElementById("drawer-text").textContent = text;
+      const sigilsEl = document.getElementById("drawer-sigils");
+      sigilsEl.innerHTML = (sigils && sigils.length)
+        ? sigils.map(s => `<span class="drawer-sigil">${SIGIL_GLYPH[s] || ""} ${SIGIL_LABEL[s] || s}</span>`).join("")
+        : "";
+      sigilsEl.style.display = (sigils && sigils.length) ? "" : "none";
+      document.getElementById("drawer-links-section").style.display = showLinks ? "" : "none";
+      document.getElementById("drawer-links").innerHTML = linksHtml;
+      document.getElementById("drawer-source").innerHTML = sourceRows.map(([k,v]) =>
+        `<span class="k">${k}</span><span class="v">${escapeHtml(String(v))}</span>`).join("");
+      document.getElementById("drawer").classList.add("open");
+      document.getElementById("drawer-scrim").classList.add("open");
+      document.getElementById("drawer").setAttribute("aria-hidden", "false");
+    }
+    function closeDrawer() {
+      document.getElementById("drawer").classList.remove("open");
+      document.getElementById("drawer-scrim").classList.remove("open");
+      document.getElementById("drawer").setAttribute("aria-hidden", "true");
+    }
+
+    let currentFlowDrawerId = null;
+    function openFlowDrawer(id) {
+      const node = FLOW_NODES.find(n => n.id === id);
+      if (!node) return;
+      currentFlowDrawerId = id;
+      document.getElementById("flow-drawer-status").textContent = node.status;
+      document.getElementById("flow-drawer-meta").textContent = node.group;
+      document.getElementById("flow-drawer-title").textContent = node.title;
+      document.getElementById("flow-drawer-purpose").textContent = node.purpose;
+      document.getElementById("flow-drawer-actions").innerHTML =
+        node.actions.map(a => `<li>${escapeHtml(a)}</li>`).join("");
+      document.getElementById("flow-drawer-issues").innerHTML =
+        node.issues.map(i => `<li>${escapeHtml(i)}</li>`).join("");
+      document.getElementById("flow-drawer-next").textContent = node.next;
+      document.getElementById("flow-drawer").classList.add("open");
+      document.getElementById("flow-drawer-scrim").classList.add("open");
+      document.getElementById("flow-drawer").setAttribute("aria-hidden", "false");
+    }
+    function closeFlowDrawer() {
+      document.getElementById("flow-drawer").classList.remove("open");
+      document.getElementById("flow-drawer-scrim").classList.remove("open");
+      document.getElementById("flow-drawer").setAttribute("aria-hidden", "true");
+    }
+
+    // ── Toast ──────────────────────────────────────────────────────────────
+    let toastTimer = null;
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 1600);
+    }
+
+    // ── Boot ───────────────────────────────────────────────────────────────
+    document.getElementById("botnav").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-view]");
+      if (btn) setView(btn.dataset.view);
+    });
+    document.getElementById("scrim").addEventListener("click", closeSheet);
+    document.getElementById("sheet-cancel").addEventListener("click", closeSheet);
+    document.getElementById("sheet-save").addEventListener("click", saveSheet);
+    document.getElementById("drawer-scrim").addEventListener("click", closeDrawer);
+    document.getElementById("drawer-close").addEventListener("click", closeDrawer);
+    document.getElementById("flow-drawer-scrim").addEventListener("click", closeFlowDrawer);
+    document.getElementById("flow-drawer-close").addEventListener("click", closeFlowDrawer);
+    document.getElementById("flow-drawer-export").addEventListener("click", () => {
+      const id = currentFlowDrawerId;
+      closeFlowDrawer();
+      if (id) openExport(id);
+    });
+    document.getElementById("drawer-add-from").addEventListener("click", () => toast("Phase pending"));
+    document.getElementById("drawer-status").addEventListener("click", () => toast("Phase pending"));
+    document.getElementById("drawer-links").addEventListener("click", e => {
+      const btn = e.target.closest(".ds-why");
+      if (!btn) return;
+      const reasonEl = document.getElementById(btn.dataset.why);
+      if (!reasonEl) return;
+      const expanded = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", expanded ? "false" : "true");
+      btn.textContent = expanded ? "Why connected?" : "Hide reason";
+      reasonEl.hidden = expanded;
+    });
+    document.getElementById("compass-menu").addEventListener("click", e => {
+      const item = e.target.closest("[data-cm]");
+      if (!item) return;
+      closeCompassMenu();
+      const a = item.dataset.cm;
+      // Intent zone
+      if (a === "claude")       openSheet("CLAUDE",  "Bug · idea · instruction for Claude. Captured raw.");
+      else if (a === "commons") openSheet("Commons", "Append raw to Commons list. Lightly cleaned for readability only.");
+      else if (a === "elco")    openSheet("ELCO",    "Append raw to ELCO list. Lightly cleaned for readability only.");
+      else if (a === "dice")    rollDice();
+      // Function zone — Flow View live, others stub
+      else if (a === "flow")    setView("flow");
+      // Account zone
+      else if (a === "settings") openSettings();
+      // All other items (remaining function-zone + non-Settings account items) — stub
+      else toast("Phase pending");
+    });
+    document.getElementById("compass-scrim").addEventListener("click", closeCompassMenu);
+    document.getElementById("compass-trigger").addEventListener("click", openCompassMenu);
+    document.getElementById("brand-home").addEventListener("click", () => setView("home"));
+    document.getElementById("settings-scrim").addEventListener("click", closeSettings);
+    document.getElementById("settings-close").addEventListener("click", closeSettings);
+    document.getElementById("theme-list").addEventListener("click", e => {
+      const row = e.target.closest("[data-theme-id]");
+      if (!row) return;
+      const id = row.dataset.themeId;
+      applyTheme(id);
+      toast(THEMES.find(t => t.id === id)?.name || "Theme applied");
+    });
+    document.getElementById("patch-beacon-got").addEventListener("click", dismissPatchBeacon);
+    document.getElementById("patch-beacon-close").addEventListener("click", dismissPatchBeacon);
+    document.getElementById("patch-beacon-show").addEventListener("click", showMePatchSurface);
+    document.getElementById("patch-beacon-feedback").addEventListener("click", feedbackForPatch);
+    initTheme();
+    render();
+    checkPatchBeacon();
+  </script>
+</body>
+</html>
