@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<!-- saved from url=(0062)file:///Users/rotorius/Documents/GitHub/hachi-cloud/index.html -->
-<html lang="en" data-theme="cmyk-forge"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#000000">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="BaxleyCommons">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BaxleyCommons" />
   <title>BaxleyCommons — HACHI Idea Cloud</title>
   <!--
     HACHI Codex — BaxleyCommons Splash Shell
@@ -142,22 +142,194 @@
       margin-bottom: 18px;
       position: relative;
     }
-    .splash h1 { margin: 0 0 4px; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
-    .splash h2 { margin: 0; font-size: 14px; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; }
+    .splash h1 { margin: 0 0 4px; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); display: inline-flex; align-items: center; gap: 12px; }
+    .splash h2 { margin: 0; font-size: 14px; font-weight: 500; color: var(--amber); letter-spacing: 0.02em; }
     .splash p { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
 
+    /* Card Crest — small hexagonal identity badge on splash headers (R#06) */
+    .splash-crest {
+      width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      vertical-align: middle;
+    }
+    .splash-crest svg { display: block; width: 100%; height: 100%; }
+    .splash-crest .crest-hex { fill: color-mix(in srgb, var(--amber) 14%, var(--surface)); stroke: color-mix(in srgb, var(--amber) 55%, transparent); stroke-width: 1.2; }
+    .splash-crest .crest-glyph { fill: var(--amber); }
+
+    /* Page metadata strip — 4-chip row beneath splash (R#06) */
+    .page-meta-strip {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
+      margin: 0 0 14px;
+    }
+    .pm-chip {
+      padding: 8px 9px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      display: flex; align-items: center; gap: 6px;
+      min-height: 48px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .pm-chip .pm-icon {
+      width: 18px; height: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--muted);
+    }
+    .pm-chip .pm-icon svg { width: 100%; height: 100%; }
+    .pm-chip .pm-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+    .pm-chip .pm-key { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+    .pm-chip .pm-val { font-size: 11px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pm-chip .pm-val .pm-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--amber); margin-right: 4px; vertical-align: middle; }
+    .pm-chip .pm-val.is-active { color: var(--amber); }
+    .pm-chip .pm-val.is-rose { color: var(--rose); }
+    .pm-chip .pm-icon.is-rose { color: var(--rose); }
+
+    /* Sigil legend — embedded reference grid (R#06) */
+    .sigil-legend {
+      margin-top: 12px; padding: 12px;
+      background: color-mix(in srgb, var(--surface-2) 35%, transparent);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      display: grid; gap: 8px;
+    }
+    .sigil-legend-title {
+      font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim);
+    }
+    .sigil-legend-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px;
+    }
+    .sigil-legend-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; color: var(--muted);
+    }
+    .sigil-legend-item .sl-glyph {
+      width: 18px; height: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 12px; color: var(--text);
+      flex-shrink: 0;
+    }
+    .sigil-legend-item .sl-glyph svg { width: 16px; height: 16px; }
+    .sigil-legend-item .sl-glyph.is-seed   { color: #86efac; }
+    .sigil-legend-item .sl-glyph.is-lux    { color: #fbbf24; }
+    .sigil-legend-item .sl-glyph.is-topo   { color: #c4b5fd; }
+    .sigil-legend-item .sl-glyph.is-force  { color: #67e8f9; }
+    .sigil-legend-item .sl-glyph.is-flux   { color: #f9a8d4; }
+    .sigil-legend-item .sl-glyph.is-kplate { color: var(--amber); }
+    .sigil-legend-item .sl-glyph.is-rule   { color: #6ee7b7; }
+    .sigil-legend-item .sl-glyph.is-reson  { color: #d4d4d8; }
+    .sigil-legend-item .sl-label { font-size: 11px; color: var(--text); }
+
+    /* Cloud feed row — hex badge + content + asteroid thumb + meta column (R#06) */
+    .list-row.cloud-feed-row,
+    .cloud-feed-row {
+      display: grid;
+      grid-template-columns: 48px 1fr 60px;
+      grid-template-rows: auto auto;
+      gap: 6px 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-soft);
+      width: 100%;
+      text-align: left;
+      background: transparent;
+    }
+    .cloud-feed-row:last-child { border-bottom: none; }
+    .cloud-feed-row:active { background: var(--surface-2); }
+    .cloud-feed-row .cf-hex     { grid-row: 1 / span 2; grid-column: 1; }
+    .cloud-feed-row .cf-content { grid-row: 1; grid-column: 2; }
+    .cloud-feed-row .cf-thumb   { grid-row: 1 / span 2; grid-column: 3; align-self: center; justify-self: end; }
+    .cloud-feed-row .cf-meta    { grid-row: 2; grid-column: 2; align-items: flex-start; flex-direction: row; gap: 12px; }
+    .cf-hex {
+      width: 48px; height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .cf-hex svg { width: 100%; height: 100%; display: block; }
+    .cf-hex .cf-hex-bg { fill: var(--surface); stroke: var(--border); stroke-width: 1; }
+    .cf-hex .cf-hex-bg.is-amber { fill: color-mix(in srgb, var(--amber) 14%, var(--surface)); stroke: color-mix(in srgb, var(--amber) 50%, transparent); }
+    .cf-hex .cf-hex-id   { fill: var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 700; }
+    .cf-hex .cf-hex-glyph { font-size: 11px; }
+    .cf-content { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+    .cf-domain { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+    /* T1 — Field-note progressive disclosure: 2-line clamp + fade mask, expand inline (R#06.1) */
+    .cf-text {
+      font-size: 13px; line-height: 1.45; color: var(--text);
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+      overflow: hidden;
+      position: relative;
+    }
+    .cf-text.is-expanded {
+      display: block; -webkit-line-clamp: unset; overflow: visible;
+    }
+    .cf-show-more {
+      align-self: flex-start;
+      font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted); padding: 4px 0 0;
+      background: transparent; border: 0;
+    }
+    .cf-show-more:active { color: var(--text); }
+    /* T4 — Quieter sigil markers (was amber pop, now ambient text) */
+    .cf-sigils { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1px; }
+    .cf-sigil {
+      font-size: 10px; padding: 0;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .cf-sigil::before { content: "· "; color: var(--faint); }
+    .cf-sigil:first-child::before { content: ""; }
+    .cf-thumb {
+      width: 64px; height: 64px;
+      background: color-mix(in srgb, var(--surface-2) 60%, var(--bg));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cf-thumb svg { width: 92%; height: 92%; }
+    .cf-thumb .cf-thumb-id {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -55%);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px; color: var(--text); font-weight: 700;
+      pointer-events: none;
+    }
+    .cf-thumb .cf-thumb-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--rose);
+      box-shadow: 0 0 6px color-mix(in srgb, var(--rose) 60%, transparent);
+    }
+    /* T2/T4 — meta tiers: red strings = SECONDARY (visible), edge label = AMBIENT (quiet plain text) (R#06.1) */
+    .cf-meta { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; min-width: 78px; }
+    .cf-rs   { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); display: flex; align-items: baseline; gap: 6px; }
+    .cf-rs-count { font-size: 14px; color: var(--rose); font-weight: 700; letter-spacing: 0; }
+    .cf-edge {
+      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim);
+      padding: 0;
+      border: none;
+      background: transparent;
+      display: inline-flex; align-items: baseline; gap: 5px;
+    }
+    .cf-edge::before { content: "·"; color: var(--faint); }
+
     /* Compass rose launcher (global, lives in topbar) */
+    /* T5 — Compass visibility refinement: subtle ring at idle (orientation, not ornament) — R#06.1 */
     .compass-btn {
       position: relative;
-      width: 38px; height: 38px;
+      width: 44px; height: 44px;
       display: flex; align-items: center; justify-content: center;
       border-radius: 50%;
       background: transparent;
+      border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
       flex-shrink: 0;
       animation: compass-pulse 4.6s ease-in-out infinite alternate;
     }
-    .compass-btn:active { background: color-mix(in srgb, var(--text) 6%, transparent); }
-    .compass-btn.open { animation: none; filter: drop-shadow(0 0 7px color-mix(in srgb, var(--amber) 55%, transparent)); }
+    .compass-btn:active { background: color-mix(in srgb, var(--text) 6%, transparent); border-color: color-mix(in srgb, var(--amber) 60%, transparent); }
+    .compass-btn.open { animation: none; border-color: color-mix(in srgb, var(--amber) 70%, transparent); filter: drop-shadow(0 0 7px color-mix(in srgb, var(--amber) 55%, transparent)); }
     .compass-rose { display: block; width: 30px; height: 30px; }
     .compass-rose .cr-bg     { fill: var(--surface); stroke: var(--border); }
     .compass-rose .cr-n      { fill: var(--text); }
@@ -346,6 +518,136 @@
     .action .hint { font-size: 11px; color: var(--dim); }
     .action.primary { border-color: var(--text); background: var(--text); color: var(--bg); }
     .action.primary .hint { color: color-mix(in srgb, var(--bg) 58%, transparent); }
+
+    /* Capture Intake Chamber — tab bar + mode rail (R#05) */
+    .capture-tabs {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+      margin: 0 0 12px;
+    }
+    .capture-tab {
+      display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+      padding: 10px 8px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      color: var(--muted);
+      font-weight: 600; text-align: left;
+      transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .capture-tab:active { transform: scale(0.98); background: var(--surface-2); }
+    .capture-tab .capture-tab-label { font-size: 13px; color: var(--text); }
+    .capture-tab .capture-tab-status {
+      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim);
+    }
+    .capture-tab .capture-tab-status.is-live { color: var(--amber); }
+    .capture-tab.is-active {
+      border-color: var(--text);
+      background: color-mix(in srgb, var(--surface-2) 55%, var(--bg));
+    }
+
+    .capture-mode {
+      margin: 0 0 16px;
+      padding: 12px 14px;
+      background: color-mix(in srgb, var(--surface-2) 50%, transparent);
+      border: 1px dashed var(--border-soft);
+      border-radius: 10px;
+      display: grid; gap: 6px;
+    }
+    .capture-mode .cm-row {
+      display: flex; gap: 12px; justify-content: space-between; align-items: baseline;
+    }
+    .capture-mode .cm-key {
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim);
+      flex-shrink: 0;
+    }
+    .capture-mode .cm-val {
+      font-size: 12px; color: var(--text); text-align: right;
+    }
+    .capture-mode .cm-mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+    }
+
+    .capture-stub-card {
+      margin: 0 0 14px;
+      padding: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      display: grid; gap: 12px;
+    }
+    .capture-stub-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .capture-stub-method { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .capture-stub-paths { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+    .capture-stub-paths li {
+      display: flex; gap: 10px; justify-content: space-between; align-items: baseline;
+      padding: 6px 8px;
+      background: color-mix(in srgb, var(--surface-2) 40%, transparent);
+      border-radius: 6px;
+    }
+    .capture-stub-paths .cm-key {
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim);
+    }
+    .capture-stub-paths .cm-mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px; color: var(--text);
+    }
+
+    /* Voice recorder — R#05.1 */
+    .voice-recorder {
+      margin: 0 0 14px;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      display: grid; gap: 12px;
+    }
+    .voice-recorder .vr-row {
+      display: flex; gap: 10px; align-items: center; justify-content: space-between;
+    }
+    .voice-recorder .vr-state {
+      font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim);
+    }
+    .voice-recorder .vr-state.is-recording { color: var(--accent); }
+    .voice-recorder .vr-state.is-ready     { color: var(--amber); }
+    .voice-recorder .vr-timer {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 28px; font-weight: 600; color: var(--text);
+      letter-spacing: 0.04em;
+    }
+    .voice-recorder .vr-meta {
+      font-size: 11px; color: var(--muted);
+      display: flex; gap: 14px; flex-wrap: wrap;
+    }
+    .voice-recorder .vr-meta .vr-key {
+      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--dim); margin-right: 4px;
+    }
+    .voice-recorder audio {
+      width: 100%; border-radius: 8px;
+    }
+    .voice-recorder .vr-error {
+      font-size: 11px; line-height: 1.4;
+      padding: 8px 10px; border-radius: 8px;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    .voice-recorder .vr-actions {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .voice-recorder .action.vr-record {
+      background: var(--accent); color: var(--bg); border-color: var(--accent);
+    }
+    .voice-recorder .action.vr-record .hint { color: color-mix(in srgb, var(--bg) 58%, transparent); }
+    .voice-recorder .action.vr-stop {
+      background: var(--text); color: var(--bg); border-color: var(--text);
+    }
+    .voice-recorder .action.vr-stop .hint { color: color-mix(in srgb, var(--bg) 58%, transparent); }
+    @keyframes vr-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+    .voice-recorder .vr-state.is-recording::before {
+      content: "● "; color: var(--accent); animation: vr-pulse 1s ease-in-out infinite;
+    }
 
     /* Module cards */
     .module {
@@ -755,9 +1057,10 @@
       color: var(--muted);
       font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
     }
-    .botnav button .dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; }
-    .botnav button[aria-selected="true"] { color: var(--text); }
-    .botnav button[aria-selected="true"] .dot { background: var(--amber); }
+    .botnav button .nav-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: color 0.15s ease; }
+    .botnav button .nav-icon svg { width: 22px; height: 22px; }
+    .botnav button[aria-selected="true"] { color: var(--amber); }
+    .botnav button[aria-selected="true"] .nav-icon { color: var(--amber); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--amber) 50%, transparent)); }
     .botnav button:active { background: color-mix(in srgb, var(--text) 6%, transparent); }
 
     /* Capture sheet */
@@ -877,8 +1180,9 @@
       font-size: 9px; color: var(--muted); border: 1px solid var(--border);
       padding: 1px 6px; border-radius: 999px; letter-spacing: 0.2em; text-transform: uppercase;
     }
-    .list-row-time { font-size: 10px; color: var(--faint); letter-spacing: 0.12em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    .list-row-id { font-size: 10px; color: var(--faint); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-left: auto; }
+    /* T2 — Timestamp A11Y: bumped from --faint to --dim for contrast; spacing increased (R#06.1) */
+    .list-row-time { font-size: 10px; color: var(--dim); letter-spacing: 0.16em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; padding-left: 4px; }
+    .list-row-id { font-size: 10px; color: var(--dim); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-left: auto; }
     .list-row-text { font-size: 13px; color: var(--text); line-height: 1.4; }
     .list-row-sigils { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
     .list-row-sigil { font-size: 10px; color: var(--dim); }
@@ -904,294 +1208,56 @@
     <div class="pill edge">Edge · v0</div>
     <button class="compass-btn" id="compass-trigger" aria-label="Open actions" aria-haspopup="true" aria-expanded="false">
       <svg class="compass-rose" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle class="cr-bg" cx="18" cy="18" r="16.5" stroke-width="0.8"></circle>
+        <circle class="cr-bg" cx="18" cy="18" r="16.5" stroke-width="0.8"/>
         <g transform="translate(18 18)">
-          <path class="cr-n" d="M0,-15 L2,-7 L0,-9 L-2,-7 Z"></path>
-          <path class="cr-n-shade" d="M0,-15 L0,-9 L-2,-7 Z"></path>
+          <path class="cr-n"       d="M0,-15 L2,-7 L0,-9 L-2,-7 Z"/>
+          <path class="cr-n-shade" d="M0,-15 L0,-9 L-2,-7 Z"/>
           <g transform="rotate(180)">
-            <path class="cr-s" d="M0,-15 L2,-7 L0,-9 L-2,-7 Z"></path>
-            <path class="cr-s-shade" d="M0,-15 L0,-9 L-2,-7 Z"></path>
+            <path class="cr-s"       d="M0,-15 L2,-7 L0,-9 L-2,-7 Z"/>
+            <path class="cr-s-shade" d="M0,-15 L0,-9 L-2,-7 Z"/>
           </g>
           <g transform="rotate(90)">
-            <path class="cr-ew" d="M0,-14 L1.6,-7.5 L0,-9 L-1.6,-7.5 Z"></path>
-            <path class="cr-ew-shade" d="M0,-14 L0,-9 L-1.6,-7.5 Z"></path>
+            <path class="cr-ew"       d="M0,-14 L1.6,-7.5 L0,-9 L-1.6,-7.5 Z"/>
+            <path class="cr-ew-shade" d="M0,-14 L0,-9 L-1.6,-7.5 Z"/>
           </g>
           <g transform="rotate(270)">
-            <path class="cr-ew" d="M0,-14 L1.6,-7.5 L0,-9 L-1.6,-7.5 Z"></path>
-            <path class="cr-ew-shade" d="M0,-14 L0,-9 L-1.6,-7.5 Z"></path>
+            <path class="cr-ew"       d="M0,-14 L1.6,-7.5 L0,-9 L-1.6,-7.5 Z"/>
+            <path class="cr-ew-shade" d="M0,-14 L0,-9 L-1.6,-7.5 Z"/>
           </g>
-          <g transform="rotate(45)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"></path></g>
-          <g transform="rotate(135)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"></path></g>
-          <g transform="rotate(225)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"></path></g>
-          <g transform="rotate(315)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"></path></g>
-          <circle class="cr-hub" r="2.8" stroke-width="0.7"></circle>
-          <circle class="cr-pin" r="1.1"></circle>
+          <g transform="rotate(45)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"/></g>
+          <g transform="rotate(135)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"/></g>
+          <g transform="rotate(225)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"/></g>
+          <g transform="rotate(315)"><path class="cr-inter" d="M0,-11.5 L1,-7 L0,-8 L-1,-7 Z"/></g>
+          <circle class="cr-hub" r="2.8" stroke-width="0.7"/>
+          <circle class="cr-pin" r="1.1"/>
         </g>
       </svg>
     </button>
   </div>
 
-  <main id="app">
-        <section class="splash">
-          <h1>HACHI Idea Cloud</h1>
-          <p>Capture first. Distill later.</p>
-        </section>
-
-        <div class="actions">
-          <button class="action primary" data-action="commons">
-            <div class="glyph">＋</div>
-            <div>
-              <div class="label">Add Commons Note</div>
-              <div class="hint">Capture · raw · no inference</div>
-            </div>
-          </button>
-          <button class="action primary" data-action="elco">
-            <div class="glyph">＋</div>
-            <div>
-              <div class="label">Add ELCO Note</div>
-              <div class="hint">Capture · raw · no inference</div>
-            </div>
-          </button>
-          <button class="action" data-action="roll">
-            <div class="glyph">⚄</div>
-            <div>
-              <div class="label">Roll Idea Dice</div>
-              <div class="hint">Force a useful collision</div>
-            </div>
-          </button>
-          <button class="action" data-action="distill">
-            <div class="glyph">◷</div>
-            <div>
-              <div class="label">Distill Today</div>
-              <div class="hint">Today, through a lens</div>
-            </div>
-          </button>
-        </div>
-
-        <div class="module">
-          <header class="is-link" data-action="open-cloud" role="button" tabindex="0" aria-label="Open Cloud view">
-            <span class="title">Idea Cloud</span><span class="meta">Open</span>
-          </header>
-          <div class="body">
-            <div class="cloud-preview" data-action="open-cloud" role="button" tabindex="0" aria-label="Open Cloud view"><svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="asteroid-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <fegaussianblur stdDeviation="1.6" result="blur"></fegaussianblur>
-            <femerge><femergenode in="blur"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
-          </filter>
-        </defs><line class="red-string" x1="197.3" y1="41.7" x2="122.2" y2="19.3" stroke-width="0.9" stroke-opacity="0.32" stroke-linecap="round"></line><line class="red-string" x1="192.5" y1="175.3" x2="203.9" y2="133.0" stroke-width="1.4" stroke-opacity="0.6" stroke-linecap="round"></line><line class="red-string" x1="125.5" y1="170.9" x2="199.6" y2="129.6" stroke-width="0.9" stroke-opacity="0.32" stroke-linecap="round"></line><line class="red-string" x1="123.8" y1="64.2" x2="114.1" y2="27.1" stroke-width="0.9" stroke-opacity="0.32" stroke-linecap="round"></line>
-          <g class="hit" transform="translate(119.3 174.4)" opacity="0.62" data-note-id="3">
-            <circle r="22" fill="transparent" pointer-events="all"></circle>
-            <g class="drifter" style="--dur:13.1s;--delay:-1.1s;--rot:3.95deg;--dx:0.14px;--dy:-0.64px">
-              <path class="ast-body" d="M 7.31 0.50 L 6.04 4.23 L 3.70 8.31 L -0.94 8.60 L -6.02 7.30 L -9.68 2.12 L -7.98 -2.05 L -5.29 -5.89 L -0.69 -7.94 L 3.23 -8.04 L 8.19 -5.16 Z" stroke-width="0.85" stroke-linejoin="round"></path>
-              <line class="ast-crack" x1="-0.4" y1="3.7" x2="-1.1" y2="2.0" stroke-width="0.6" stroke-linecap="round"></line><line class="ast-crack" x1="-1.7" y1="-0.7" x2="-1.9" y2="1.9" stroke-width="0.6" stroke-linecap="round"></line>
-              <text class="ast-id" text-anchor="middle" y="2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.6" opacity="0.95">#3</text>
-              <text class="ast-glyph" text-anchor="middle" y="7.1" font-size="7.2">M L</text>
-            </g>
-          </g>
-          <g class="hit" transform="translate(205.8 126.2)" opacity="0.62" data-note-id="6">
-            <circle r="22" fill="transparent" pointer-events="all"></circle>
-            <g class="drifter" style="--dur:11.4s;--delay:-5.0s;--rot:1.69deg;--dx:-0.39px;--dy:0.66px">
-              <path class="ast-body" d="M 9.21 0.07 L 7.79 5.04 L 4.02 7.91 L -0.50 8.22 L -6.42 7.24 L -8.33 2.68 L -8.45 -2.18 L -6.11 -6.40 L -1.20 -8.98 L 4.09 -7.38 L 6.25 -4.85 Z" stroke-width="0.85" stroke-linejoin="round"></path>
-              <line class="ast-crack" x1="-1.9" y1="-4.6" x2="4.3" y2="-1.7" stroke-width="0.6" stroke-linecap="round"></line><line class="ast-crack" x1="3.3" y1="-3.2" x2="1.0" y2="-4.4" stroke-width="0.6" stroke-linecap="round"></line>
-              <text class="ast-id" text-anchor="middle" y="2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.6" opacity="0.95">#6</text>
-              <text class="ast-glyph" text-anchor="middle" y="7.1" font-size="7.2">T M K</text>
-            </g>
-          </g>
-          <g class="hit" transform="translate(190.1 184.0)" opacity="1" data-note-id="2">
-            <circle r="22" fill="transparent" pointer-events="all"></circle>
-            <g class="drifter" style="--dur:9.5s;--delay:-7.5s;--rot:3.63deg;--dx:-0.52px;--dy:0.27px">
-              <path class="ast-body" d="M 12.75 0.35 L 9.83 5.80 L 5.27 10.15 L -1.69 10.37 L -7.42 7.26 L -12.03 2.70 L -11.13 -4.27 L -7.08 -7.59 L -0.80 -11.08 L 3.24 -9.11 L 7.95 -4.83 Z" stroke-width="0.85" stroke-linejoin="round"></path>
-              <line class="ast-crack" x1="2.3" y1="-3.6" x2="3.4" y2="-3.6" stroke-width="0.6" stroke-linecap="round"></line><line class="ast-crack" x1="0.2" y1="4.8" x2="-5.8" y2="1.0" stroke-width="0.6" stroke-linecap="round"></line>
-              <text class="ast-id" text-anchor="middle" y="2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.0" opacity="0.95">#2</text>
-              <text class="ast-glyph" text-anchor="middle" y="9.5" font-size="7.6">K L T</text>
-            </g>
-          </g>
-          <g class="hit" transform="translate(207.2 44.7)" opacity="1" data-note-id="1">
-            <circle r="22" fill="transparent" pointer-events="all"></circle>
-            <g class="drifter" style="--dur:8.1s;--delay:-4.6s;--rot:1.95deg;--dx:0.72px;--dy:0.01px" filter="url(#asteroid-glow)">
-              <path class="ast-body is-hot" d="M 10.79 0.84 L 9.63 5.17 L 5.33 9.63 L -1.26 10.40 L -8.19 9.49 L -10.93 3.03 L -12.80 -2.93 L -8.58 -11.05 L -2.10 -12.55 L 3.80 -9.82 L 10.22 -7.71 Z" stroke-width="1.4" stroke-linejoin="round"></path>
-              <line class="ast-crack is-hot" x1="6.0" y1="-1.2" x2="4.9" y2="-5.4" stroke-width="0.6" stroke-linecap="round"></line><line class="ast-crack is-hot" x1="2.2" y1="-2.5" x2="-0.3" y2="-5.9" stroke-width="0.6" stroke-linecap="round"></line>
-              <text class="ast-id is-hot" text-anchor="middle" y="2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.8" opacity="0.95">#1</text>
-              <text class="ast-glyph is-hot" text-anchor="middle" y="11.1" font-size="7.4">🌱</text>
-            </g>
-          </g>
-          <g class="hit" transform="translate(126.4 74.2)" opacity="1" data-note-id="4">
-            <circle r="22" fill="transparent" pointer-events="all"></circle>
-            <g class="drifter" style="--dur:9.2s;--delay:-2.3s;--rot:2.48deg;--dx:0.22px;--dy:-0.34px" filter="url(#asteroid-glow)">
-              <path class="ast-body is-hot" d="M 14.47 1.16 L 12.12 7.86 L 5.98 11.08 L -2.59 11.55 L -7.05 8.41 L -13.89 3.95 L -11.38 -3.58 L -7.58 -10.23 L -1.08 -12.97 L 4.51 -11.05 L 9.49 -5.88 Z" stroke-width="1.4" stroke-linejoin="round"></path>
-              <line class="ast-crack is-hot" x1="2.5" y1="6.6" x2="0.9" y2="2.8" stroke-width="0.6" stroke-linecap="round"></line><line class="ast-crack is-hot" x1="-2.8" y1="0.1" x2="-1.4" y2="-2.5" stroke-width="0.6" stroke-linecap="round"></line>
-              <text class="ast-id is-hot" text-anchor="middle" y="2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.8" opacity="0.95">#4</text>
-              <text class="ast-glyph is-hot" text-anchor="middle" y="11.1" font-size="7.4">⚗ 🌱 R</text>
-            </g>
-          </g>
-          <g class="hit" transform="translate(111.2 16.0)" opacity="1" data-note-id="5">
-            <circle r="22" fill="transparent" pointer-events="all"></circle>
-            <g class="drifter" style="--dur:10.1s;--delay:-5.4s;--rot:1.56deg;--dx:-0.58px;--dy:0.02px" filter="url(#asteroid-glow)">
-              <path class="ast-body is-hot" d="M 16.15 -0.60 L 12.03 8.34 L 5.42 11.98 L -1.25 15.80 L -8.41 10.33 L -15.15 3.27 L -12.32 -2.76 L -7.96 -8.51 L -2.97 -15.81 L 5.22 -10.49 L 10.23 -7.60 Z" stroke-width="1.4" stroke-linejoin="round"></path>
-              <line class="ast-crack is-hot" x1="7.3" y1="2.0" x2="0.7" y2="3.9" stroke-width="0.6" stroke-linecap="round"></line><line class="ast-crack is-hot" x1="0.5" y1="-5.5" x2="2.3" y2="-1.7" stroke-width="0.6" stroke-linecap="round"></line>
-              <text class="ast-id is-hot" text-anchor="middle" y="2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.0" opacity="0.95">#5</text>
-              <text class="ast-glyph is-hot" text-anchor="middle" y="12.5" font-size="7.6">F ⚗</text>
-            </g>
-          </g></svg></div>
-          </div>
-        </div>
-
-        <div class="module list-section">
-          <header><span class="title">Latest Field Notes</span><span class="meta">5 captured · 3 demo</span></header>
-          <div class="body">
-            
-              <button class="list-row" data-item-id="cap-1778195259206-okw3">
-                <div class="list-row-head">
-                  <span class="list-row-domain">CLAUDE</span>
-                  <span class="list-row-time">16:07</span>
-                  
-                </div>
-                <div class="list-row-text">Commons
-10:52
-Testing from capture
-
-CLAUDE
-10:51
-TESTING. Can you read this Claude?
-
-ELCO
-19:42
-demo
-Need to check if Peach Tree lift station easement conflicts with road frontage on east lots.
-Loose Threads
-worth observing
-🌱
-Material study from last week — never paired with K-Plate authority note.
-pairing candidate
-R
-Review board cadence keeps slipping past the 2-week mark.
-recurring friction
-⛓
-Three notes about 'wandering quality' — possible Red String forming.
-worth observing further
-Challenge Tray
-current pull
-Combine Seed + Alchemist Lab + Recurring Friction into one usable idea packet.
-#1
-#2
-#3
-#4
-#5
-#6
-Hachi Codex · Baxley Commons · Edge build
-
-Home
-
-Cloud
-
-List
-
-Capture
-
-Distill
-Add Commons Note
-Append raw to Commons list. Lightly cleaned for readability only.
-
-Does this idea show up in Idea visual?
-Cancel
-Save
-Commons
-field capture
-Does this idea show up in Idea visual?</div>
-              </button>
-            
-              <button class="list-row" data-item-id="cap-1778195205230-3d7e">
-                <div class="list-row-head">
-                  <span class="list-row-domain">Commons</span>
-                  <span class="list-row-time">16:06</span>
-                  
-                </div>
-                <div class="list-row-text">Does this idea show up in Idea visual?</div>
-              </button>
-            
-              <button class="list-row" data-item-id="cap-1778186156848-tt5c">
-                <div class="list-row-head">
-                  <span class="list-row-domain">Commons</span>
-                  <span class="list-row-time">13:35</span>
-                  
-                </div>
-                <div class="list-row-text">Plat ideas for peach tree</div>
-              </button>
-            
-              <button class="list-row" data-item-id="cap-1778176330289-vw95">
-                <div class="list-row-head">
-                  <span class="list-row-domain">Commons</span>
-                  <span class="list-row-time">10:52</span>
-                  
-                </div>
-                <div class="list-row-text">Testing from capture</div>
-              </button>
-            
-              <button class="list-row" data-item-id="cap-1778176306506-o5t2">
-                <div class="list-row-head">
-                  <span class="list-row-domain">CLAUDE</span>
-                  <span class="list-row-time">10:51</span>
-                  
-                </div>
-                <div class="list-row-text">TESTING. Can you read this Claude?</div>
-              </button>
-            
-          </div>
-        </div>
-
-        <div class="module">
-          <header><span class="title">Loose Threads</span><span class="meta">worth observing</span></header>
-          <div class="body">
-            <ul class="lt-list">
-              
-                <li class="lt-item">
-                  <span class="lt-marker">🌱</span>
-                  <div class="lt-body">
-                    <div class="lt-title">Material study from last week — never paired with K-Plate authority note.</div>
-                    <div class="lt-status">pairing candidate</div>
-                  </div>
-                </li>
-              
-                <li class="lt-item">
-                  <span class="lt-marker">R</span>
-                  <div class="lt-body">
-                    <div class="lt-title">Review board cadence keeps slipping past the 2-week mark.</div>
-                    <div class="lt-status">recurring friction</div>
-                  </div>
-                </li>
-              
-                <li class="lt-item">
-                  <span class="lt-marker">⛓</span>
-                  <div class="lt-body">
-                    <div class="lt-title">Three notes about 'wandering quality' — possible Red String forming.</div>
-                    <div class="lt-status">worth observing further</div>
-                  </div>
-                </li>
-              
-            </ul>
-          </div>
-        </div>
-
-        <div class="module">
-          <header><span class="title">Challenge Tray</span><span class="meta">current pull</span></header>
-          <div class="body challenge">
-            <div class="ch-line">Combine Seed + Alchemist Lab + Recurring Friction into one usable idea packet.</div>
-            <div class="ch-ids">
-              <button class="ch-id hot" data-note-id="1" aria-label="Open note 1">#1</button><button class="ch-id " data-note-id="2" aria-label="Open note 2">#2</button><button class="ch-id " data-note-id="3" aria-label="Open note 3">#3</button><button class="ch-id hot" data-note-id="4" aria-label="Open note 4">#4</button><button class="ch-id hot" data-note-id="5" aria-label="Open note 5">#5</button><button class="ch-id " data-note-id="6" aria-label="Open note 6">#6</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="sig">Hachi Codex · Baxley Commons · Edge build</div>
-      </main>
+  <main id="app"></main>
 
   <nav class="botnav" id="botnav" role="tablist" aria-label="Primary navigation">
-    <button data-view="home" aria-selected="true"><span class="dot"></span>Home</button>
-    <button data-view="cloud" aria-selected="false"><span class="dot"></span>Cloud</button>
-    <button data-view="list" aria-selected="false"><span class="dot"></span>List</button>
-    <button data-view="capture" aria-selected="false"><span class="dot"></span>Capture</button>
-    <button data-view="distill" aria-selected="false"><span class="dot"></span>Distill</button>
+    <button data-view="home" aria-selected="true">
+      <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 11 L11 3 L19 11 V19 H3 Z"/><path d="M9 19 V13 H13 V19" stroke-width="1.4"/></svg></span>
+      Home
+    </button>
+    <button data-view="cloud" aria-selected="false">
+      <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M6 16 a4 4 0 0 1 0 -8 a5 5 0 0 1 9.6 -1.6 a4.4 4.4 0 0 1 4.4 4.4 a5.2 5.2 0 0 1 -5.2 5.2 H6 Z"/></svg></span>
+      Cloud
+    </button>
+    <button data-view="list" aria-selected="false">
+      <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="5" y1="6"  x2="18" y2="6"/><line x1="5" y1="11" x2="18" y2="11"/><line x1="5" y1="16" x2="18" y2="16"/><circle cx="2.6" cy="6"  r="1" fill="currentColor" stroke="none"/><circle cx="2.6" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="2.6" cy="16" r="1" fill="currentColor" stroke="none"/></svg></span>
+      List
+    </button>
+    <button data-view="capture" aria-selected="false">
+      <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><circle cx="11" cy="11" r="3"/><circle cx="11" cy="11" r="1.2" fill="currentColor"/></svg></span>
+      Capture
+    </button>
+    <button data-view="distill" aria-selected="false">
+      <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M9 3 H13 L13 8 L17 16 a2 2 0 0 1 -2 3 H7 a2 2 0 0 1 -2 -3 L9 8 Z"/><line x1="9" y1="3" x2="13" y2="3" stroke-width="1.6"/></svg></span>
+      Distill
+    </button>
   </nav>
 
   <div class="scrim" id="scrim"></div>
@@ -1239,47 +1305,7 @@ Does this idea show up in Idea visual?</div>
     <p class="sheet-hint">Atmosphere only — semantic routing is held across all themes.</p>
     <div class="settings-section">
       <div class="settings-section-title">Theme</div>
-      <div class="theme-list" id="theme-list">
-          <button class="theme-row is-active" data-theme-id="cmyk-forge" role="menuitemradio" aria-checked="true">
-            <span class="tr-check" aria-hidden="true">✓</span>
-            <span class="tr-body">
-              <span class="tr-name">CMYK Forge</span>
-              <span class="tr-hint">Brand lab · electric</span>
-            </span>
-            <span class="tr-swatches" aria-hidden="true"><span class="tr-swatch" style="background:#030304"></span><span class="tr-swatch" style="background:#eab308"></span><span class="tr-swatch" style="background:#e879f9"></span><span class="tr-swatch" style="background:#22d3ee"></span></span>
-          </button>
-          <button class="theme-row " data-theme-id="gold-leaning" role="menuitemradio" aria-checked="false">
-            <span class="tr-check" aria-hidden="true"></span>
-            <span class="tr-body">
-              <span class="tr-name">Gold</span>
-              <span class="tr-hint">Warm · production default</span>
-            </span>
-            <span class="tr-swatches" aria-hidden="true"><span class="tr-swatch" style="background:#0c0a06"></span><span class="tr-swatch" style="background:#f59e0b"></span><span class="tr-swatch" style="background:#f43f5e"></span><span class="tr-swatch" style="background:#a78bfa"></span></span>
-          </button>
-          <button class="theme-row " data-theme-id="alabaster-light" role="menuitemradio" aria-checked="false">
-            <span class="tr-check" aria-hidden="true"></span>
-            <span class="tr-body">
-              <span class="tr-name">Alabaster</span>
-              <span class="tr-hint">Light · daylight-safe</span>
-            </span>
-            <span class="tr-swatches" aria-hidden="true"><span class="tr-swatch" style="background:#f8f7f4"></span><span class="tr-swatch" style="background:#b45309"></span><span class="tr-swatch" style="background:#be123c"></span><span class="tr-swatch" style="background:#7c3aed"></span></span>
-          </button>
-          <button class="theme-row " data-theme-id="penumbra-dark" role="menuitemradio" aria-checked="false">
-            <span class="tr-check" aria-hidden="true"></span>
-            <span class="tr-body">
-              <span class="tr-name">Penumbra</span>
-              <span class="tr-hint">Void · violet shadow</span>
-            </span>
-            <span class="tr-swatches" aria-hidden="true"><span class="tr-swatch" style="background:#07060d"></span><span class="tr-swatch" style="background:#fbbf24"></span><span class="tr-swatch" style="background:#f43f5e"></span><span class="tr-swatch" style="background:#c4b5fd"></span></span>
-          </button>
-          <button class="theme-row " data-theme-id="meditation" role="menuitemradio" aria-checked="false">
-            <span class="tr-check" aria-hidden="true"></span>
-            <span class="tr-body">
-              <span class="tr-name">Meditation</span>
-              <span class="tr-hint">Soft · low stimulation</span>
-            </span>
-            <span class="tr-swatches" aria-hidden="true"><span class="tr-swatch" style="background:#161412"></span><span class="tr-swatch" style="background:#d97706"></span><span class="tr-swatch" style="background:#e11d48"></span><span class="tr-swatch" style="background:#8b5cf6"></span></span>
-          </button></div>
+      <div class="theme-list" id="theme-list"></div>
     </div>
     <div class="settings-meta">EDGE · v0 · Settings</div>
     <div class="sheet-actions">
@@ -1318,10 +1344,10 @@ Does this idea show up in Idea visual?</div>
 
   <aside class="patch-beacon" id="patch-beacon" role="status" aria-live="polite" aria-hidden="true">
     <div class="pb-head">
-      <span class="pb-id" id="patch-beacon-id">Redline #03.1</span>
+      <span class="pb-id" id="patch-beacon-id">Redline</span>
       <button class="pb-close" id="patch-beacon-close" aria-label="Dismiss">×</button>
     </div>
-    <div class="pb-summary" id="patch-beacon-summary">Compass menu zones are now anchored in GW containers to prevent mobile drift.</div>
+    <div class="pb-summary" id="patch-beacon-summary"></div>
     <div class="pb-actions">
       <button class="pb-primary" id="patch-beacon-got">Got it</button>
       <button id="patch-beacon-show">Show me</button>
@@ -1385,8 +1411,20 @@ Does this idea show up in Idea visual?</div>
       { s: 4, t: 5, type: "operational-overlap",strength:"weak"   },
     ];
 
-    const SIGIL_GLYPH = { seed:"🌱", lab:"⚗", kplate:"K", lux:"L", material:"M", type:"T", forge:"F", friction:"R" };
-    const SIGIL_LABEL = { seed:"Seed", lab:"Alchemist Lab", kplate:"K-Plate", lux:"Lux", material:"Material", type:"Typography", forge:"Forge Tested", friction:"Recurring Friction" };
+    const SIGIL_GLYPH = { seed:"🌱", lab:"⚗", kplate:"K", lux:"L", material:"M", type:"T", forge:"F", friction:"R", topology:"△", force:"⊙", flux:"⌖", rule:"◊", resonance:"◎", method:"M" };
+    const SIGIL_LABEL = { seed:"Seed", lab:"Alchemist Lab", kplate:"K-Plate", lux:"Lux", material:"Material", type:"Typography", forge:"Forge Tested", friction:"Recurring Friction", topology:"Topology", force:"Force", flux:"Flux", rule:"Rule", resonance:"Resonance", method:"Method" };
+    // Sigil legend reference set — display vocabulary on Cloud view (R#06).
+    // Render-only; does not modify the locked Note Sigil registry (GC-HACHI-IDEA-SIGILS-RED-STRINGS-01).
+    const SIGIL_LEGEND_SET = [
+      { id: "seed",      label: "Seed",      glyph: "🌱", cls: "is-seed"   },
+      { id: "lux",       label: "Lux",       glyph: "L",  cls: "is-lux"    },
+      { id: "topology",  label: "Topology",  glyph: "△",  cls: "is-topo"   },
+      { id: "force",     label: "Force",     glyph: "⊙",  cls: "is-force"  },
+      { id: "flux",      label: "Flux",      glyph: "⌖",  cls: "is-flux"   },
+      { id: "kplate",    label: "K-Plate",   glyph: "≪",  cls: "is-kplate" },
+      { id: "rule",      label: "Rule",      glyph: "◊",  cls: "is-rule"   },
+      { id: "resonance", label: "Resonance", glyph: "◎",  cls: "is-reson"  }
+    ];
 
     // Seed/demo field notes — kept as orientation data, never persisted.
     const SEED_FIELD_NOTES = [
@@ -1427,6 +1465,252 @@ Does this idea show up in Idea visual?</div>
       return { item, persisted: ok };
     }
     let userCaptures = loadCaptures();
+
+    // ── Capture Intake Chamber (R#05) ──────────────────────────────────────
+    const CAPTURE_TAB_KEY  = "bxc.capture-intake.tab";
+    const CAPTURE_META_KEY = "bxc.capture-metadata";
+    const DRIVE_TARGETS = {
+      notes:  "Hachi/inbox",
+      voice:  "Hachi/inbox/voice",
+      photos: "Hachi/inbox/photos",
+      video:  "Hachi/inbox/video"
+    };
+    let captureActiveTab = (function() {
+      try { return localStorage.getItem(CAPTURE_TAB_KEY) || "notes"; }
+      catch (e) { return "notes"; }
+    })();
+    function setCaptureTab(t) {
+      if (!DRIVE_TARGETS[t]) return;
+      captureActiveTab = t;
+      try { localStorage.setItem(CAPTURE_TAB_KEY, t); } catch (e) {}
+      render();
+    }
+    function loadCaptureMetadata() {
+      try {
+        const raw = localStorage.getItem(CAPTURE_META_KEY);
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) { return []; }
+    }
+    function saveCaptureMetadata(arr) {
+      try { localStorage.setItem(CAPTURE_META_KEY, JSON.stringify(arr)); return true; }
+      catch (e) { return false; }
+    }
+    function logHandoff(tab) {
+      const target = DRIVE_TARGETS[tab] || DRIVE_TARGETS.notes;
+      const ts = new Date();
+      const entry = {
+        id: "meta-" + ts.getTime() + "-" + Math.random().toString(36).slice(2, 6),
+        tab: tab,
+        target: target,
+        timestamp: ts.toISOString(),
+        time: ts.toTimeString().slice(0, 5)
+      };
+      const arr = loadCaptureMetadata();
+      arr.push(entry);
+      return { entry, persisted: saveCaptureMetadata(arr) };
+    }
+
+    // ── Voice Capture MVP (R#05.1) ─────────────────────────────────────────
+    // MediaRecorder-based local recording. No transcription, no Drive upload.
+    let voiceState = {
+      phase: "idle",         // 'idle' | 'recording' | 'ready'
+      recorder: null,
+      stream: null,
+      chunks: [],
+      blob: null,
+      blobUrl: null,
+      filename: null,
+      startMs: 0,
+      durationMs: 0,
+      error: null,
+      tickHandle: null,
+      mimeType: ""
+    };
+
+    function formatDuration(ms) {
+      const total = Math.max(0, Math.floor((ms || 0) / 1000));
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    }
+    function formatBytes(b) {
+      if (typeof b !== "number" || b < 0) return "";
+      if (b < 1024) return b + " B";
+      if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
+      return (b / 1024 / 1024).toFixed(2) + " MB";
+    }
+    function voiceFilename(d) {
+      const z = n => String(n).padStart(2, "0");
+      return "hachi-voice-" + d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate())
+           + "-" + z(d.getHours()) + z(d.getMinutes()) + z(d.getSeconds()) + ".webm";
+    }
+    function voicePickMime() {
+      const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"];
+      if (typeof MediaRecorder === "undefined") return "";
+      for (const m of candidates) {
+        try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) {}
+      }
+      return "";
+    }
+    function startVoiceTimer() {
+      stopVoiceTimer();
+      voiceState.tickHandle = setInterval(() => {
+        const t = document.querySelector(".voice-recorder .vr-timer");
+        if (t && voiceState.phase === "recording") {
+          t.textContent = formatDuration(Date.now() - voiceState.startMs);
+        }
+      }, 250);
+    }
+    function stopVoiceTimer() {
+      if (voiceState.tickHandle) clearInterval(voiceState.tickHandle);
+      voiceState.tickHandle = null;
+    }
+    async function startVoiceRecording() {
+      voiceState.error = null;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
+        voiceState.error = "MediaRecorder not supported in this browser.";
+        render();
+        return;
+      }
+      // Discard any prior recording
+      if (voiceState.blobUrl) { try { URL.revokeObjectURL(voiceState.blobUrl); } catch (e) {} }
+      voiceState.blob = null; voiceState.blobUrl = null; voiceState.filename = null;
+      voiceState.chunks = []; voiceState.durationMs = 0;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mime = voicePickMime();
+        const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+        voiceState.mimeType = rec.mimeType || mime || "audio/webm";
+        voiceState.recorder = rec;
+        voiceState.stream = stream;
+        rec.ondataavailable = e => { if (e.data && e.data.size > 0) voiceState.chunks.push(e.data); };
+        rec.onstop = () => {
+          const stopTs = Date.now();
+          voiceState.durationMs = stopTs - voiceState.startMs;
+          const blob = new Blob(voiceState.chunks, { type: voiceState.mimeType || "audio/webm" });
+          voiceState.blob = blob;
+          voiceState.blobUrl = URL.createObjectURL(blob);
+          voiceState.filename = voiceFilename(new Date(voiceState.startMs));
+          if (voiceState.stream) {
+            try { voiceState.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+          }
+          voiceState.stream = null;
+          voiceState.recorder = null;
+          voiceState.phase = "ready";
+          stopVoiceTimer();
+          render();
+        };
+        voiceState.startMs = Date.now();
+        voiceState.phase = "recording";
+        rec.start();
+        startVoiceTimer();
+        render();
+      } catch (e) {
+        voiceState.error = (e && e.message) ? ("Mic access failed: " + e.message) : "Mic access failed.";
+        voiceState.phase = "idle";
+        render();
+      }
+    }
+    function stopVoiceRecording() {
+      if (voiceState.recorder && voiceState.phase === "recording") {
+        try { voiceState.recorder.stop(); } catch (e) {}
+      }
+    }
+    function downloadVoiceRecording() {
+      if (!voiceState.blob || !voiceState.blobUrl || !voiceState.filename) return;
+      const a = document.createElement("a");
+      a.href = voiceState.blobUrl;
+      a.download = voiceState.filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { try { document.body.removeChild(a); } catch (e) {} }, 100);
+
+      // Auto-log the handoff with file metadata
+      const ts = new Date();
+      const entry = {
+        id: "meta-" + ts.getTime() + "-" + Math.random().toString(36).slice(2, 6),
+        tab: "voice",
+        target: DRIVE_TARGETS.voice,
+        timestamp: ts.toISOString(),
+        time: ts.toTimeString().slice(0, 5),
+        filename: voiceState.filename,
+        sizeBytes: voiceState.blob.size,
+        durationMs: voiceState.durationMs,
+        method: "mediarecorder-webm"
+      };
+      const arr = loadCaptureMetadata();
+      arr.push(entry);
+      const ok = saveCaptureMetadata(arr);
+      toast(ok ? ("Downloaded · drop into " + DRIVE_TARGETS.voice) : "Downloaded · log unavailable");
+      render();
+    }
+    function voiceRecorderHtml() {
+      const phase = voiceState.phase;
+      const elapsed = phase === "recording"
+        ? Math.max(0, Date.now() - voiceState.startMs)
+        : voiceState.durationMs;
+      const timer = formatDuration(elapsed);
+      let stateLabel = "Idle"; let stateClass = "";
+      if (phase === "recording") { stateLabel = "Recording"; stateClass = "is-recording"; }
+      else if (phase === "ready") { stateLabel = "Ready · review or download"; stateClass = "is-ready"; }
+
+      const audioBlock = (phase === "ready" && voiceState.blobUrl)
+        ? `<audio controls preload="auto" src="${voiceState.blobUrl}"></audio>` : "";
+
+      const errorBlock = voiceState.error
+        ? `<div class="vr-error">${escapeHtml(voiceState.error)}</div>` : "";
+
+      const metaBlock = (phase === "ready" && voiceState.blob)
+        ? `
+          <div class="vr-meta">
+            <span><span class="vr-key">File</span>${escapeHtml(voiceState.filename)}</span>
+            <span><span class="vr-key">Size</span>${formatBytes(voiceState.blob.size)}</span>
+            <span><span class="vr-key">Duration</span>${timer}</span>
+          </div>`
+        : "";
+
+      let actions = "";
+      if (phase === "idle") {
+        actions = `
+          <button class="action vr-record" data-action="voice-record-start">
+            <div class="glyph">●</div>
+            <div><div class="label">Start recording</div><div class="hint">browser asks for mic permission</div></div>
+          </button>`;
+      } else if (phase === "recording") {
+        actions = `
+          <button class="action vr-stop" data-action="voice-record-stop">
+            <div class="glyph">■</div>
+            <div><div class="label">Stop recording</div><div class="hint">creates audio blob locally</div></div>
+          </button>`;
+      } else if (phase === "ready") {
+        actions = `
+          <div class="vr-actions">
+            <button class="action vr-record" data-action="voice-record-start">
+              <div class="glyph">●</div>
+              <div><div class="label">New recording</div><div class="hint">discard current</div></div>
+            </button>
+            <button class="action" data-action="voice-download">
+              <div class="glyph">⇩</div>
+              <div><div class="label">Download .webm</div><div class="hint">auto-logs handoff</div></div>
+            </button>
+          </div>`;
+      }
+
+      return `
+        <div class="voice-recorder">
+          <div class="vr-row">
+            <span class="vr-state ${stateClass}">${stateLabel}</span>
+            <span class="vr-timer">${timer}</span>
+          </div>
+          ${errorBlock}
+          ${audioBlock}
+          ${metaBlock}
+          ${actions}
+        </div>
+      `;
+    }
 
     // Merged feed: user captures (newest first) + seed.
     function feedItems(limit) {
@@ -1572,14 +1856,18 @@ Does this idea show up in Idea visual?</div>
       const zBucket = id => (id % 3 === 0 ? "back" : id % 3 === 1 ? "mid" : "front");
       const zScale  = { back: 0.78, mid: 0.9,  front: 1.0 };
       const zOpac   = { back: 0.62, mid: 0.82, front: 1.0 };
-      const baseR   = (z, isHot) => (isHot ? 14 : 11) * z;
+      // T3 — Node size encodes BEHAVIORAL signal (red-string density), not visual presence (R#06.1).
+      // A node with many relationships sits visually larger; a solitary node sits smaller (dormant signal).
+      // Hot state adds glow only — never inflates size.
+      const rsCount = id => LINKS.reduce((n, l) => n + (l.s === id || l.t === id ? 1 : 0), 0);
+      const baseR   = (z, _isHot, id) => (12 + Math.min(rsCount(id), 4) * 2.6) * z;
 
       // Red Strings — anchored to asteroid edge seams, not centers.
       const edges = LINKS.map(l => {
         const a = pmap.get(l.s), b = pmap.get(l.t);
         if (!a || !b) return "";
-        const ar = baseR(zScale[zBucket(a.id)], hot.has(a.id));
-        const br = baseR(zScale[zBucket(b.id)], hot.has(b.id));
+        const ar = baseR(zScale[zBucket(a.id)], hot.has(a.id), a.id);
+        const br = baseR(zScale[zBucket(b.id)], hot.has(b.id), b.id);
         const aA = edgeAnchor(a, b, ar);
         const bA = edgeAnchor(b, a, br);
         return `<line class="red-string" x1="${aA.x.toFixed(1)}" y1="${aA.y.toFixed(1)}"
@@ -1601,7 +1889,7 @@ Does this idea show up in Idea visual?</div>
         const isHot = hot.has(n.id);
         const z = zScale[zBucket(n.id)];
         const op = isHot ? 1 : zOpac[zBucket(n.id)];
-        const r = baseR(z, isHot);
+        const r = baseR(z, isHot, n.id);
         const path = asteroidPath(n.id, r);
         const cracks = crackSegments(n.id, r);
         const hotClass = isHot ? " is-hot" : "";
@@ -1622,8 +1910,8 @@ Does this idea show up in Idea visual?</div>
             stroke-width="0.6" stroke-linecap="round"/>`
         ).join("");
 
-        const idFontSize    = (7 + z * 2).toFixed(1);
-        const glyphFontSize = (6 + z * 1.6).toFixed(1);
+        const idFontSize    = (8 + z * 3).toFixed(1);
+        const glyphFontSize = (8 + z * 2.6).toFixed(1);
 
         return `
           <g class="hit" transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})" opacity="${op}" data-note-id="${n.id}">
@@ -1649,12 +1937,111 @@ Does this idea show up in Idea visual?</div>
       return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">${defs}${edges}${nodes}</svg>`;
     }
 
+    // ── Card Crest + visual helpers (R#06) ─────────────────────────────────
+    // Card Crest = Grove Card identity badge (per GC-HACHI-CARD-CREST-NOTE-TO-VISUAL-01).
+    // Renders a small hexagonal mark beside the splash h1 of each view.
+    const CREST_GLYPHS = {
+      home:    '<polygon points="11,3 19,11 11,19 3,11" />',
+      cloud:   '<circle cx="11" cy="11" r="3" /><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="0.9" />',
+      list:    '<rect x="4" y="6"  width="14" height="1.6" rx="0.8" /><rect x="4" y="10" width="14" height="1.6" rx="0.8" /><rect x="4" y="14" width="14" height="1.6" rx="0.8" />',
+      capture: '<circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.2" /><circle cx="11" cy="11" r="2" />',
+      distill: '<path d="M8 4 H14 L13 9 L17 16 H5 L9 9 Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />'
+    };
+    function crestSvg(viewId) {
+      const inner = CREST_GLYPHS[viewId] || CREST_GLYPHS.home;
+      return `
+        <span class="splash-crest" aria-hidden="true">
+          <svg viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+            <polygon class="crest-hex" points="11,1.6 19.7,6.4 19.7,15.6 11,20.4 2.3,15.6 2.3,6.4" />
+            <g class="crest-glyph">${inner}</g>
+          </svg>
+        </span>`;
+    }
+    function pmIcon(kind) {
+      // Small inline SVG icons for the page meta strip
+      switch (kind) {
+        case "asteroid": return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3 L20 7 L21 13 L17 18 L10 20 L4 16 L3 9 L8 4 Z" stroke="currentColor" stroke-width="0.6" stroke-linejoin="round" fill="color-mix(in srgb, currentColor 40%, transparent)"/><circle cx="9"  cy="9"  r="1" fill="currentColor"/><circle cx="14" cy="13" r="1.4" fill="currentColor"/><circle cx="11" cy="16" r="0.8" fill="currentColor"/></svg>';
+        case "type":     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M5 17 a4 4 0 0 1 0 -8 a5 5 0 0 1 9.6 -1.6 a4.4 4.4 0 0 1 4.4 4.4 a5.2 5.2 0 0 1 -5.2 5.2 H5 Z"/></svg>';
+        case "rs":       return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 5 L17 19 M9 5 L19 19"/></svg>';
+        default:         return "";
+      }
+    }
+    function pageMetaStripHtml(items) {
+      return `
+        <div class="page-meta-strip">
+          ${items.map(it => `
+            <div class="pm-chip">
+              <span class="pm-icon ${it.iconCls || ""}">${pmIcon(it.icon)}</span>
+              <span class="pm-body">
+                <span class="pm-key">${it.key}</span>
+                <span class="pm-val ${it.valCls || ""}">${it.dot ? '<span class="pm-dot"></span>' : ""}${it.val}</span>
+              </span>
+            </div>
+          `).join("")}
+        </div>`;
+    }
+    function sigilLegendHtml() {
+      return `
+        <div class="sigil-legend">
+          <div class="sigil-legend-title">Sigil Legend</div>
+          <div class="sigil-legend-grid">
+            ${SIGIL_LEGEND_SET.map(s => `
+              <div class="sigil-legend-item">
+                <span class="sl-glyph ${s.cls}">${s.glyph}</span>
+                <span class="sl-label">${s.label}</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>`;
+    }
+    function asteroidThumbSvg(noteId) {
+      const path = asteroidPath(noteId, 22);
+      const cracks = crackSegments(noteId, 22).map(s =>
+        `<line x1="${s.x1.toFixed(1)}" y1="${s.y1.toFixed(1)}" x2="${s.x2.toFixed(1)}" y2="${s.y2.toFixed(1)}" stroke="color-mix(in srgb, var(--muted) 50%, transparent)" stroke-width="0.6" stroke-linecap="round"/>`).join("");
+      return `<svg viewBox="-26 -26 52 52" xmlns="http://www.w3.org/2000/svg"><path d="${path}" fill="var(--surface-3)" stroke="var(--border)" stroke-width="0.85" stroke-linejoin="round"/>${cracks}</svg>`;
+    }
+    function cloudFeedRowHtml(n) {
+      const primary = (n.sigils && n.sigils.length) ? n.sigils[0] : "";
+      const primaryGlyph = SIGIL_GLYPH[primary] || "·";
+      const rsCount = LINKS.filter(l => l.s === n.id || l.t === n.id).length;
+      const sigilChips = (n.sigils || []).map(s =>
+        `<span class="cf-sigil">${SIGIL_LABEL[s] || s}</span>`).join("");
+      // T1 — heuristic: text long enough to clamp meaningfully → show inline expander (R#06.1)
+      const isLong = (n.text || "").length > 60;
+      const showMoreBtn = isLong ? `<button class="cf-show-more" type="button" data-cf-expand="1">Show more</button>` : "";
+      return `
+        <div class="cloud-feed-row list-row" role="button" tabindex="0" data-note-id="${n.id}">
+          <span class="cf-hex">
+            <svg viewBox="0 0 48 56" xmlns="http://www.w3.org/2000/svg">
+              <polygon class="cf-hex-bg" points="24,2 45,14 45,42 24,54 3,42 3,14"/>
+              <text class="cf-hex-id" x="24" y="26" text-anchor="middle">#${n.id}</text>
+              <text class="cf-hex-glyph" x="24" y="40" text-anchor="middle">${primaryGlyph}</text>
+            </svg>
+          </span>
+          <span class="cf-content">
+            <span class="cf-domain">${n.domain}</span>
+            <span class="cf-text">${escapeHtml(n.text)}</span>
+            ${showMoreBtn}
+            ${sigilChips ? `<span class="cf-sigils">${sigilChips}</span>` : ""}
+          </span>
+          <span class="cf-thumb">
+            ${asteroidThumbSvg(n.id)}
+            <span class="cf-thumb-id">#${n.id}</span>
+            ${rsCount > 0 ? '<span class="cf-thumb-dot"></span>' : ""}
+          </span>
+          <span class="cf-meta">
+            <span class="cf-rs">Red Strings <span class="cf-rs-count">${rsCount}</span></span>
+            <span class="cf-edge">Edge · v0</span>
+          </span>
+        </div>`;
+    }
+
     // ── View renderers ─────────────────────────────────────────────────────
     function viewHome() {
       const hot = currentChallenge.ids;
       return `
         <section class="splash">
-          <h1>HACHI Idea Cloud</h1>
+          <h1>HACHI Idea Cloud ${crestSvg("home")}</h1>
           <p>Capture first. Distill later.</p>
         </section>
 
@@ -1747,68 +2134,178 @@ Does this idea show up in Idea visual?</div>
 
     function viewCloud() {
       const hot = currentChallenge.ids;
+      const meta = pageMetaStripHtml([
+        { key: "Asteroid",    val: "#CLOUD-01",   icon: "asteroid" },
+        { key: "Status",      val: "ACTIVE",      icon: "",         dot: true, valCls: "is-active" },
+        { key: "Type",        val: "IDEA CLOUD",  icon: "type" },
+        { key: "Red Strings", val: String(LINKS.length), icon: "rs", iconCls: "is-rose", valCls: "is-rose" }
+      ]);
       return `
         <section class="splash">
-          <h1>Cloud</h1>
+          <h1>Cloud ${crestSvg("cloud")}</h1>
           <h2>Idea Cloud — gravity, not frequency</h2>
           <p>Distance encodes relationship. Strange adjacency is the signal.</p>
         </section>
+        ${meta}
         <div class="module">
           <header><span class="title">Topology</span><span class="meta">${NOTES.length} notes · ${LINKS.length} red strings</span></header>
           <div class="body">
-            <div class="cloud-preview">${renderCloudSVG({ width: 320, height: 280, hotIds: hot })}</div>
+            <div class="cloud-preview">${renderCloudSVG({ width: 320, height: 360, hotIds: hot })}</div>
+            ${sigilLegendHtml()}
           </div>
         </div>
         <div class="module list-section">
           <header><span class="title">Notes</span><span class="meta">tap any row</span></header>
-          <div class="body">
-            ${NOTES.map(n => `
-              <button class="list-row" data-note-id="${n.id}">
-                <div class="list-row-head">
-                  <span class="list-row-domain">${n.domain}</span>
-                  <span class="list-row-id">#${n.id}</span>
-                </div>
-                <div class="list-row-text">${escapeHtml(n.text)}</div>
-                ${n.sigils && n.sigils.length ? `
-                  <div class="list-row-sigils">
-                    ${n.sigils.map(s => `<span class="list-row-sigil">${SIGIL_GLYPH[s] || ""} ${SIGIL_LABEL[s] || s}</span>`).join(" · ")}
-                  </div>` : ""}
-              </button>
-            `).join("")}
+          <div class="body" style="padding: 0;">
+            ${NOTES.map(n => cloudFeedRowHtml(n)).join("")}
           </div>
         </div>
       `;
     }
 
     function viewCapture() {
+      const tab = captureActiveTab || "notes";
+      const tabs = [
+        { id: "notes",  label: "Notes",  status: "LIVE",
+          method: "Text sheet (Commons / ELCO domains)",
+          target: "Hachi/inbox",
+          state:  "LIVE — saved to local field-notes (bxc.field-notes)",
+          next:   "Distill → re-read raw notes through a lens" },
+        { id: "voice",  label: "Voice",  status: "LIVE",
+          method: "MediaRecorder (browser mic) → .webm download",
+          target: "Hachi/inbox/voice",
+          state:  "LIVE — local recording; Drive upload is still manual after download",
+          next:   "Download → drop into Hachi/inbox/voice → handoff auto-logged" },
+        { id: "photos", label: "Photos", status: "PENDING",
+          method: "Manual export — drop image files into Drive folder",
+          target: "Hachi/inbox/photos",
+          state:  "PENDING — manual export only, metadata logged locally",
+          next:   "Log handoff after upload to keep metadata in sync" },
+        { id: "video",  label: "Video",  status: "PENDING",
+          method: "Manual export — drop video files into Drive folder",
+          target: "Hachi/inbox/video",
+          state:  "PENDING — manual export only, metadata logged locally",
+          next:   "Log handoff after upload to keep metadata in sync" }
+      ];
+      const active = tabs.find(t => t.id === tab) || tabs[0];
+
+      const tabBar = `
+        <div class="capture-tabs" role="tablist" aria-label="Intake mode">
+          ${tabs.map(t => `
+            <button class="capture-tab ${t.id === tab ? "is-active" : ""}"
+                    role="tab"
+                    aria-selected="${t.id === tab ? "true" : "false"}"
+                    data-action="capture-tab-${t.id}">
+              <span class="capture-tab-label">${t.label}</span>
+              <span class="capture-tab-status ${t.status === "LIVE" ? "is-live" : "is-pending"}">${t.status}</span>
+            </button>
+          `).join("")}
+        </div>
+      `;
+
+      const rail = `
+        <div class="capture-mode" aria-live="polite">
+          <div class="cm-row"><span class="cm-key">Active tab</span><span class="cm-val">${active.label}</span></div>
+          <div class="cm-row"><span class="cm-key">Method</span><span class="cm-val">${active.method}</span></div>
+          <div class="cm-row"><span class="cm-key">Goes to</span><span class="cm-val cm-mono">${active.target}</span></div>
+          <div class="cm-row"><span class="cm-key">State</span><span class="cm-val">${active.state}</span></div>
+          <div class="cm-row"><span class="cm-key">Next step</span><span class="cm-val">${active.next}</span></div>
+        </div>
+      `;
+
+      let body = "";
+      if (tab === "notes") {
+        body = `
+          <div class="actions">
+            <button class="action primary" data-action="commons">
+              <div class="glyph">＋</div>
+              <div><div class="label">Add Commons Note</div><div class="hint">routes to Commons list · Hachi/inbox</div></div>
+            </button>
+            <button class="action primary" data-action="elco">
+              <div class="glyph">＋</div>
+              <div><div class="label">Add ELCO Note</div><div class="hint">routes to ELCO list · Hachi/inbox</div></div>
+            </button>
+          </div>
+          <div class="stub">
+            <div class="stub-title">Reminder triggers</div>
+            <div class="stub-hint">"Commons reminder:" / "ELCO reminder:" land here once the reminder layer is wired.</div>
+            <div class="stub-status">Phase pending</div>
+          </div>
+        `;
+      } else {
+        const meta = loadCaptureMetadata().filter(m => m.tab === tab);
+        const historyHtml = `
+          <div class="module">
+            <header><span class="title">Logged handoffs · ${active.label}</span><span class="meta">${meta.length}</span></header>
+            <div class="body">
+              ${meta.length === 0
+                ? '<div class="stub"><div class="stub-hint">No handoffs logged yet for this tab.</div></div>'
+                : meta.slice().reverse().map(m => `
+                    <div class="list-row">
+                      <div class="list-row-head">
+                        <span class="list-row-domain">${m.tab.toUpperCase()}</span>
+                        <span class="list-row-time">${m.time || ""}</span>
+                      </div>
+                      <div class="list-row-text">→ ${escapeHtml(m.target)}${m.filename ? " · " + escapeHtml(m.filename) : ""}${(typeof m.durationMs === "number" && m.durationMs > 0) ? " · " + formatDuration(m.durationMs) : ""}${(typeof m.sizeBytes === "number") ? " · " + formatBytes(m.sizeBytes) : ""}</div>
+                    </div>
+                  `).join("")
+              }
+            </div>
+          </div>
+        `;
+
+        if (tab === "voice") {
+          body = `
+            ${voiceRecorderHtml()}
+            <div class="capture-stub-card">
+              <div class="capture-stub-title">Drive handoff — manual</div>
+              <div class="capture-stub-method">After download, drop the .webm into the Drive folder below. The handoff is auto-logged when you press Download. Direct Drive upload is not wired in this MVP.</div>
+              <ul class="capture-stub-paths">
+                <li><span class="cm-key">Inbox</span><span class="cm-mono">${active.target}</span></li>
+                <li><span class="cm-key">Processed</span><span class="cm-mono">Hachi/processed</span></li>
+                <li><span class="cm-key">Exports</span><span class="cm-mono">Hachi/exports</span></li>
+                <li><span class="cm-key">Metadata</span><span class="cm-mono">Hachi/metadata · local: bxc.capture-metadata</span></li>
+              </ul>
+            </div>
+            ${historyHtml}
+          `;
+        } else {
+          body = `
+            <div class="capture-stub-card">
+              <div class="capture-stub-title">${active.label} intake — manual export</div>
+              <div class="capture-stub-method">${active.method}. Direct upload not wired in v0; record / save the artifact yourself, drop it in Drive, then log the handoff so metadata stays paired with the file.</div>
+              <ul class="capture-stub-paths">
+                <li><span class="cm-key">Inbox</span><span class="cm-mono">${active.target}</span></li>
+                <li><span class="cm-key">Processed</span><span class="cm-mono">Hachi/processed</span></li>
+                <li><span class="cm-key">Exports</span><span class="cm-mono">Hachi/exports</span></li>
+                <li><span class="cm-key">Metadata</span><span class="cm-mono">Hachi/metadata · local: bxc.capture-metadata</span></li>
+              </ul>
+              <button class="action" data-action="log-handoff-${tab}">
+                <div class="glyph">⇪</div>
+                <div><div class="label">Log manual handoff</div><div class="hint">writes {tab, target, time} to bxc.capture-metadata</div></div>
+              </button>
+            </div>
+            ${historyHtml}
+          `;
+        }
+      }
+
       return `
         <section class="splash">
-          <h1>Capture</h1>
-          <h2>Voice + thumb capture</h2>
-          <p>Append raw. No analysis. No inference. The intake stays frictionless.</p>
+          <h1>Capture ${crestSvg("capture")}</h1>
+          <h2>Intake Chamber · v0</h2>
+          <p>Append raw. No analysis. No inference. Pick the intake mode for what you're capturing.</p>
         </section>
-        <div class="actions">
-          <button class="action primary" data-action="commons">
-            <div class="glyph">＋</div>
-            <div><div class="label">Add Commons Note</div><div class="hint">routes to Commons list</div></div>
-          </button>
-          <button class="action primary" data-action="elco">
-            <div class="glyph">＋</div>
-            <div><div class="label">Add ELCO Note</div><div class="hint">routes to ELCO list</div></div>
-          </button>
-        </div>
-        <div class="stub">
-          <div class="stub-title">Reminder triggers</div>
-          <div class="stub-hint">"Commons reminder:" / "ELCO reminder:" land here once the reminder layer is wired.</div>
-          <div class="stub-status">Phase pending</div>
-        </div>
+        ${tabBar}
+        ${rail}
+        ${body}
       `;
     }
 
     function viewDistill() {
       return `
         <section class="splash">
-          <h1>Distill</h1>
+          <h1>Distill ${crestSvg("distill")}</h1>
           <h2>Today, through a lens</h2>
           <p>Re-distilling raw captures through changing filters, pressures, and lenses. Lens toggles pending.</p>
         </section>
@@ -1862,7 +2359,7 @@ Does this idea show up in Idea visual?</div>
       const captures = userCaptures;
       return `
         <section class="splash">
-          <h1>List</h1>
+          <h1>List ${crestSvg("list")}</h1>
           <h2>Detail focus</h2>
           <p>Sequential view of every note. Tap a row to open its drawer.</p>
         </section>
@@ -1934,18 +2431,22 @@ Does this idea show up in Idea visual?</div>
         next: "Distill lenses or Capture intake chamber would propagate here next."
       },
       { id: "cloud", group: "page", title: "Cloud", status: "PARTIAL",
-        purpose: "Aura Focus — topology, asteroids, Red Strings.",
+        purpose: "Aura Focus — topology, asteroids, Red Strings. Reference surface for the Cloud Visual System (R#06).",
         actions: [
+          "Splash + Card Crest hex badge (R#06)",
+          "Page-meta strip: Asteroid · Status · Type · Red Strings (R#06)",
+          "Topology SVG with sigil glyphs + embedded Sigil Legend (R#06)",
+          "Hex-badge feed rows with asteroid thumbnails + Red Strings count + Edge·v0 status (R#06)",
           "Tap any asteroid → drawer (verified)",
           "Tap any Notes row → drawer (R#02 ✓)",
           "Z-bucketed depth + force-layout drift"
         ],
         issues: [
-          "Asteroids still generic polygon noise (GW/K-Plate spec aspirational)",
+          "Asteroid silhouettes still generic polygon noise — full GW/K-Plate visual vocabulary deferred",
           "No focus glow / drift slow on press",
-          "Open from Home is hard route, not in-place expansion"
+          "Sigil Legend is render-only display vocab, NOT the locked Note Sigil registry"
         ],
-        next: "Cloud open-field expansion (smallest patch) or K-Plate seam pass."
+        next: "Promote Card Crest patch to LOCK after 2 more card-update demos; extend visual system to other views."
       },
       { id: "list", group: "page", title: "List", status: "LIVE",
         purpose: "Detail Focus — sequential view of every note.",
@@ -1961,18 +2462,21 @@ Does this idea show up in Idea visual?</div>
         next: "Filter/grouping deferred — needs Mutable Node schema first."
       },
       { id: "capture", group: "page", title: "Capture", status: "PARTIAL",
-        purpose: "Dedicated capture screen — currently duplicates Compass intent.",
+        purpose: "Intake Chamber — tabbed capture modes (Notes / Voice / Photos / Video). Routes raw artifacts toward Hachi Drive folders.",
         actions: [
-          "Add Commons Note → capture sheet",
-          "Add ELCO Note → capture sheet",
-          "Reminder Triggers (display stub)"
+          "Tab bar (Notes LIVE · Voice LIVE-MVP · Photos / Video PENDING)",
+          "Capture rail — active tab · method · target · state · next",
+          "Notes → Add Commons Note + Add ELCO Note (existing capture sheet)",
+          "Voice → MediaRecorder Start / Stop / Download .webm · auto-logs handoff with filename + duration + size",
+          "Photos / Video → Log manual handoff (bxc.capture-metadata)"
         ],
         issues: [
-          "Duplicates Home action grid + Compass intent zone (3-way redundancy)",
-          "Mode tabs (Raw / Reminder / Voice / Photo) DEFINE-only",
-          "Voice / Photo capture not wired"
+          "Voice download is local-file only — user must drop .webm into Hachi/inbox/voice manually",
+          "No transcription, no waveform, no resume after page reload",
+          "Photos / Video still manual-export stubs — no recording or upload",
+          "Drive sync (Hachi/inbox|processed|exports|metadata) is target-only, not wired"
         ],
-        next: "Capture intake chamber conversion — replace launcher with mode tabs."
+        next: "Wire Drive upload — replace download+manual-drop with direct PUT to Hachi/inbox/{tab}/."
       },
       { id: "distill", group: "page", title: "Distill", status: "PARTIAL",
         purpose: "Re-distilling raw captures through filters / lenses.",
@@ -2083,7 +2587,15 @@ Does this idea show up in Idea visual?</div>
       { date: "2026-05-06", title: "Redline #03 — Flow View v0",
         summary: "Live structural map inside the app — 10 flow cards (5 pages + 5 overlays) with status badges + flow drawer detail." },
       { date: "2026-05-07", title: "Redline #04 — Flow Export v0",
-        summary: "Exportable redline artifact — printable B/W view rendering all 10 flow nodes + patch lineage. Per-page export from flow drawer." }
+        summary: "Exportable redline artifact — printable B/W view rendering all 10 flow nodes + patch lineage. Per-page export from flow drawer." },
+      { date: "2026-05-07", title: "Redline #05 — Capture Intake Chamber v0",
+        summary: "Capture page becomes a tabbed intake chamber: Notes (live), Voice / Photos / Video (manual-export stubs). Drive folders Hachi/inbox|processed|exports|metadata declared as targets; metadata logged to bxc.capture-metadata until sync is wired." },
+      { date: "2026-05-07", title: "Redline #05.1 — Voice Capture MVP",
+        summary: "Voice tab functional via MediaRecorder. Record / Stop creates a local .webm blob; Download saves the file and auto-logs a handoff to bxc.capture-metadata with filename, duration, and size. Manual upload to Hachi/inbox/voice still required. No transcription, no direct Drive write." },
+      { date: "2026-05-07", title: "Redline #06.1 — Refinement Closure Pass #01",
+        summary: "Alignment sub-patch (no new systems). Closes 4 of 5 friction targets from GC-HACHI-CLOUD-VISUAL-HIERARCHY-REFINE-01: T1 field-note progressive disclosure (2-line clamp + Show More inline expand) · T2 timestamp A11Y (--faint→--dim, increased letter-spacing) · T3 node size = behavioral signal (red-string density, hot adds glow only — no scale inflation) · T4 quieter ambient (sigil chips = inline dim text, edge label = plain dim, no border pill) · T5 compass visibility ring + 44px touch target. Closure gate cleared." },
+      { date: "2026-05-07", title: "Redline #06 — Cloud Visual System",
+        summary: "First visible application of GC-HACHI-CARD-CREST-NOTE-TO-VISUAL-01. Cloud view rebuilt: Card Crests on every splash header (Home/Cloud/List/Capture/Distill); page-meta strip (Asteroid/Status/Type/Red Strings); embedded Sigil Legend; hex-badge feed rows with asteroid thumbnails + Red Strings count + Edge·v0 status; bottom nav swapped from dot+word to icon+word with amber active glow; asteroid radius scaled up. Locked Note Sigil registry is preserved — sigil legend is render-only display vocabulary." }
     ];
 
     function flowCardHtml(n) {
@@ -2297,12 +2809,12 @@ Does this idea show up in Idea visual?</div>
 
     // ── Patch Beacon ───────────────────────────────────────────────────────
     const APP_PATCH = {
-      id: "redline-03-1-compass-gw-containers",
-      title: "Redline #03.1",
-      summary: "Compass menu zones are now anchored in GW containers to prevent mobile drift.",
-      surface: "home",
-      surfaceSelectors: [".compass-menu", ".cm-zone"],
-      surfaceLabel: "Compass / GW Containers"
+      id: "redline-06-1-refinement-closure-01",
+      title: "Redline #06.1",
+      summary: "Refinement closure pass: progressive disclosure on field notes, timestamp contrast, behavioral node sizing, quieter ambient, compass ring.",
+      surface: "cloud",
+      surfaceSelectors: [".cf-text", ".cf-meta", ".compass-btn"],
+      surfaceLabel: "Cloud / Refinement Closure #01"
     };
     const PATCH_KEY = "bxc.last-seen-patch";
 
@@ -2410,7 +2922,18 @@ Does this idea show up in Idea visual?</div>
       });
       // List rows for cloud notes
       document.querySelectorAll(".list-row[data-note-id]").forEach(el => {
-        el.addEventListener("click", () => {
+        el.addEventListener("click", (e) => {
+          // T1 — Show More toggles inline expansion without opening drawer (R#06.1)
+          const expander = e.target.closest("[data-cf-expand]");
+          if (expander) {
+            e.stopPropagation();
+            const txt = expander.parentElement?.querySelector(".cf-text");
+            if (txt) {
+              const expanded = txt.classList.toggle("is-expanded");
+              expander.textContent = expanded ? "Show less" : "Show more";
+            }
+            return;
+          }
           const id = parseInt(el.getAttribute("data-note-id"), 10);
           const note = NOTES.find(n => n.id === id);
           if (note) openDrawerForNote(note);
@@ -2455,6 +2978,19 @@ Does this idea show up in Idea visual?</div>
       else if (kind === "export-flow") openExport(null);
       else if (kind === "print-export") window.print();
       else if (kind === "back-to-flow") { exportFilter = null; setView("flow"); }
+      else if (kind === "capture-tab-notes")  setCaptureTab("notes");
+      else if (kind === "capture-tab-voice")  setCaptureTab("voice");
+      else if (kind === "capture-tab-photos") setCaptureTab("photos");
+      else if (kind === "capture-tab-video")  setCaptureTab("video");
+      else if (kind === "log-handoff-voice"  || kind === "log-handoff-photos" || kind === "log-handoff-video") {
+        const tab = kind.replace("log-handoff-", "");
+        const { persisted } = logHandoff(tab);
+        render();
+        toast(persisted ? ("Handoff logged · " + DRIVE_TARGETS[tab]) : "Handoff logged · storage unavailable");
+      }
+      else if (kind === "voice-record-start") startVoiceRecording();
+      else if (kind === "voice-record-stop")  stopVoiceRecording();
+      else if (kind === "voice-download")     downloadVoiceRecording();
     }
 
     function rollDice() {
@@ -2671,6 +3207,5 @@ Does this idea show up in Idea visual?</div>
     render();
     checkPatchBeacon();
   </script>
-
-
-</body></html>
+</body>
+</html>
