@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>PENUMBRA — VS-01</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #050511;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      touch-action: none;
+      -webkit-user-select: none; user-select: none;
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    }
+    canvas { display: block; }
+
+    #hud { position: fixed; inset: 0; pointer-events: none; }
+
+    #title {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: #3d2e6e;
+    }
+    #zone-label {
+      position: fixed; top: 34px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: #71717a; white-space: nowrap;
+      opacity: 0; transition: opacity 0.5s;
+    }
+    #zone-label.on { opacity: 1; }
+
+    #beacon-hint {
+      position: fixed; bottom: 78px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #fbbf24; white-space: nowrap;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    #beacon-hint.on { opacity: 1; }
+
+    #staff-bar {
+      position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 7px; align-items: center;
+      opacity: 0.5; transition: opacity 0.25s;
+    }
+    #staff-bar.warn { opacity: 1; }
+    .pip {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #fbbf24; box-shadow: 0 0 5px #fbbf2460;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+    .pip.off { background: #27272a; box-shadow: none; }
+
+    #controls-hint {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #27272a; white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <div id="title">PENUMBRA · VS-01</div>
+  <div id="zone-label"></div>
+  <div id="beacon-hint">hold E · restore beacon</div>
+  <div id="staff-bar"></div>
+  <div id="controls-hint">WASD · SHIFT=run · E=restore</div>
+</div>
+<script>
+// ════════════════════════════════════════════════════════════════
+// PENUMBRA — Vertical Slice 01
+// One true route. One beacon chain. One pressure zone. Echo pocket.
+// Core law: light is infrastructure. Darkness is normal.
+// ════════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+
+// ── Viewport ──────────────────────────────────────────────────────────────
+const VW = 416, VH = 672;
+canvas.width = VW; canvas.height = VH;
+
+function resize() {
+  const s = Math.min(window.innerWidth / VW, window.innerHeight / VH);
+  canvas.style.width  = VW * s + 'px';
+  canvas.style.height = VH * s + 'px';
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── Offscreen darkness canvas (destination-out light cutouts) ─────────────
+const darkCvs = document.createElement('canvas');
+darkCvs.width = VW; darkCvs.height = VH;
+const dctx = darkCvs.getContext('2d');
+
+// ── Tile system ───────────────────────────────────────────────────────────
+const TS    = 32;   // tile size px
+const MCOLS = 13;   // 13 × 32 = 416 = VW
+const MROWS = 29;   // 29 × 32 = 928, camera range = 928-672 = 256px
+
+// 0=floor  1=wall  2=beacon(dormant)  3=echo-pocket
+const MAP = [
+  [1,1,1,1,1,1,1,1,1,1,1,1,1], // 0  top wall
+  [1,1,1,3,3,3,3,3,3,3,1,1,1], // 1  echo pocket
+  [1,1,3,3,3,3,3,3,3,3,3,1,1], // 2
+  [1,1,3,3,3,3,3,3,3,3,3,1,1], // 3
+  [1,1,1,3,3,3,3,3,3,3,1,1,1], // 4
+  [1,1,1,1,1,1,0,0,1,1,1,1,1], // 5  narrow exit from echo
+  [1,1,1,1,1,0,0,0,0,1,1,1,1], // 6  beacon 2 approach
+  [1,1,1,1,0,0,0,0,0,0,1,1,1], // 7
+  [1,1,1,1,0,2,0,0,0,0,1,1,1], // 8  BEACON 2
+  [1,1,1,1,0,0,0,0,0,0,1,1,1], // 9
+  [1,1,1,1,1,0,0,0,0,1,1,1,1], // 10 pressure narrow
+  [1,1,1,1,1,0,0,0,0,1,1,1,1], // 11
+  [1,1,1,1,1,0,0,0,0,1,1,1,1], // 12
+  [1,1,1,1,0,0,0,0,0,0,1,1,1], // 13 phage zone entry
+  [1,1,1,0,0,0,0,0,0,0,0,1,1], // 14 phage zone
+  [1,1,1,0,0,0,0,0,0,0,0,1,1], // 15
+  [1,1,1,0,0,0,0,0,0,0,0,1,1], // 16
+  [1,1,1,1,0,0,0,0,0,0,1,1,1], // 17
+  [1,1,1,1,1,0,0,0,0,1,1,1,1], // 18 narrow passage
+  [1,1,1,1,1,0,0,0,0,1,1,1,1], // 19
+  [1,1,1,0,0,0,0,0,0,0,0,1,1], // 20 beacon 1 zone
+  [1,1,1,0,0,0,2,0,0,0,0,1,1], // 21 BEACON 1
+  [1,1,1,0,0,0,0,0,0,0,0,1,1], // 22
+  [1,1,0,0,0,0,0,0,0,0,0,0,1], // 23 widening
+  [1,1,0,0,0,0,0,0,0,0,0,0,1], // 24
+  [1,0,0,0,0,0,0,0,0,0,0,0,0], // 25 start zone (edge of civilization)
+  [1,0,0,0,0,0,0,0,0,0,0,0,0], // 26
+  [1,0,0,0,0,0,0,0,0,0,0,0,0], // 27
+  [1,1,1,1,1,1,1,1,1,1,1,1,1], // 28 bottom wall
+];
+
+function tileAt(c, r) {
+  if (c < 0 || c >= MCOLS || r < 0 || r >= MROWS) return 1;
+  return MAP[r][c];
+}
+function walkable(c, r) { const t = tileAt(c, r); return t === 0 || t === 2 || t === 3; }
+function canMoveTo(wx, wy) {
+  const m = 11;
+  return walkable(Math.floor((wx - m) / TS), Math.floor((wy - m) / TS)) &&
+         walkable(Math.floor((wx + m) / TS), Math.floor((wy - m) / TS)) &&
+         walkable(Math.floor((wx - m) / TS), Math.floor((wy + m) / TS)) &&
+         walkable(Math.floor((wx + m) / TS), Math.floor((wy + m) / TS));
+}
+
+// ── Camera ────────────────────────────────────────────────────────────────
+let camY = MROWS * TS - VH; // start at bottom
+
+// ── Player ────────────────────────────────────────────────────────────────
+const player = {
+  x: 6 * TS + TS / 2,   // col 6
+  y: 26 * TS + TS / 2,  // row 26
+  lumen:   1.0,          // staff light level 0..1
+  lightR:  120,          // current light radius px
+  pulse:   0,            // animation phase
+  running: false,
+  restoring: false,
+  nearBeacon: null,
+  ripples: [],           // presence ripple effects when running
+};
+
+// ── Beacons ───────────────────────────────────────────────────────────────
+const beacons = [];
+for (let r = 0; r < MROWS; r++) {
+  for (let c = 0; c < MCOLS; c++) {
+    if (MAP[r][c] === 2) {
+      beacons.push({
+        c, r,
+        x: c * TS + TS / 2,
+        y: r * TS + TS / 2,
+        active:   false,
+        progress: 0,
+        pulse:    Math.random() * Math.PI * 2,
+      });
+    }
+  }
+}
+
+// ── Phages ────────────────────────────────────────────────────────────────
+const phages = [
+  { x: 6 * TS + TS/2, y: 14 * TS + TS/2, vx: 0, vy: 0, phase: 0.0, alert: 0 },
+  { x: 4 * TS + TS/2, y: 15 * TS + TS/2, vx: 0, vy: 0, phase: 2.1, alert: 0 },
+  { x: 8 * TS + TS/2, y: 16 * TS + TS/2, vx: 0, vy: 0, phase: 4.2, alert: 0 },
+];
+
+// ── Zone labels ───────────────────────────────────────────────────────────
+const ZONES = [
+  { r0: 25, r1: 28, label: '' },
+  { r0: 18, r1: 24, label: 'UNSTABLE PASSAGE' },
+  { r0: 10, r1: 17, label: 'PRESSURE ZONE' },
+  { r0:  5, r1:  9, label: '' },
+  { r0:  0, r1:  4, label: 'ECHO POCKET' },
+];
+let activeZoneLabel = '';
+let zoneLabelTimer  = 0;
+
+// ── Input ─────────────────────────────────────────────────────────────────
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.code] = true; });
+window.addEventListener('keyup',   e => { keys[e.code] = false; });
+
+// Touch — drag for movement, auto-restore near beacons when still
+const touch = { on: false, x0: 0, y0: 0, dx: 0, dy: 0 };
+canvas.addEventListener('touchstart', e => {
+  const rc = canvas.getBoundingClientRect();
+  const s  = VW / rc.width;
+  touch.on = true;
+  touch.x0 = (e.touches[0].clientX - rc.left) * s;
+  touch.y0 = (e.touches[0].clientY - rc.top)  * s;
+  touch.dx = touch.dy = 0;
+  e.preventDefault();
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  if (!touch.on) return;
+  const rc = canvas.getBoundingClientRect();
+  const s  = VW / rc.width;
+  touch.dx = (e.touches[0].clientX - rc.left) * s - touch.x0;
+  touch.dy = (e.touches[0].clientY - rc.top)  * s - touch.y0;
+  e.preventDefault();
+}, { passive: false });
+canvas.addEventListener('touchend', () => {
+  touch.on = false; touch.dx = touch.dy = 0;
+}, { passive: false });
+
+// ── Game loop ─────────────────────────────────────────────────────────────
+let prev = 0, T = 0;
+function loop(now) {
+  const dt = Math.min((now - prev) / 1000, 0.05);
+  prev = now; T += dt;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+
+// ── Update ────────────────────────────────────────────────────────────────
+function update(dt) {
+  // ── Movement input ──
+  let mx = 0, my = 0;
+  if (keys['KeyA'] || keys['ArrowLeft'])  mx -= 1;
+  if (keys['KeyD'] || keys['ArrowRight']) mx += 1;
+  if (keys['KeyW'] || keys['ArrowUp'])    my -= 1;
+  if (keys['KeyS'] || keys['ArrowDown'])  my += 1;
+  if (touch.on) {
+    const td = Math.hypot(touch.dx, touch.dy);
+    if (td > 14) { mx = touch.dx / td; my = touch.dy / td; }
+  }
+  const moving = mx !== 0 || my !== 0;
+  if (moving) { const m = Math.hypot(mx, my); mx /= m; my /= m; }
+
+  player.running = moving && (keys['ShiftLeft'] || keys['ShiftRight']);
+  const speed = player.running ? 4.0 : 2.1;
+
+  // ── Slide collision ──
+  if (moving) {
+    const nx = player.x + mx * speed;
+    const ny = player.y + my * speed;
+    if (canMoveTo(nx, player.y)) player.x = nx;
+    if (canMoveTo(player.x, ny)) player.y = ny;
+  }
+
+  // ── Lumen ──
+  if (player.running) {
+    player.lumen = Math.max(0, player.lumen - dt * 0.09);
+  } else {
+    player.lumen = Math.min(1.0, player.lumen + dt * 0.024);
+  }
+
+  // ── Light radius + breath ──
+  player.pulse += dt * (player.lumen > 0.05 ? 1.6 : 5.0);
+  if (player.lumen > 0.05) {
+    const base = 48 + player.lumen * 84;           // 48..132
+    player.lightR = base + Math.sin(player.pulse) * base * 0.046;
+  } else {
+    // Dead staff: scary flicker
+    player.lightR = 18 + Math.abs(Math.sin(player.pulse)) * 16;
+  }
+
+  // ── Presence ripples (sound/vibration signal when running) ──
+  if (player.running && moving && Math.random() < 0.35) {
+    player.ripples.push({ x: player.x, y: player.y, r: 0, a: 0.3 });
+  }
+  player.ripples = player.ripples
+    .map(rp => ({ ...rp, r: rp.r + 70 * dt, a: rp.a * 0.88 }))
+    .filter(rp => rp.a > 0.02);
+
+  // ── Camera follow ──
+  const targetCY = player.y - VH * 0.58;
+  camY += (targetCY - camY) * 0.07;
+  camY  = Math.max(0, Math.min(MROWS * TS - VH, camY));
+
+  // ── Beacon proximity ──
+  player.nearBeacon = null;
+  for (const b of beacons) {
+    b.pulse += dt * 1.25;
+    if (!b.active && Math.hypot(player.x - b.x, player.y - b.y) < 44) {
+      player.nearBeacon = b;
+    }
+  }
+
+  // ── Restoration: hold E, or stay still near beacon on touch ──
+  player.restoring = false;
+  const autoRestore = touch.on && !moving;
+  if (player.nearBeacon && !player.nearBeacon.active &&
+      (keys['KeyE'] || keys['Space'] || autoRestore)) {
+    player.restoring = true;
+    player.nearBeacon.progress = Math.min(1, player.nearBeacon.progress + dt * 0.42);
+    if (player.nearBeacon.progress >= 1) {
+      player.nearBeacon.active = true;
+      player.lumen = Math.min(1.0, player.lumen + 0.3); // beacon feeds the staff
+    }
+  }
+
+  // ── Phages ──
+  const presenceR = player.lightR * (player.running ? 1.5 : 1.0);
+  for (const ph of phages) {
+    ph.phase += dt * 1.35;
+    const dx   = player.x - ph.x;
+    const dy   = player.y - ph.y;
+    const dist = Math.hypot(dx, dy);
+
+    // Alert rises when inside presence radius
+    if (dist < presenceR) ph.alert = Math.min(1, ph.alert + dt * 0.38);
+    else                  ph.alert = Math.max(0, ph.alert - dt * 0.16);
+
+    if (ph.alert > 0.08 && dist > 22) {
+      // Drift toward player with lag — ecological, not aggressive
+      ph.vx += (dx / dist) * 0.52 * ph.alert * dt * 60;
+      ph.vy += (dy / dist) * 0.52 * ph.alert * dt * 60;
+    } else {
+      // Idle wander
+      ph.vx += (Math.random() - 0.5) * 0.55;
+      ph.vy += (Math.random() - 0.5) * 0.55;
+    }
+    ph.vx *= 0.84; ph.vy *= 0.84;
+
+    const px2 = ph.x + ph.vx, py2 = ph.y + ph.vy;
+    if (walkable(Math.floor(px2 / TS), Math.floor(ph.y  / TS))) ph.x = px2;
+    if (walkable(Math.floor(ph.x / TS), Math.floor(py2 / TS))) ph.y = py2;
+  }
+
+  // ── Zone label ──
+  const pRow = Math.floor(player.y / TS);
+  for (const z of ZONES) {
+    if (pRow >= z.r0 && pRow <= z.r1 && z.label && z.label !== activeZoneLabel) {
+      activeZoneLabel = z.label;
+      zoneLabelTimer  = 2.8;
+    }
+  }
+  if (zoneLabelTimer > 0) zoneLabelTimer -= dt;
+
+  updateHUD();
+}
+
+function updateHUD() {
+  const pips   = 5;
+  const filled = Math.round(player.lumen * pips);
+  const bar    = document.getElementById('staff-bar');
+  bar.innerHTML = Array.from({ length: pips }, (_, i) =>
+    `<div class="pip${i < filled ? '' : ' off'}"></div>`
+  ).join('');
+  bar.className = player.lumen < 0.35 ? 'warn' : '';
+
+  const hint = document.getElementById('beacon-hint');
+  hint.className = (player.nearBeacon && !player.nearBeacon.active) ? 'on' : '';
+
+  const zl = document.getElementById('zone-label');
+  if (zoneLabelTimer > 0 && activeZoneLabel) {
+    zl.textContent = activeZoneLabel;
+    zl.className   = 'on';
+  } else {
+    zl.className = '';
+  }
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function render() {
+  ctx.clearRect(0, 0, VW, VH);
+  ctx.fillStyle = '#050511';
+  ctx.fillRect(0, 0, VW, VH);
+
+  drawWorld();
+  drawRipples();
+  drawBeacons();
+  drawPhages();
+  drawPlayer();
+  drawDarkness();
+  drawCorruptionTint();
+  drawVignette();
+}
+
+// ── World tiles ───────────────────────────────────────────────────────────
+function drawWorld() {
+  const r0 = Math.max(0, Math.floor(camY / TS) - 1);
+  const r1 = Math.min(MROWS - 1, r0 + Math.ceil(VH / TS) + 2);
+
+  for (let r = r0; r <= r1; r++) {
+    for (let c = 0; c < MCOLS; c++) {
+      const t  = MAP[r][c];
+      const sx = c * TS;
+      const sy = r * TS - camY;
+
+      if (t === 1) {
+        // Wall
+        ctx.fillStyle = '#030110';
+        ctx.fillRect(sx, sy, TS, TS);
+        ctx.fillStyle = 'rgba(40,20,70,0.1)';
+        ctx.fillRect(sx, sy, TS, 1);
+        ctx.fillRect(sx, sy, 1, TS);
+      } else if (t === 3) {
+        // Echo pocket — warm dark green, living
+        ctx.fillStyle = '#0a1a14';
+        ctx.fillRect(sx, sy, TS, TS);
+        const gv = Math.sin(T * 0.65 + c * 0.55 + r * 0.4) * 0.022 + 0.038;
+        ctx.fillStyle = `rgba(74,222,128,${gv})`;
+        ctx.fillRect(sx, sy, TS, TS);
+      } else {
+        // Floor
+        ctx.fillStyle = '#0d0920';
+        ctx.fillRect(sx, sy, TS, TS);
+        // subtle grain
+        if ((c * 3 + r * 7) % 11 < 2) {
+          ctx.fillStyle = 'rgba(15,10,40,0.22)';
+          ctx.fillRect(sx + 4, sy + 4, TS - 8, TS - 8);
+        }
+      }
+    }
+  }
+
+  // Start zone civilization warmth — amber glow on the floor
+  const szy = 26.5 * TS - camY;
+  const sg  = ctx.createRadialGradient(VW / 2, szy, 0, VW / 2, szy, 130);
+  sg.addColorStop(0, 'rgba(251,191,36,0.055)');
+  sg.addColorStop(1, 'rgba(251,191,36,0)');
+  ctx.fillStyle = sg;
+  ctx.fillRect(0, szy - 135, VW, 270);
+}
+
+// ── Presence ripples ──────────────────────────────────────────────────────
+function drawRipples() {
+  for (const rp of player.ripples) {
+    const sy = rp.y - camY;
+    ctx.save();
+    ctx.strokeStyle = `rgba(168,85,247,${rp.a * 0.38})`;
+    ctx.lineWidth   = 0.8;
+    ctx.beginPath();
+    ctx.arc(rp.x, sy, rp.r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// ── Beacons ───────────────────────────────────────────────────────────────
+function drawBeacons() {
+  for (const b of beacons) {
+    const sx = b.x;
+    const sy = b.y - camY;
+    if (sy < -90 || sy > VH + 90) continue;
+
+    if (b.active) {
+      const p  = Math.sin(b.pulse) * 0.12 + 0.88;
+      const g  = ctx.createRadialGradient(sx, sy, 0, sx, sy, 66 * p);
+      g.addColorStop(0, `rgba(251,191,36,${0.22 * p})`);
+      g.addColorStop(0.5, `rgba(251,191,36,${0.07 * p})`);
+      g.addColorStop(1, 'rgba(251,191,36,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(sx - 70, sy - 70, 140, 140);
+      drawTree(sx, sy, true, p);
+    } else {
+      // Dormant — very dim violet pulse
+      const dp = Math.sin(b.pulse * 0.32) * 0.012 + 0.038;
+      const g  = ctx.createRadialGradient(sx, sy, 0, sx, sy, 28);
+      g.addColorStop(0, `rgba(109,33,168,${dp * 4})`);
+      g.addColorStop(1, 'rgba(109,33,168,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(sx - 32, sy - 32, 64, 64);
+      drawTree(sx, sy, false, 1);
+
+      // Restore progress arc
+      if (b.progress > 0 && b.progress < 1) {
+        ctx.save();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth   = 2;
+        ctx.globalAlpha = 0.82;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 22, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * b.progress);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+}
+
+function drawTree(sx, sy, active, pulse) {
+  ctx.save();
+  ctx.translate(sx, sy);
+  const a = active ? 0.82 * pulse : 0.4;
+  ctx.strokeStyle = active ? `rgba(251,191,36,${a})` : `rgba(74,63,112,${a})`;
+  ctx.lineWidth   = active ? 1.9 : 1.2;
+  ctx.lineCap     = 'round';
+  ctx.beginPath();
+  // trunk
+  ctx.moveTo(0, 13); ctx.lineTo(0, -3);
+  // main branches
+  ctx.moveTo(0, -1); ctx.lineTo(-10, -14);
+  ctx.moveTo(0, -1); ctx.lineTo(10, -14);
+  // sub branches
+  ctx.moveTo(0, 4);  ctx.lineTo(-6, -7);
+  ctx.moveTo(0, 4);  ctx.lineTo(6, -7);
+  ctx.stroke();
+
+  if (active) {
+    const cg = ctx.createRadialGradient(0, -14, 0, 0, -14, 16 * pulse);
+    cg.addColorStop(0, `rgba(251,191,36,${0.52 * pulse})`);
+    cg.addColorStop(1, 'rgba(251,191,36,0)');
+    ctx.globalAlpha = 1;
+    ctx.fillStyle   = cg;
+    ctx.fillRect(-20, -32, 40, 26);
+  }
+  ctx.restore();
+}
+
+// ── Phages ────────────────────────────────────────────────────────────────
+function drawPhages() {
+  for (const ph of phages) {
+    const sx = ph.x;
+    const sy = ph.y - camY;
+    if (sy < -55 || sy > VH + 55) continue;
+
+    const a  = 0.25 + ph.alert * 0.58;
+    const sc = 0.8 + Math.sin(ph.phase) * 0.2;
+
+    // Soft glow
+    const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, 22 * sc);
+    g.addColorStop(0, `rgba(168,85,247,${a * 0.52})`);
+    g.addColorStop(1, 'rgba(168,85,247,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(sx - 26, sy - 26, 52, 52);
+
+    // Geometric body — slowly rotating diamond
+    ctx.save();
+    ctx.translate(sx, sy);
+    ctx.rotate(T * 0.42 + ph.phase * 0.25);
+    ctx.fillStyle = `rgba(168,85,247,${a})`;
+    const s = 5.5 * sc;
+    ctx.beginPath();
+    ctx.moveTo(0, -s); ctx.lineTo(s * 0.6, 0);
+    ctx.lineTo(0, s);  ctx.lineTo(-s * 0.6, 0);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+}
+
+// ── Player ────────────────────────────────────────────────────────────────
+function drawPlayer() {
+  const sx = player.x;
+  const sy = player.y - camY;
+
+  // Warm floor bloom under player
+  const lr = player.lightR;
+  const fg = ctx.createRadialGradient(sx, sy, 0, sx, sy, lr * 0.62);
+  fg.addColorStop(0, `rgba(251,191,36,${0.09 * player.lumen})`);
+  fg.addColorStop(1, 'rgba(251,191,36,0)');
+  ctx.fillStyle = fg;
+  ctx.fillRect(sx - lr, sy - lr, lr * 2, lr * 2);
+
+  ctx.save();
+  ctx.translate(sx, sy);
+
+  // Cloak silhouette
+  ctx.fillStyle = '#9d8fd0';
+  ctx.beginPath();
+  ctx.ellipse(0, 3, 7, 11, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Head
+  ctx.fillStyle = '#fef3c7';
+  ctx.beginPath(); ctx.arc(0, -9, 4.5, 0, Math.PI * 2); ctx.fill();
+
+  // Staff shaft
+  ctx.strokeStyle = 'rgba(180,140,55,0.72)';
+  ctx.lineWidth   = 1.5;
+  ctx.lineCap     = 'round';
+  ctx.beginPath(); ctx.moveTo(7, 9); ctx.lineTo(11, -8); ctx.stroke();
+
+  // Staff orb
+  if (player.lumen > 0.04) {
+    const oa = Math.min(1, player.lumen * 1.15);
+    const og = ctx.createRadialGradient(11, -8, 0, 11, -8, 10);
+    og.addColorStop(0, `rgba(251,191,36,${oa})`);
+    og.addColorStop(1, 'rgba(251,191,36,0)');
+    ctx.fillStyle = og; ctx.fillRect(1, -18, 20, 20);
+    ctx.fillStyle = `rgba(255,248,185,${oa})`;
+    ctx.beginPath(); ctx.arc(11, -8, 2.4, 0, Math.PI * 2); ctx.fill();
+  } else {
+    // Dead — dim flicker, emotionally meaningful
+    const f = Math.abs(Math.sin(T * 14)) * 0.28;
+    ctx.fillStyle = `rgba(160,90,30,${f})`;
+    ctx.beginPath(); ctx.arc(11, -8, 1.8, 0, Math.PI * 2); ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// ── Darkness layer (destination-out = light cuts through darkness) ─────────
+function drawDarkness() {
+  dctx.clearRect(0, 0, VW, VH);
+
+  // Base darkness — heavy but not absolute (world must still be barely readable)
+  dctx.fillStyle = 'rgba(3,1,16,0.96)';
+  dctx.fillRect(0, 0, VW, VH);
+
+  dctx.globalCompositeOperation = 'destination-out';
+
+  // Player light — soft edge, breathes with lumen
+  const px = player.x, py = player.y - camY;
+  const lr = player.lightR;
+  const plg = dctx.createRadialGradient(px, py, 0, px, py, lr);
+  const lum = Math.min(1, player.lumen + 0.04);
+  plg.addColorStop(0,    `rgba(0,0,0,${lum * 0.97})`);
+  plg.addColorStop(0.38, `rgba(0,0,0,${lum * 0.9})`);
+  plg.addColorStop(0.72, `rgba(0,0,0,${lum * 0.38})`);
+  plg.addColorStop(1,    'rgba(0,0,0,0)');
+  dctx.fillStyle = plg;
+  dctx.fillRect(px - lr - 5, py - lr - 5, (lr + 5) * 2, (lr + 5) * 2);
+
+  // Active beacon lights — each beacon pushes back darkness
+  for (const b of beacons) {
+    if (!b.active) continue;
+    const bx = b.x, by = b.y - camY;
+    const br = 70 + Math.sin(b.pulse) * 8;
+    const blg = dctx.createRadialGradient(bx, by, 0, bx, by, br);
+    blg.addColorStop(0,   'rgba(0,0,0,0.88)');
+    blg.addColorStop(0.5, 'rgba(0,0,0,0.48)');
+    blg.addColorStop(1,   'rgba(0,0,0,0)');
+    dctx.fillStyle = blg;
+    dctx.fillRect(bx - br - 5, by - br - 5, (br + 5) * 2, (br + 5) * 2);
+  }
+
+  // Echo pocket has ambient bioluminescence — always slightly visible
+  const echoY = 2.5 * TS - camY;
+  const echoX = 6.5 * TS;
+  const echoG = dctx.createRadialGradient(echoX, echoY, 0, echoX, echoY, 110);
+  echoG.addColorStop(0,   'rgba(0,0,0,0.52)');
+  echoG.addColorStop(0.55, 'rgba(0,0,0,0.22)');
+  echoG.addColorStop(1,    'rgba(0,0,0,0)');
+  dctx.fillStyle = echoG;
+  dctx.fillRect(echoX - 115, echoY - 115, 230, 230);
+
+  dctx.globalCompositeOperation = 'source-over';
+  ctx.drawImage(darkCvs, 0, 0);
+}
+
+// ── Pressure zone corruption tint ─────────────────────────────────────────
+// Applied on top — corruption tints the air even through light
+function drawCorruptionTint() {
+  const pz0 = 10 * TS - camY;
+  const pz1 = 16 * TS - camY;
+  if (pz0 >= VH || pz1 <= 0) return;
+  const cg = ctx.createLinearGradient(0, pz0 - 30, 0, pz1 + 30);
+  cg.addColorStop(0,   'rgba(80,18,95,0)');
+  cg.addColorStop(0.28, 'rgba(80,18,95,0.1)');
+  cg.addColorStop(0.72, 'rgba(80,18,95,0.1)');
+  cg.addColorStop(1,   'rgba(80,18,95,0)');
+  ctx.fillStyle = cg;
+  ctx.fillRect(0, Math.max(0, pz0 - 30), VW, Math.min(VH, pz1 + 30) - Math.max(0, pz0 - 30));
+}
+
+// ── Edge vignette ─────────────────────────────────────────────────────────
+function drawVignette() {
+  const vg = ctx.createRadialGradient(VW/2, VH/2, VH * 0.24, VW/2, VH/2, VH * 0.8);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(1, 'rgba(3,1,16,0.62)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, VW, VH);
+}
+
+// ── Start ─────────────────────────────────────────────────────────────────
+requestAnimationFrame(ts => { prev = ts; requestAnimationFrame(loop); });
+</script>
+</body>
+</html>
