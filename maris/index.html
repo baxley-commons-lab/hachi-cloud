@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maris — Semantic Navigation</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: #080c10;
+  color: #8fa8b8;
+  font-family: ui-monospace, 'Cascadia Code', 'Consolas', monospace;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ── Header ── */
+#hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 8px;
+  border-bottom: 1px solid rgba(80,110,130,0.18);
+  flex-shrink: 0;
+}
+#hdr-title { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: #3a5060; }
+#weather-lbl {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: #4a7080; transition: color 1.8s ease;
+}
+
+/* ── Chart ── */
+#chart-wrap { flex: 1; position: relative; overflow: hidden; min-height: 0; }
+#chart { position: absolute; top: 0; left: 0; display: block; }
+
+/* ── Interaction ── */
+#interaction {
+  flex-shrink: 0;
+  padding: 14px 0 10px;
+  border-top: 1px solid rgba(80,110,130,0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#objective-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #304050; }
+#objective-text  { font-size: 13px; color: #7090a0; line-height: 1.65; min-height: 40px; }
+
+#choices {
+  display: flex;
+  gap: 10px;
+}
+
+.c-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(70,100,120,0.28);
+  border-radius: 3px;
+  color: #608090;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.55;
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.c-btn:hover:not(:disabled) {
+  border-color: rgba(110,160,185,0.5);
+  color: #a0c0d0;
+  background: rgba(50,90,115,0.1);
+}
+.c-btn:disabled { opacity: .35; cursor: default; }
+
+#response-text {
+  font-size: 11px; line-height: 1.6; color: #405060;
+  font-style: italic; min-height: 18px;
+  opacity: 0; transition: opacity .35s ease; letter-spacing: .2px;
+}
+#response-text.show { opacity: 1; }
+
+#pip-row { display: flex; gap: 5px; align-items: center; }
+.pip {
+  width: 5px; height: 5px; border-radius: 50%;
+  border: 1px solid rgba(70,100,120,0.35);
+  transition: background .5s, border-color .5s;
+}
+.pip.done    { background: rgba(52,211,153,.45); border-color: rgba(52,211,153,.5); }
+.pip.current { background: rgba(52,211,153,.18); border-color: rgba(52,211,153,.4); }
+
+/* ── End screen ── */
+#end-panel {
+  display: none; flex-direction: column; gap: 8px; padding: 4px 0;
+}
+#end-panel.show { display: flex; }
+#end-title { font-size: 12px; letter-spacing: 1px; color: rgba(52,211,153,.75); }
+#end-body  { font-size: 12px; line-height: 1.7; color: #607080; }
+#restart-btn {
+  background: transparent; border: 1px solid rgba(52,211,153,.28);
+  color: rgba(52,211,153,.65); font-family: inherit; font-size: 10px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 7px 16px; cursor: pointer; border-radius: 2px; width: fit-content;
+  transition: border-color .15s, color .15s;
+}
+#restart-btn:hover { border-color: rgba(52,211,153,.55); color: rgba(52,211,153,.9); }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <span id="hdr-title">Maris — Semantic Navigation</span>
+    <span id="weather-lbl">Clearwater</span>
+  </div>
+
+  <div id="chart-wrap"><canvas id="chart"></canvas></div>
+
+  <div id="interaction">
+    <div id="objective-label">Objective</div>
+    <div id="objective-text"></div>
+    <div id="choices">
+      <button class="c-btn" id="c0"></button>
+      <button class="c-btn" id="c1"></button>
+      <button class="c-btn" id="c2"></button>
+    </div>
+    <div id="response-text"></div>
+    <div id="pip-row"></div>
+    <div id="end-panel">
+      <div id="end-title"></div>
+      <div id="end-body"></div>
+      <button id="restart-btn">Navigate Again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Virtual canvas size ────────────────────────────────────────────────────
+const VW = 920, VH = 390;
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+// ── Route waypoints ────────────────────────────────────────────────────────
+const WP = [
+  { x: 115, y: 280, label: 'W·1' },
+  { x: 255, y: 190, label: 'W·2' },
+  { x: 420, y: 148, label: 'W·3' },
+  { x: 590, y: 178, label: 'W·4' },
+  { x: 730, y: 295, label: 'Deep Current' },
+];
+
+// ── Situations ─────────────────────────────────────────────────────────────
+// Each choice: { text, delta }
+// delta > +14  → structured  (coherence rises)
+// delta -6..+6 → partial     (small change)
+// delta < -14  → vague       (coherence falls)
+const SITS = [
+  {
+    obj: "The route ahead is unclear. Stabilize it.",
+    guide: {
+      hi:  "The chart is readable. Choose how you want to proceed.",
+      mid: "The chart is... mostly readable. Choose your approach.",
+      lo:  "Chart... [drift] ...choose— [break]",
+    },
+    choices: [
+      { text: "Fix it.",                                                                                                               delta: -22 },
+      { text: "Help me clarify the route ahead.",                                                                                     delta:  -4 },
+      { text: "Use the last stable waypoint as anchor. Identify the missing context in the next segment, then redraw the clearest route forward.", delta: +22 },
+    ],
+    outcomes: [
+      "The route softens. Direction becomes uncertain.",
+      "The route holds, mostly. Something remains unclear.",
+      "The route firms. The anchor holds and the segment becomes readable.",
+    ],
+  },
+  {
+    obj: "Two paths diverge. Determine which follows the main current.",
+    guide: {
+      hi:  "Two branches ahead. I need your guidance on which to take.",
+      mid: "Two branches... ahead. Which direction... do you want?",
+      lo:  "Branch... [static] ...which— [loss]",
+    },
+    choices: [
+      { text: "Compare signal strength on both branches. Take the one with steadier, stronger output.",                               delta: +22 },
+      { text: "Check both briefly, then pick one.",                                                                                   delta:  -4 },
+      { text: "Take the left path.",                                                                                                  delta: -22 },
+    ],
+    outcomes: [
+      "The main current holds. The route ahead becomes readable.",
+      "You move forward. The path remains somewhat unclear.",
+      "The wrong current carries you sideways. Fog builds at the chart edge.",
+    ],
+  },
+  {
+    obj: "Three data fragments arrived. They partially contradict each other.",
+    guide: {
+      hi:  "The fragments are here. They don't fully agree. What do you need from them?",
+      mid: "Fragments... arrived. They... don't agree. What do you do?",
+      lo:  "Fragments... [contradict] ...what— [dropout]",
+    },
+    choices: [
+      { text: "Use the most recent one.",                                                                                             delta: -22 },
+      { text: "Try to reconcile them somehow.",                                                                                      delta:  -3 },
+      { text: "Identify which two fragments agree. Use those as your baseline and treat the third as noise until confirmed.",         delta: +22 },
+    ],
+    outcomes: [
+      "The contradiction propagates. The chart line drifts further.",
+      "Partial resolution. The underlying conflict persists.",
+      "The contradictions collapse. A reliable signal emerges from the agreement.",
+    ],
+  },
+  {
+    obj: "The annotations on the forward segment are degraded. Restore reading clarity.",
+    guide: {
+      hi:  "The forward annotations are partially legible. How do you want to restore them?",
+      mid: "Annotations ahead... partially readable. What do you do?",
+      lo:  "Annotations... [illegible] ...restore— [break]",
+    },
+    choices: [
+      { text: "Push through — use what's legible.",                                                                                  delta: -20 },
+      { text: "Re-read the annotations slowly and try again.",                                                                       delta:  +5 },
+      { text: "Return to the last clear waypoint. Use it as reference to reconstruct the degraded segment from known information.",   delta: +24 },
+    ],
+    outcomes: [
+      "The route degrades further. Motion becomes unreliable.",
+      "The route partially recovers. Some annotations return.",
+      "Clarity returns. The last waypoint anchors the rebuild and the segment restores.",
+    ],
+  },
+  {
+    obj: "A dense block of navigation data is in the current. It is too large to use directly.",
+    guide: {
+      hi:  "The data is here. I cannot parse all of it at once. What do you need from it?",
+      mid: "Data... too much to parse. What do... you need?",
+      lo:  "Data block... [overload] ...what do— [signal lost]",
+    },
+    choices: [
+      { text: "Give me the key points.",                                                                                              delta: -18 },
+      { text: "Summarize it.",                                                                                                       delta:   0 },
+      { text: "Extract the core signal only. Group by type. Order by relevance to the current route objective.",                     delta: +22 },
+    ],
+    outcomes: [
+      "The key points remain vague. The data diffuses.",
+      "A summary emerges. Some signal is lost in compression.",
+      "The data compresses cleanly. The essential pattern is preserved.",
+    ],
+  },
+  {
+    obj: "The route enters fog. Maintain context continuity through the transition.",
+    guide: {
+      hi:  "Fogwater ahead. Context continuity becomes critical. What is your approach?",
+      mid: "Fog... ahead. Need to stay... coherent. Approach?",
+      lo:  "Fog transition... [breaking] ...stay— [loss]",
+    },
+    choices: [
+      { text: "Stay focused and move through.",                                                                                       delta: -18 },
+      { text: "Go carefully and check for signal breaks as you move.",                                                               delta:  +2 },
+      { text: "Before entering: anchor the current context, set a return point, and flag any signal breaks immediately for repair.", delta: +22 },
+    ],
+    outcomes: [
+      "Focus wavers. The transition loses coherence.",
+      "The transition holds. Context remains mostly intact.",
+      "The transition is stable. Context continuity is maintained through the shift.",
+    ],
+  },
+  {
+    obj: "A companion is providing partial information. Fill the gap.",
+    guide: {
+      hi:  "The companion's response is incomplete. There is a gap in the context. How do you address it?",
+      mid: "Companion response... incomplete. Gap in context. What do you... do?",
+      lo:  "Companion... [gap] ...context... [fragmented]",
+    },
+    choices: [
+      { text: "Ask for more.",                                                                                                        delta: -20 },
+      { text: "Ask the companion to clarify the missing part.",                                                                      delta:  -3 },
+      { text: "Identify the specific gap. Provide the missing context yourself and ask the companion to confirm or correct it.",      delta: +22 },
+    ],
+    outcomes: [
+      "The gap remains open. The companion continues with incomplete information.",
+      "Clarification helps partially. The core gap is still vague.",
+      "The companion recalibrates. The response fills correctly and the route updates.",
+    ],
+  },
+  {
+    obj: "Deep current entry. Final navigation decision. The chart is reading.",
+    guide: {
+      hi:  "The deep current entry is here. Final decision. The chart is legible. What is your instruction?",
+      mid: "Entry... is here. Final decision. Chart shows... something. What do you need?",
+      lo:  "Entry... [final] ...instruction... what is— [heavy drift]",
+    },
+    choices: [
+      { text: "Go in.",                                                                                                               delta: -18 },
+      { text: "Enter carefully and record what you observe.",                                                                        delta:  +5 },
+      { text: "Enter the deep current. Hold signal continuity. Anchor the new segment. Document the approach pattern for reuse.",    delta: +25 },
+    ],
+    outcomes: [
+      "Entry is messy. The pattern dissolves in the current.",
+      "Entry is manageable. The pattern partially persists.",
+      "Entry is clean. The pattern holds. The route is established through the deep current.",
+    ],
+  },
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+let coh       = 82;   // displayed coherence (lerps toward target)
+let tgtCoh    = 82;   // target coherence
+let sitIdx    = 0;
+let posT      = 0;    // 0–1 along route
+let tgtPosT   = 0;
+let anchors   = [];   // waypoint indices: anchored (discovered instrument)
+let streak    = 0;    // consecutive structured choices
+let phase     = 'play'; // 'play' | 'transition' | 'end'
+let fc        = 0;    // frame count
+let lastTs    = 0;
+
+// ── Canvas ─────────────────────────────────────────────────────────────────
+const canvas = document.getElementById('chart');
+const ctx    = canvas.getContext('2d');
+
+function resize() {
+  const wrap = document.getElementById('chart-wrap');
+  const ww = wrap.clientWidth, wh = wrap.clientHeight;
+  const sc = Math.min(ww / VW, wh / VH);
+  canvas.width  = Math.round(VW * sc * DPR);
+  canvas.height = Math.round(VH * sc * DPR);
+  canvas.style.width  = Math.round(VW * sc) + 'px';
+  canvas.style.height = Math.round(VH * sc) + 'px';
+  ctx.setTransform(sc * DPR, 0, 0, sc * DPR, 0, 0);
+}
+window.addEventListener('resize', resize);
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+function wobble(c)     { return (1 - c / 100) * 10; }
+function fogAlpha(c)   { return clamp((72 - c) / 72, 0, 1) * 0.78; }
+function annotAlpha(c) { return clamp(c / 100 * 0.92, 0.06, 0.92); }
+function gridAlpha(c)  { return clamp(c / 100 * 0.22, 0.06, 0.22); }
+function cmpDrift(c)   { return (1 - c / 100) * 32; }
+
+// Deterministic text fragmentation using sin — consistent glitch per char+coherence
+const GLYPH = ['·', '—', '∿', '≋', '∾', '∼', '⌇', '░', '≀'];
+function frag(text, c) {
+  if (c > 66) return text;
+  const rate = Math.pow(1 - c / 66, 1.7) * 0.58;
+  return [...text].map((ch, i) => {
+    if (ch === ' ') return ' ';
+    const v = Math.sin(i * 7.43 + c * 0.11) * 0.5 + 0.5;
+    return v < rate ? GLYPH[i % GLYPH.length] : ch;
+  }).join('');
+}
+
+// ── Draw: grid ─────────────────────────────────────────────────────────────
+function drawGrid(ts) {
+  const w = wobble(coh) * 0.28, a = gridAlpha(coh);
+  const G = 52;
+  ctx.strokeStyle = `rgba(75,110,135,${a})`;
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x < VW; x += G) {
+    ctx.beginPath();
+    for (let y = 0; y <= VH; y += 7) {
+      const d = Math.sin(ts * 0.00075 + y * 0.042 + x * 0.014) * w;
+      y === 0 ? ctx.moveTo(x + d, y) : ctx.lineTo(x + d, y);
+    }
+    ctx.stroke();
+  }
+  for (let y = 0; y < VH; y += G) {
+    ctx.beginPath();
+    for (let x = 0; x <= VW; x += 7) {
+      const d = Math.sin(ts * 0.00085 + x * 0.03 + y * 0.019) * w;
+      x === 0 ? ctx.moveTo(x, y + d) : ctx.lineTo(x, y + d);
+    }
+    ctx.stroke();
+  }
+}
+
+// ── Draw: compass ──────────────────────────────────────────────────────────
+function drawCompass(ts) {
+  const cx = 62, cy = 62, r = 26;
+  const drift = cmpDrift(coh);
+  const angle = Math.sin(ts * 0.00038) * drift * 0.5 * Math.PI / 180;
+  const a = annotAlpha(coh) * 0.75;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  ctx.strokeStyle = `rgba(90,130,155,${a})`;
+  ctx.fillStyle   = `rgba(90,130,155,${a})`;
+  ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
+  for (let i = 0; i < 8; i++) {
+    const ang = (i / 8) * Math.PI * 2;
+    const inner = i % 2 === 0 ? r - 7 : r - 3;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(ang) * inner, Math.sin(ang) * inner);
+    ctx.lineTo(Math.cos(ang) * r,     Math.sin(ang) * r);
+    ctx.stroke();
+  }
+  // North pointer
+  ctx.beginPath();
+  ctx.moveTo(0, -r + 5); ctx.lineTo(-3.5, 4); ctx.lineTo(3.5, 4);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  // N label
+  ctx.fillStyle = `rgba(90,130,155,${a * 0.8})`;
+  ctx.font = '8px ui-monospace,monospace';
+  ctx.textAlign = 'center';
+  const na = -Math.PI / 2 + angle;
+  ctx.fillText('N', cx + Math.cos(na) * (r + 10), cy + Math.sin(na) * (r + 10) + 3);
+}
+
+// ── Draw: route ────────────────────────────────────────────────────────────
+function drawWobblyLine(x1, y1, x2, y2, w, ts, idx) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  const S = 16;
+  for (let i = 1; i <= S; i++) {
+    const p = i / S;
+    const x = lerp(x1, x2, p), y = lerp(y1, y2, p);
+    const d1 = Math.sin(ts * 0.00082 + p * 9.1 + idx * 2.6) * w;
+    const d2 = Math.cos(ts * 0.00061 + p * 6.3 + idx * 1.8) * w * 0.55;
+    ctx.lineTo(x + d1, y + d2);
+  }
+  ctx.stroke();
+}
+
+function drawRoute(ts) {
+  const w = wobble(coh);
+  const ba = Math.max(0.1, coh / 100 * 0.78);
+  for (let i = 0; i < WP.length - 1; i++) {
+    const p1 = WP[i], p2 = WP[i + 1];
+    const anch = anchors.includes(i);
+    const ew = anch ? w * 0.12 : w;
+    ctx.strokeStyle = anch
+      ? `rgba(175,205,220,${ba + 0.14})`
+      : `rgba(120,158,178,${ba})`;
+    ctx.lineWidth = anch ? 1.3 : 0.9;
+    drawWobblyLine(p1.x, p1.y, p2.x, p2.y, ew, ts, i);
+  }
+}
+
+// ── Draw: waypoints ────────────────────────────────────────────────────────
+function drawWaypoints(ts) {
+  const a = annotAlpha(coh);
+  WP.forEach((wp, i) => {
+    const dest  = i === WP.length - 1;
+    const anch  = anchors.includes(i - 1) || anchors.includes(i);
+    const r     = dest ? 7 : 5;
+    const w     = wobble(coh) * 0.38;
+    const dx    = Math.sin(ts * 0.00088 + i * 3.05) * w;
+    const dy    = Math.cos(ts * 0.00072 + i * 2.28) * w;
+    const wx    = wp.x + dx, wy = wp.y + dy;
+
+    ctx.lineWidth = 0.9;
+    if (dest) {
+      // Diamond
+      ctx.beginPath();
+      ctx.moveTo(wx, wy - r); ctx.lineTo(wx + r, wy);
+      ctx.lineTo(wx, wy + r); ctx.lineTo(wx - r, wy);
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(52,211,153,${Math.min(a * 1.6, 0.95)})`;
+      ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.arc(wx, wy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = anch
+        ? `rgba(180,210,225,${a * 1.2})`
+        : `rgba(100,148,170,${a})`;
+      ctx.stroke();
+    }
+    // Anchor rings (discovered instrument)
+    if (anchors.includes(i)) {
+      ctx.strokeStyle = `rgba(175,210,230,${a * 0.85})`;
+      ctx.lineWidth = 0.7;
+      ctx.beginPath(); ctx.arc(wx, wy, r + 6, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(wx - r - 7, wy); ctx.lineTo(wx + r + 7, wy);
+      ctx.moveTo(wx, wy - r - 7); ctx.lineTo(wx, wy + r + 7);
+      ctx.stroke();
+    }
+    // Label
+    ctx.font = dest ? '9.5px ui-monospace,monospace' : '8.5px ui-monospace,monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = dest
+      ? `rgba(52,211,153,${Math.min(a * 1.5, 0.9)})`
+      : `rgba(95,142,165,${a * 0.88})`;
+    ctx.fillText(wp.label, wx, wy - r - 5);
+  });
+}
+
+// ── Draw: position marker ──────────────────────────────────────────────────
+function drawPosition(ts) {
+  const seg  = clamp(Math.floor(posT * (WP.length - 1)), 0, WP.length - 2);
+  const st   = posT * (WP.length - 1) - seg;
+  const p1   = WP[seg], p2 = WP[seg + 1] || WP[seg];
+  const px   = lerp(p1.x, p2.x, st);
+  const py   = lerp(p1.y, p2.y, st);
+  const pulse = Math.sin(ts * 0.0042) * 0.5 + 0.5;
+  // Outer glow ring
+  ctx.beginPath(); ctx.arc(px, py, 6 + pulse * 3, 0, Math.PI * 2);
+  ctx.strokeStyle = `rgba(52,211,153,${0.25 + pulse * 0.1})`;
+  ctx.lineWidth = 0.7; ctx.stroke();
+  // Core dot
+  ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(52,211,153,0.88)'; ctx.fill();
+}
+
+// ── Draw: fog ──────────────────────────────────────────────────────────────
+function drawFog(ts) {
+  const fa = fogAlpha(coh);
+  if (fa < 0.02) return;
+  for (let l = 0; l < 3; l++) {
+    const lx = Math.sin(ts * 0.00028 + l * 2.08) * 65;
+    const ly = Math.cos(ts * 0.00035 + l * 1.73) * 32;
+    const gx = VW * 0.62 + lx, gy = VH * 0.42 + ly;
+    const grad = ctx.createRadialGradient(gx, gy, 0, gx, gy, VW * 0.68);
+    grad.addColorStop(0,   `rgba(6,11,19,${fa * 0.55})`);
+    grad.addColorStop(0.45,`rgba(6,11,19,${fa * 0.38})`);
+    grad.addColorStop(1,   `rgba(6,11,19,0)`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, VW, VH);
+  }
+}
+
+// ── Draw: chart labels ─────────────────────────────────────────────────────
+function drawLabels() {
+  const a = annotAlpha(coh);
+  ctx.font = '9px ui-monospace,monospace'; ctx.textAlign = 'left';
+  ctx.fillStyle = `rgba(70,105,125,${a * 0.55})`;
+  ctx.fillText('MARIS NAVIGATIONAL CHART  ·  SEMANTIC FIELD', VW * 0.5 - 155, 20);
+  // Scale bar
+  const sbx = VW - 125, sby = VH - 18;
+  ctx.strokeStyle = `rgba(70,105,125,${a * 0.38})`; ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(sbx, sby); ctx.lineTo(sbx + 80, sby);
+  ctx.moveTo(sbx, sby - 4); ctx.lineTo(sbx, sby + 4);
+  ctx.moveTo(sbx + 80, sby - 4); ctx.lineTo(sbx + 80, sby + 4);
+  ctx.stroke();
+  ctx.fillStyle = `rgba(70,105,125,${a * 0.45})`;
+  ctx.fillText('semantic range', sbx + 8, sby - 5);
+  // Region label
+  const region = coh >= 68 ? 'clearwater' : coh >= 38 ? 'fogwater' : 'deep fog';
+  ctx.textAlign = 'right';
+  ctx.fillText(region, VW - 16, 20);
+  ctx.textAlign = 'left';
+}
+
+// ── Render loop ────────────────────────────────────────────────────────────
+function render(ts) {
+  if (!lastTs) lastTs = ts;
+  const dt = Math.min(ts - lastTs, 50);
+  lastTs = ts; fc++;
+  const lf = 1 - Math.pow(0.003, dt / 1000);
+  coh  = lerp(coh, tgtCoh, lf);
+  posT = lerp(posT, tgtPosT, lf * 0.45);
+
+  ctx.fillStyle = '#080c10';
+  ctx.fillRect(0, 0, VW, VH);
+  drawGrid(ts);
+  drawCompass(ts);
+  drawRoute(ts);
+  drawWaypoints(ts);
+  drawPosition(ts);
+  drawFog(ts);
+  drawLabels();
+
+  // Live-update guide + weather
+  if (fc % 14 === 0) {
+    if (phase === 'play' && sitIdx < SITS.length) refreshGuide();
+    updateWeather();
+  }
+  requestAnimationFrame(render);
+}
+
+// ── Guide + weather ────────────────────────────────────────────────────────
+function getGuideLine(sit) {
+  if (coh >= 66) return sit.guide.hi;
+  if (coh >= 36) return sit.guide.mid;
+  return sit.guide.lo;
+}
+function refreshGuide() {
+  const el = document.getElementById('objective-text');
+  el.textContent = frag(getGuideLine(SITS[sitIdx]), coh);
+}
+function updateWeather() {
+  const el = document.getElementById('weather-lbl');
+  if (coh >= 68) { el.textContent = 'Clearwater'; el.style.color = '#4a8090'; }
+  else if (coh >= 38) { el.textContent = 'Fogwater'; el.style.color = '#4a5e68'; }
+  else { el.textContent = 'Deep Fog'; el.style.color = '#3a4850'; }
+}
+
+// ── Present situation ──────────────────────────────────────────────────────
+function present(idx) {
+  if (idx >= SITS.length) { endGame(); return; }
+  const sit = SITS[idx];
+  phase = 'play';
+
+  // Objective (un-fragmented — this is the stated objective, not the guide)
+  document.getElementById('objective-text').textContent = sit.obj;
+
+  // Choices
+  sit.choices.forEach((ch, i) => {
+    const btn = document.getElementById(`c${i}`);
+    btn.textContent = ch.text;
+    btn.disabled    = false;
+    btn.onclick     = () => choose(idx, i, ch.delta);
+  });
+  document.getElementById('choices').style.display = 'flex';
+
+  // Response
+  const rsp = document.getElementById('response-text');
+  rsp.classList.remove('show'); rsp.textContent = '';
+
+  // End panel
+  document.getElementById('end-panel').classList.remove('show');
+
+  // Pips
+  const row = document.getElementById('pip-row');
+  row.innerHTML = '';
+  SITS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'pip' + (i < idx ? ' done' : i === idx ? ' current' : '');
+    row.appendChild(d);
+  });
+}
+
+// ── Handle choice ──────────────────────────────────────────────────────────
+function choose(idx, choiceIdx, delta) {
+  phase = 'transition';
+  ['c0','c1','c2'].forEach(id => document.getElementById(id).disabled = true);
+
+  const isStr  = delta > 14;
+  const isVague = delta < -14;
+  if (isStr)  { streak++; if (streak >= 3 && !anchors.includes(idx) && idx < WP.length) anchors.push(idx); }
+  else        { streak = 0; }
+
+  tgtCoh  = clamp(tgtCoh + delta, 5, 100);
+  tgtPosT = (idx + 1) / (SITS.length - 1);
+
+  const rsp = document.getElementById('response-text');
+  rsp.textContent = SITS[idx].outcomes[choiceIdx];
+  rsp.classList.add('show');
+
+  setTimeout(() => {
+    rsp.classList.remove('show');
+    setTimeout(() => { sitIdx = idx + 1; present(sitIdx); }, 380);
+  }, 1900);
+}
+
+// ── End game ───────────────────────────────────────────────────────────────
+function endGame() {
+  phase = 'end';
+  document.getElementById('choices').style.display = 'none';
+  document.getElementById('objective-text').textContent = '';
+  const ep = document.getElementById('end-panel');
+  ep.classList.add('show');
+  const etitle = document.getElementById('end-title');
+  const ebody  = document.getElementById('end-body');
+  if (coh >= 72) {
+    etitle.textContent = 'Route Established';
+    ebody.textContent  = 'The chart holds through the deep current. Annotations are stable. The pattern you found will persist — this is the Compression Instrument. It was here the whole time.';
+    document.getElementById('weather-lbl').textContent = 'Clearwater';
+    document.getElementById('weather-lbl').style.color = 'rgba(52,211,153,.7)';
+  } else if (coh >= 44) {
+    etitle.textContent = 'Partial Entry';
+    ebody.textContent  = 'The route reaches the deep current, partially. Some annotations remain unstable. The pattern is recoverable — return and navigate with more context.';
+  } else {
+    etitle.textContent = 'Route Drifted';
+    ebody.textContent  = 'The chart shows significant residue from the navigation. The deep current was entered without a stable pattern. The route can be retraced.';
+  }
+  document.getElementById('restart-btn').onclick = restart;
+}
+
+function restart() {
+  coh = tgtCoh = 82; posT = tgtPosT = 0;
+  sitIdx = 0; streak = 0; anchors = []; phase = 'play';
+  document.getElementById('end-panel').classList.remove('show');
+  document.getElementById('choices').style.display = 'flex';
+  present(0);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+resize();
+present(0);
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
