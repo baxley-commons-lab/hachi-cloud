@@ -1240,6 +1240,77 @@
       width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
     }
 
+    /* Grove branch cards */
+    .grove-branch-card {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-soft);
+      width: 100%; text-align: left; background: transparent;
+    }
+    .grove-branch-card:last-child { border-bottom: none; }
+    .grove-branch-card:active { background: var(--surface-2); }
+    .gbc-indicator {
+      width: 3px; min-height: 40px; border-radius: 2px; flex-shrink: 0; margin-top: 2px;
+    }
+    .gbc-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .gbc-head { display: flex; align-items: center; gap: 8px; }
+    .gbc-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .gbc-status {
+      font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+    .gbc-status.is-alive   { color: var(--seed-green); border-color: color-mix(in srgb, var(--seed-green) 35%, transparent); }
+    .gbc-status.is-steady  { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 35%, transparent); }
+    .gbc-status.is-dormant { color: var(--dim); border-color: var(--border-soft); }
+    .gbc-desc { font-size: 11px; color: var(--muted); }
+    .gbc-counts { display: flex; gap: 10px; margin-top: 3px; }
+    .gbc-count { font-size: 10px; color: var(--dim); display: flex; align-items: center; gap: 3px; }
+    .gbc-count-val { font-weight: 600; color: var(--muted); }
+
+    /* Open loops list */
+    .grove-loop-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .grove-loop-item:last-child { border-bottom: none; }
+    .glo-urgency {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
+    }
+    .glo-urgency.is-high   { background: var(--rose); }
+    .glo-urgency.is-medium { background: var(--amber); }
+    .glo-urgency.is-low    { background: var(--surface-3); }
+    .glo-text { font-size: 12px; color: var(--muted); line-height: 1.45; }
+    .glo-branch { font-size: 9px; color: var(--dim); letter-spacing: 0.12em; margin-top: 2px; }
+
+    /* Root principles strip */
+    .grove-roots-list { display: flex; flex-direction: column; gap: 0; }
+    .grove-root-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .grove-root-item:last-child { border-bottom: none; }
+    .gri-marker { font-size: 11px; color: var(--amber); flex-shrink: 0; margin-top: 1px; }
+    .gri-principle { font-size: 12px; font-weight: 600; color: var(--text); }
+    .gri-note { font-size: 10px; color: var(--dim); margin-top: 2px; }
+
+    /* Balance signal banner */
+    .grove-balance-banner {
+      margin: 0 0 10px;
+      padding: 10px 12px;
+      background: color-mix(in srgb, var(--rose) 8%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--rose) 22%, transparent);
+      border-radius: 10px;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .gbb-icon { font-size: 13px; flex-shrink: 0; color: var(--rose); line-height: 1.6; }
+    .gbb-body { flex: 1; }
+    .gbb-title { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--rose); font-weight: 600; margin-bottom: 3px; }
+    .gbb-text  { font-size: 11px; color: var(--muted); }
+    .gbb-suggest { font-size: 10px; color: var(--dim); margin-top: 4px; }
+
     /* Toast */
     .toast {
       position: fixed; left: 50%; bottom: calc(96px + var(--safe-bottom)); transform: translate(-50%, 12px);
@@ -1480,6 +1551,61 @@
       "Forge":    "var(--rose)",
     };
     function domainColor(domain) { return DOMAIN_COLOR[domain] || "var(--muted)"; }
+
+    // ── Grove Model (seed data — no persistence yet) ───────────────────────
+    // This is the canonical object model behind the Growth Map.
+    // Every project is a branch. Every session is a growth event.
+    // Every note is a leaf. Every output is fruit. Every pattern becomes a thread.
+    // Every abandoned branch can become compost.
+    const GROVE_MODEL = {
+      meta: { name: "Hachi Commons", status: "converging" },
+
+      roots: [
+        { id: "root-1", principle: "Capture first. Distill later.", note: "Foundation of the field-notes intake layer." },
+        { id: "root-2", principle: "Every pattern is a signal. Every signal needs a home.", note: "Basis for the idea-thread overlay." },
+        { id: "root-3", principle: "Growth without balance becomes overgrowth.", note: "Basis for growth-balance diagnostics." },
+      ],
+
+      branches: [
+        { id: "br-1", name: "Hachi Platform",  domain: "Hachi",    status: "alive",   leaves: 24, sessions: 4, fruit: 2, desc: "Core system and idea ecology infrastructure." },
+        { id: "br-2", name: "Baxley Build",    domain: "Baxley",   status: "alive",   leaves: 14, sessions: 3, fruit: 1, desc: "Product systems and structural design." },
+        { id: "br-3", name: "Commons Field",   domain: "Commons",  status: "alive",   leaves: 12, sessions: 5, fruit: 3, desc: "Shared patterns, field notes, raw captures." },
+        { id: "br-4", name: "Penumbra",        domain: "Penumbra", status: "steady",  leaves:  8, sessions: 1, fruit: 0, desc: "Material studies and surface explorations." },
+        { id: "br-5", name: "Forge Lab",       domain: "Forge",    status: "dormant", leaves:  5, sessions: 0, fruit: 1, desc: "Experimental techniques under pressure." },
+      ],
+
+      sessions: [
+        { id: "ses-1", title: "Capture · Focus Mode",   branch: "br-1", time: "Today 10:42",    status: "active",  leaves: 3, decisions: 2, loops: 2, artifacts: 1 },
+        { id: "ses-2", title: "Review · Link Session",  branch: "br-2", time: "Yesterday 4:15", status: "done",    leaves: 2, decisions: 1, loops: 0, artifacts: 0 },
+        { id: "ses-3", title: "Execute · Build Mode",   branch: "br-1", time: "May 14 9:03",    status: "done",    leaves: 4, decisions: 1, loops: 1, artifacts: 1 },
+      ],
+
+      openLoops: [
+        { id: "ol-1", text: "What exactly counts as a Grove? Workspace, collection, or view?",           branch: "br-1", urgency: "high"   },
+        { id: "ol-2", text: "What is the minimum useful mobile view?",                                   branch: "br-1", urgency: "high"   },
+        { id: "ol-3", text: "What data powers the idea-thread overlay — manual tags or AI detection?",   branch: "br-1", urgency: "medium" },
+        { id: "ol-4", text: "How does Hachi avoid becoming another action manager?",                     branch: "br-2", urgency: "medium" },
+        { id: "ol-5", text: "What is the first real prototype — deck, Figma flow, or web mockup?",       branch: "br-1", urgency: "low"    },
+      ],
+
+      ideaThreads: [
+        { id: "it-1", label: "Rhythm vs. constraint",   branches: ["br-1","br-2"], type: "recurring"  },
+        { id: "it-2", label: "Material + pressure",     branches: ["br-2","br-4"], type: "merge-candidate" },
+        { id: "it-3", label: "Capture → pattern loop",  branches: ["br-1","br-3"], type: "scaffold"   },
+      ],
+
+      balanceSignals: {
+        alive: 3, steady: 1, dormant: 1,
+        dominant: "Hachi Platform",
+        imbalance: "Forge Lab: 0 sessions. Undernourished.",
+        suggestion: "High-potential ideas in Forge Lab are unwatered. Review to unlock balance.",
+      },
+
+      pruningDecisions: [
+        { id: "pr-1", branch: "br-5", note: "Forge Lab: park, not kill. Revisit when bandwidth opens.", status: "parked" },
+      ],
+    };
+
     // Sigil legend reference set — display vocabulary on Cloud view (R#06).
     // Render-only; does not modify the locked Note Sigil registry (GC-HACHI-IDEA-SIGILS-RED-STRINGS-01).
     const SIGIL_LEGEND_SET = [
@@ -2377,66 +2503,88 @@
     }
 
     function viewGrove() {
-      const rsOf = id => LINKS.reduce((n, l) => n + (l.s === id || l.t === id ? 1 : 0), 0);
-      const vitOf = n => {
-        let v = rsOf(n.id) * 2;
-        if (n.sigils.includes("seed"))   v += 1.5;
-        if (n.sigils.includes("kplate")) v += 1.0;
-        if (n.sigils.includes("lab"))    v += 0.5;
-        return Math.max(v, 0.1);
-      };
-      const maxVit = Math.max(...NOTES.map(n => vitOf(n)));
-      const withV  = NOTES.map(n => ({
-        ...n,
-        vit: vitOf(n),
-        vitNorm: vitOf(n) / maxVit,
-        tier: vitOf(n) / maxVit >= 0.65 ? "alive" : vitOf(n) / maxVit >= 0.35 ? "steady" : "dormant",
-      })).sort((a, b) => b.vit - a.vit);
+      const gm = GROVE_MODEL;
+      const bs = gm.balanceSignals;
+      const totalLeaves = gm.branches.reduce((n, b) => n + b.leaves, 0);
+      const totalFruit  = gm.branches.reduce((n, b) => n + b.fruit, 0);
+      const aliveCount  = gm.branches.filter(b => b.status === "alive").length;
+      const openCount   = gm.openLoops.length;
 
-      const aliveCount   = withV.filter(n => n.tier === "alive").length;
-      const dormantCount = withV.filter(n => n.tier === "dormant").length;
-
-      // Build mycelium count (shared-sigil non-linked pairs)
-      const explicit = new Set(LINKS.map(l => `${Math.min(l.s,l.t)}-${Math.max(l.s,l.t)}`));
-      let myceliumCount = 0;
-      for (let i = 0; i < NOTES.length; i++) {
-        for (let j = i + 1; j < NOTES.length; j++) {
-          const a = NOTES[i], b = NOTES[j];
-          if (explicit.has(`${Math.min(a.id,b.id)}-${Math.max(a.id,b.id)}`)) continue;
-          if (a.sigils.some(s => b.sigils.includes(s))) myceliumCount++;
-        }
-      }
+      // Domain color legend from branches
+      const domainLegend = gm.branches.map(b => {
+        const col = domainColor(b.domain);
+        return `<span class="grove-domain-chip"><span class="grove-domain-dot" style="background:${col}"></span>${b.name}</span>`;
+      }).join("");
 
       const meta = pageMetaStripHtml([
-        { key: "Grove",     val: "#GROVE-01",    icon: "asteroid" },
-        { key: "Status",    val: "CONVERGING",   icon: "", dot: true, valCls: "is-active" },
-        { key: "Branches",  val: `${aliveCount} alive`, icon: "type" },
-        { key: "Threads",   val: `${LINKS.length}+${myceliumCount}`, icon: "rs", iconCls: "is-rose", valCls: "is-rose" },
+        { key: "Branches",  val: `${aliveCount} alive`,     icon: "asteroid" },
+        { key: "Status",    val: "CONVERGING",              icon: "", dot: true, valCls: "is-active" },
+        { key: "Leaves",    val: String(totalLeaves),       icon: "type" },
+        { key: "Open Loops",val: String(openCount),         icon: "rs", iconCls: "is-rose", valCls: "is-rose" },
       ]);
 
-      const nodeChips = withV.map(n => {
-        const dotCls  = n.tier === "alive" ? "is-alive" : n.tier === "steady" ? "is-steady" : "is-dormant";
-        const tierLbl = n.tier === "alive" ? "Growing" : n.tier === "steady" ? "Steady" : "Dormant";
-        const short   = n.text.length > 38 ? n.text.substring(0, 38) + "…" : n.text;
+      // Branch cards
+      const branchCards = gm.branches.map(b => {
+        const col    = domainColor(b.domain);
+        const stsCls = `is-${b.status}`;
+        const stsLbl = b.status.charAt(0).toUpperCase() + b.status.slice(1);
         return `
-          <div class="grove-node-chip">
-            <div class="gnc-domain">${escapeHtml(n.domain)}</div>
-            <div class="gnc-title" title="${escapeHtml(n.text)}">${escapeHtml(short)}</div>
-            <div class="gnc-vit"><span class="gnc-dot ${dotCls}"></span>${tierLbl} · #${n.id}</div>
+          <div class="grove-branch-card">
+            <div class="gbc-indicator" style="background:${col}"></div>
+            <div class="gbc-body">
+              <div class="gbc-head">
+                <span class="gbc-name">${escapeHtml(b.name)}</span>
+                <span class="gbc-status ${stsCls}">${stsLbl}</span>
+              </div>
+              <div class="gbc-desc">${escapeHtml(b.desc)}</div>
+              <div class="gbc-counts">
+                <span class="gbc-count">Leaves <span class="gbc-count-val">${b.leaves}</span></span>
+                <span class="gbc-count">Sessions <span class="gbc-count-val">${b.sessions}</span></span>
+                <span class="gbc-count">Fruit <span class="gbc-count-val">${b.fruit}</span></span>
+              </div>
+            </div>
           </div>`;
       }).join("");
 
-      // Domain color legend for map
-      const domainLegend = [...new Set(NOTES.map(n => n.domain))].map(d => {
-        const col = domainColor(d);
-        return `<span class="grove-domain-chip"><span class="grove-domain-dot" style="background:${col}"></span>${d}</span>`;
+      // Open loops
+      const loopItems = gm.openLoops.map(ol => {
+        const branchName = (gm.branches.find(b => b.id === ol.branch) || {}).name || ol.branch;
+        return `
+          <div class="grove-loop-item">
+            <div class="glo-urgency is-${ol.urgency}"></div>
+            <div>
+              <div class="glo-text">${escapeHtml(ol.text)}</div>
+              <div class="glo-branch">${escapeHtml(branchName)}</div>
+            </div>
+          </div>`;
       }).join("");
+
+      // Root principles
+      const rootItems = gm.roots.map(r => `
+        <div class="grove-root-item">
+          <span class="gri-marker">◈</span>
+          <div>
+            <div class="gri-principle">${escapeHtml(r.principle)}</div>
+            <div class="gri-note">${escapeHtml(r.note)}</div>
+          </div>
+        </div>`).join("");
+
+      // Balance signal banner (only if imbalance detected)
+      const balanceBanner = bs.dormant > 0 ? `
+        <div class="grove-balance-banner">
+          <div class="gbb-icon">△</div>
+          <div class="gbb-body">
+            <div class="gbb-title">Growth Bias Detected</div>
+            <div class="gbb-text">${escapeHtml(bs.imbalance)}</div>
+            <div class="gbb-suggest">${escapeHtml(bs.suggestion)}</div>
+          </div>
+        </div>` : "";
 
       return `
         <section class="splash">
           <h1>Growth Map ${crestSvg("grove")}</h1>
-          <h2>Grove Card · Alive branches. Hidden threads.</h2>
-          <p>Not a roadmap — a living system. Where attention flows, which branches are overgrown, and what ideas are quietly waiting.</p>
+          <h2>Grove Card · ${escapeHtml(gm.meta.name)}</h2>
+          <p>Every project is a branch. Every session is a growth event. Every note is a leaf. Every output is fruit.</p>
         </section>
         ${meta}
         <div class="module">
@@ -2455,9 +2603,22 @@
           </div>
         </div>
         <div class="module list-section">
-          <header><span class="title">Branch Vitality</span><span class="meta">${aliveCount} growing · ${dormantCount} dormant</span></header>
-          <div class="body">
-            <div class="grove-status-grid">${nodeChips}</div>
+          <header><span class="title">Branches</span><span class="meta">${aliveCount} alive · ${gm.branches.length} total</span></header>
+          <div class="body" style="padding:0">
+            ${branchCards}
+          </div>
+        </div>
+        ${balanceBanner ? `<div style="padding:0 16px">${balanceBanner}</div>` : ""}
+        <div class="module list-section">
+          <header><span class="title">Open Loops</span><span class="meta">${openCount} unresolved</span></header>
+          <div class="body" style="padding:0">
+            ${loopItems}
+          </div>
+        </div>
+        <div class="module list-section">
+          <header><span class="title">Roots</span><span class="meta">foundational principles</span></header>
+          <div class="body" style="padding:0">
+            <div class="grove-roots-list">${rootItems}</div>
           </div>
         </div>
         <div class="sig">Grove Card · Growth Map Interface · Hachi Codex</div>
