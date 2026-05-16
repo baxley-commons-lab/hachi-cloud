@@ -1049,13 +1049,13 @@
       backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       border-top: 1px solid var(--border);
       padding-bottom: var(--safe-bottom);
-      display: grid; grid-template-columns: repeat(5, 1fr);
+      display: grid; grid-template-columns: repeat(6, 1fr);
     }
     .botnav button {
       min-height: var(--tap); padding: 10px 0 8px;
       display: flex; flex-direction: column; align-items: center; gap: 3px;
       color: var(--muted);
-      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
     }
     .botnav button .nav-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: color 0.15s ease; }
     .botnav button .nav-icon svg { width: 22px; height: 22px; }
@@ -1200,6 +1200,79 @@
 
     /* Footer signature */
     .sig { padding: 8px 0 4px; font-size: 9px; color: var(--faint); text-align: center; letter-spacing: 0.22em; text-transform: uppercase; }
+
+    /* ── Lumera Type Engine ───────────────────────────────────────────────── */
+    .lt-substrate-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 0; }
+    .lt-mode-grid       { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .lt-constraint-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+
+    .lt-param-btn {
+      padding: 10px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: transparent;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted);
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      min-height: 48px; line-height: 1.2;
+      transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+    }
+    .lt-param-btn .lt-btn-hint { font-size: 8px; letter-spacing: 0.1em; color: var(--dim); font-weight: 400; }
+    .lt-param-btn.is-active { border-color: var(--amber); color: var(--amber); background: color-mix(in srgb, var(--amber) 8%, var(--surface)); }
+    .lt-param-btn.is-active.is-lumera { border-color: var(--purple); color: var(--purple); background: color-mix(in srgb, var(--purple) 8%, var(--surface)); }
+    .lt-param-btn:active { transform: scale(0.97); background: var(--surface-2); }
+
+    .lt-specimen-body { min-height: 170px; background: color-mix(in srgb, var(--surface-2) 35%, var(--bg)); }
+    .lt-specimen-svg  { display: block; width: 100%; }
+
+    .lt-param-rail { display: grid; gap: 12px; }
+    .lt-slider-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; }
+    .lt-slider-row .lt-slider-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); }
+    .lt-slider-row .lt-slider-val   { font-size: 13px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text); min-width: 20px; text-align: right; }
+    .lt-slider-row input[type="range"] {
+      grid-column: 1 / -1;
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 4px; border-radius: 2px; outline: none; cursor: pointer;
+    }
+    .lt-slider-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--amber); border: 2.5px solid var(--bg);
+      box-shadow: 0 0 6px color-mix(in srgb, var(--amber) 55%, transparent);
+    }
+    .lt-slider-row input[type="range"]::-moz-range-thumb {
+      width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid var(--bg);
+      background: var(--amber); cursor: pointer;
+    }
+
+    .lt-passport { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius); margin-bottom: 14px; overflow: hidden; }
+    .lt-passport-head { padding: 10px 14px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: space-between; }
+    .lt-passport-head .lt-pp-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .lt-passport-head .lt-pp-ghost { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+    .lt-passport-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .lt-pp-cell { padding: 9px 11px; border-bottom: 1px solid var(--border-soft); border-right: 1px solid var(--border-soft); min-width: 0; overflow: hidden; }
+    .lt-pp-cell:nth-child(3n)     { border-right: none; }
+    .lt-pp-cell:nth-last-child(-n+3) { border-bottom: none; }
+    .lt-pp-cell .lt-pp-key { font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lt-pp-cell .lt-pp-val { font-size: 13px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lt-pp-cell.is-warn .lt-pp-val { color: var(--amber); }
+    .lt-pp-cell.is-hot  .lt-pp-val { color: var(--rose);  }
+    .lt-substrate-strip { padding: 10px 14px; border-top: 1px solid var(--border-soft); }
+    .lt-substrate-strip .lt-ss-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin-bottom: 4px; }
+    .lt-substrate-strip .lt-ss-desc  { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    .lt-law-check { margin-bottom: 14px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-soft); }
+    .lt-law-check.law-pass { border-color: color-mix(in srgb, var(--seed-green) 45%, transparent); background: color-mix(in srgb, var(--seed-green) 5%, transparent); }
+    .lt-law-check.law-warn { border-color: color-mix(in srgb, var(--amber) 45%, transparent);      background: color-mix(in srgb, var(--amber) 5%, transparent); }
+    .lt-law-check.law-fail { border-color: color-mix(in srgb, var(--rose) 45%, transparent);       background: color-mix(in srgb, var(--rose) 5%, transparent); }
+    .lt-law-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+    .lt-law-head .lt-law-title  { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+    .lt-law-head .lt-law-status { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; }
+    .lt-law-check.law-pass .lt-law-status { color: var(--seed-green); }
+    .lt-law-check.law-warn .lt-law-status { color: var(--amber); }
+    .lt-law-check.law-fail .lt-law-status { color: var(--rose); }
+    .lt-law-detail    { font-size: 11px; color: var(--muted); line-height: 1.45; }
+    .lt-law-principle { margin-top: 8px; font-size: 10px; color: var(--dim); font-style: italic; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -1257,6 +1330,10 @@
     <button data-view="distill" aria-selected="false">
       <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M9 3 H13 L13 8 L17 16 a2 2 0 0 1 -2 3 H7 a2 2 0 0 1 -2 -3 L9 8 Z"/><line x1="9" y1="3" x2="13" y2="3" stroke-width="1.6"/></svg></span>
       Distill
+    </button>
+    <button data-view="type" aria-selected="false">
+      <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="5" x2="18" y2="5"/><line x1="11" y1="5" x2="11" y2="18"/></svg></span>
+      Type
     </button>
   </nav>
 
@@ -1381,7 +1458,7 @@
     </div>
     <div class="cm-zone cm-zone-fn" role="group" aria-label="GW-02 Function">
       <button class="cm-fn" data-cm="notes" role="menuitem">Notes</button>
-      <button class="cm-fn" data-cm="parameters" role="menuitem">Parameters</button>
+      <button class="cm-fn" data-cm="type" role="menuitem">Type Engine</button>
       <button class="cm-fn" data-cm="flow" role="menuitem">Flow</button>
       <button class="cm-fn" data-cm="red-threads" role="menuitem">Red Threads</button>
     </div>
@@ -1945,7 +2022,8 @@
       cloud:   '<circle cx="11" cy="11" r="3" /><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="0.9" />',
       list:    '<rect x="4" y="6"  width="14" height="1.6" rx="0.8" /><rect x="4" y="10" width="14" height="1.6" rx="0.8" /><rect x="4" y="14" width="14" height="1.6" rx="0.8" />',
       capture: '<circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.2" /><circle cx="11" cy="11" r="2" />',
-      distill: '<path d="M8 4 H14 L13 9 L17 16 H5 L9 9 Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />'
+      distill: '<path d="M8 4 H14 L13 9 L17 16 H5 L9 9 Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />',
+      type:    '<line x1="4" y1="6" x2="18" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="11" y1="6" x2="11" y2="18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>'
     };
     function crestSvg(viewId) {
       const inner = CREST_GLYPHS[viewId] || CREST_GLYPHS.home;
@@ -2553,6 +2631,28 @@
         ],
         next: "Capture mode tabs (Raw / Reminder / Voice / Photo)."
       },
+      { id: "type", group: "page", title: "Type Engine", status: "PARTIAL",
+        purpose: "Lumera Behavioral Typography Engine — substrate selector, parameter rail, live type specimen, type passport, and Hard Law checker.",
+        actions: [
+          "Substrate selector: Sans / Serif / Script / Lumera",
+          "Mode selector: Mark / Sigil / Story / Plate / Product / Diagram",
+          "Live SVG specimen: K-Core, Ghost Wrapper, Lux Nodes, Signal Path, Counter Protection, Field Density, Intertwine, Lumera field state",
+          "Chisel slider with behavioral mode label",
+          "8-parameter slider rail (Ghost / Readability / Counter Protection / Intertwine / Lux / Field Density / Semantic Load)",
+          "Production Constraint selector",
+          "Type Passport output grid (12 values)",
+          "Hard Law check: expressive vs. explainable",
+          "State persisted to bxc.lt-state"
+        ],
+        issues: [
+          "Specimen uses a single geometric H — full typeface rendering deferred",
+          "No multi-letter / word-level Shared Field interaction",
+          "Ghost Wrapper braid and emergence events not animated",
+          "Production Constraint does not yet modify specimen rendering",
+          "No glyph import or typeface loading"
+        ],
+        next: "Word-level Shared Field — where multiple ghost wrappers meet, overlap, and generate emergence events."
+      },
       { id: "patch-beacon", group: "overlay", title: "Patch Beacon", status: "LIVE",
         purpose: "What changed? Self-explaining patch communication.",
         actions: [
@@ -2595,7 +2695,9 @@
       { date: "2026-05-07", title: "Redline #06.1 — Refinement Closure Pass #01",
         summary: "Alignment sub-patch (no new systems). Closes 4 of 5 friction targets from GC-HACHI-CLOUD-VISUAL-HIERARCHY-REFINE-01: T1 field-note progressive disclosure (2-line clamp + Show More inline expand) · T2 timestamp A11Y (--faint→--dim, increased letter-spacing) · T3 node size = behavioral signal (red-string density, hot adds glow only — no scale inflation) · T4 quieter ambient (sigil chips = inline dim text, edge label = plain dim, no border pill) · T5 compass visibility ring + 44px touch target. Closure gate cleared." },
       { date: "2026-05-07", title: "Redline #06 — Cloud Visual System",
-        summary: "First visible application of GC-HACHI-CARD-CREST-NOTE-TO-VISUAL-01. Cloud view rebuilt: Card Crests on every splash header (Home/Cloud/List/Capture/Distill); page-meta strip (Asteroid/Status/Type/Red Strings); embedded Sigil Legend; hex-badge feed rows with asteroid thumbnails + Red Strings count + Edge·v0 status; bottom nav swapped from dot+word to icon+word with amber active glow; asteroid radius scaled up. Locked Note Sigil registry is preserved — sigil legend is render-only display vocabulary." }
+        summary: "First visible application of GC-HACHI-CARD-CREST-NOTE-TO-VISUAL-01. Cloud view rebuilt: Card Crests on every splash header (Home/Cloud/List/Capture/Distill); page-meta strip (Asteroid/Status/Type/Red Strings); embedded Sigil Legend; hex-badge feed rows with asteroid thumbnails + Red Strings count + Edge·v0 status; bottom nav swapped from dot+word to icon+word with amber active glow; asteroid radius scaled up. Locked Note Sigil registry is preserved — sigil legend is render-only display vocabulary." },
+      { date: "2026-05-16", title: "Redline #07 — Lumera Type Engine v0",
+        summary: "GC DROP: Penumbra / Lumera Typography Engine. New Type view added to bottom nav and Compass Function zone. Behavioral typography framework: substrate (Sans/Serif/Script/Lumera), mode (Mark/Sigil/Story/Plate/Product/Diagram), 8-parameter slider rail, live SVG specimen with behavioral layer stack (K-Core, Ghost Wrapper, Lux Nodes, Signal Path, Counter Protection, Field Density, Intertwine arcs, Lumera field state), Type Passport grid (12 values), Hard Law checker (expressive vs. explainable). State persisted to bxc.lt-state." }
     ];
 
     function flowCardHtml(n) {
@@ -2743,7 +2845,399 @@
       setView("export");
     }
 
-    const VIEWS = { home: viewHome, cloud: viewCloud, list: viewList, capture: viewCapture, distill: viewDistill, flow: viewFlow, export: viewExport };
+    // ── Lumera Type Engine ─────────────────────────────────────────────────
+    const LT_SUBSTRATES = [
+      { id: "sans",   label: "Sans",   hint: "UI · Data" },
+      { id: "serif",  label: "Serif",  hint: "Authority" },
+      { id: "script", label: "Script", hint: "Motion" },
+      { id: "lumera", label: "Lumera", hint: "Field state" },
+    ];
+    const LT_MODES = [
+      { id: "mark",    label: "Mark"    },
+      { id: "sigil",   label: "Sigil"   },
+      { id: "story",   label: "Story"   },
+      { id: "plate",   label: "Plate"   },
+      { id: "product", label: "Product" },
+      { id: "diagram", label: "Diagram" },
+    ];
+    const LT_CONSTRAINTS = [
+      { id: "screen",  label: "Screen"  },
+      { id: "mobile",  label: "Mobile"  },
+      { id: "print",   label: "Print"   },
+      { id: "product", label: "Product" },
+      { id: "motion",  label: "Motion"  },
+      { id: "none",    label: "None"    },
+    ];
+    const LT_PARAMS = [
+      { key: "ghost",             label: "Ghost Level"        },
+      { key: "readability",       label: "Readability Floor"  },
+      { key: "counterProtection", label: "Counter Protection" },
+      { key: "intertwine",        label: "Intertwine"         },
+      { key: "lux",               label: "Lux Intensity"      },
+      { key: "fieldDensity",      label: "Field Density"      },
+      { key: "semanticLoad",      label: "Semantic Load"      },
+    ];
+    const LT_DEFAULTS = { substrate:"sans", mode:"mark", chisel:3, ghost:2, readability:8, counterProtection:7, intertwine:1, lux:2, fieldDensity:2, semanticLoad:3, constraint:"screen" };
+    let LT_STATE = Object.assign({}, LT_DEFAULTS);
+    (function(){
+      try {
+        const raw = localStorage.getItem("bxc.lt-state");
+        if (raw) { const s = JSON.parse(raw); if (s && typeof s === "object") Object.assign(LT_STATE, s); }
+      } catch(e){}
+    })();
+    function saveLTState() { try { localStorage.setItem("bxc.lt-state", JSON.stringify(LT_STATE)); } catch(e){} }
+
+    function ltChiselDesc(c) {
+      if (c <= 3) return "Structure · spacing · readability";
+      if (c <= 6) return "Lux · pressure · ghost · terminals";
+      if (c <= 8) return "Wrapper interaction · word behavior · field state";
+      return "Sigil · myth · art collapse";
+    }
+    function ltSubstrateDesc(s) {
+      return { sans:"High clarity · Low ghost tolerance · UI · Systems · Dashboards", serif:"Structured authority · Serifs as anchors, nodes, pressure points", script:"Motion-led · High flow potential · High readability risk", lumera:"Field begins influencing form · Activated behavioral state" }[s] || "";
+    }
+    function ltGhostBehavior(ghost, chisel) {
+      if (ghost === 0) return "No ghost";
+      if (ghost <= 2) return "Halo";
+      if (ghost <= 4) return "Echo";
+      if (ghost <= 6) return chisel >= 5 ? "Extend" : "Echo";
+      if (ghost <= 8) return chisel >= 7 ? "Overlap" : "Extend";
+      return chisel >= 7 ? "Braid · Intertwine" : "Overlap";
+    }
+    function ltHardLaw(state) {
+      const { chisel, ghost, readability, counterProtection, intertwine, lux, semanticLoad } = state;
+      const expressive  = (ghost + intertwine + lux + (10 - readability) + (10 - counterProtection)) / 5;
+      const explainable = (chisel + counterProtection + semanticLoad + readability) / 4;
+      const excess = expressive - explainable;
+      const pass  = excess <= 0 ? "pass" : excess <= 2 ? "warn" : "fail";
+      const label = excess <= 0 ? "Law holds" : excess <= 2 ? "Boundary tension" : "Law broken";
+      return { pass, label, expressive: expressive.toFixed(1), explainable: explainable.toFixed(1), excess: Math.max(0, excess).toFixed(1) };
+    }
+
+    function renderTypeSpecimen(state) {
+      const { substrate, chisel, ghost, lux, readability, counterProtection, intertwine, fieldDensity, semanticLoad } = state;
+      const W = 240, H = 210;
+      const c = chisel / 10, g = ghost / 10, lv = lux / 10, r = readability / 10;
+      const cp = counterProtection / 10, it = intertwine / 10, fd = fieldDensity / 10, sl = semanticLoad / 10;
+      let out = "";
+
+      // ── Ghost wrapper ──
+      if (c >= 0.15 && g > 0) {
+        const expFactor = substrate === "lumera" ? 1.9 : substrate === "script" ? 1.3 : 1.0;
+        const exp = (18 + g * 38) * expFactor;
+        const gCx = 90, gCy = 107;
+        const sx = substrate === "script" ? exp * 0.22 : 0;
+        const sy = substrate === "script" ? -exp * 0.08 : 0;
+        const rx = exp + 46, ry = exp + 78;
+        const jitter = [0.92, 1.08, 0.96, 1.1, 0.88, 1.05];
+        const pts = Array.from({ length: 6 }, (_, i) => {
+          const ang = (i / 6) * Math.PI * 2 - Math.PI / 2;
+          return { x: gCx + sx + Math.cos(ang) * rx * jitter[i], y: gCy + sy + Math.sin(ang) * ry * jitter[i] };
+        });
+        let blob = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+        for (let i = 0; i < pts.length; i++) {
+          const n = pts[(i + 1) % pts.length];
+          blob += ` Q ${pts[i].x.toFixed(1)} ${pts[i].y.toFixed(1)} ${((pts[i].x + n.x) / 2).toFixed(1)} ${((pts[i].y + n.y) / 2).toFixed(1)}`;
+        }
+        blob += " Z";
+        const gCol = substrate === "lumera" ? "var(--purple)" : substrate === "script" ? "var(--seed-green)" : "var(--text)";
+        const baseOp = Math.min(0.5, ((c - 0.15) / 0.85) * g * 0.55);
+        out += `<path d="${blob}" fill="${gCol}" fill-opacity="${(baseOp * 0.14).toFixed(3)}" stroke="${gCol}" stroke-width="0.8" stroke-opacity="${(baseOp * 0.65).toFixed(3)}" />`;
+        if (c >= 0.4 && g >= 0.3) {
+          const eo = Math.min(0.3, (c - 0.4) * (g - 0.3) * 0.85);
+          out += `<ellipse cx="${(gCx+sx).toFixed(1)}" cy="${(gCy+sy).toFixed(1)}" rx="${(rx*1.26).toFixed(1)}" ry="${(ry*1.19).toFixed(1)}" fill="none" stroke="${gCol}" stroke-width="0.5" stroke-opacity="${(eo*0.55).toFixed(3)}" stroke-dasharray="3 5" />`;
+        }
+      }
+
+      // ── Field density dots ──
+      if (c >= 0.45 && fd > 0) {
+        const dotOp = Math.min(0.42, (c - 0.45) / 0.55 * fd * 0.7);
+        if (dotOp > 0.02) {
+          const step = Math.max(7, Math.round(22 - fd * 12));
+          let dots = "";
+          for (let dx = 14; dx < W - 8; dx += step) {
+            for (let dy = 8; dy < H - 4; dy += step) {
+              const inL = dx >= 41 && dx <= 69 && dy >= 26 && dy <= 194;
+              const inR = dx >= 111 && dx <= 139 && dy >= 26 && dy <= 194;
+              const inC = dx >= 69 && dx <= 111 && dy >= 96 && dy <= 124;
+              if (!inL && !inR && !inC) dots += `<circle cx="${dx}" cy="${dy}" r="0.75" />`;
+            }
+          }
+          out += `<g fill="var(--text)" opacity="${dotOp.toFixed(3)}">${dots}</g>`;
+        }
+      }
+
+      // ── Counter protection zones ──
+      const cpVis = (1 - cp) * 0.24;
+      if (cpVis > 0.01) {
+        out += `<rect x="69" y="26" width="42" height="70" rx="3" fill="var(--rose)" fill-opacity="${cpVis.toFixed(3)}" />`;
+        out += `<rect x="69" y="124" width="42" height="68" rx="3" fill="var(--rose)" fill-opacity="${(cpVis * 0.6).toFixed(3)}" />`;
+      }
+
+      // ── Serif anchors ──
+      if (substrate === "serif" || substrate === "lumera") {
+        const sw = substrate === "lumera" ? 18 : 14, sOp = Math.min(1, r * 1.3);
+        out += `<g fill="var(--text)" opacity="${sOp.toFixed(3)}">
+          <rect x="${55 - sw/2}" y="24" width="${sw}" height="4" rx="1.5" />
+          <rect x="${55 - sw/2}" y="192" width="${sw}" height="4" rx="1.5" />
+          <rect x="${125 - sw/2}" y="24" width="${sw}" height="4" rx="1.5" />
+          <rect x="${125 - sw/2}" y="192" width="${sw}" height="4" rx="1.5" />
+        </g>`;
+      }
+
+      // ── K-Core (the H) ──
+      const kOp = substrate === "lumera"
+        ? Math.max(0.12, 0.9 - (c > 0.7 ? (c - 0.7) * 1.4 : 0))
+        : Math.max(0.08, 0.18 + r * 0.82);
+      const tform = substrate === "script" ? ' transform="rotate(-5 90 110) skewX(-5)"' : "";
+      out += `<g opacity="${kOp.toFixed(3)}"${tform}>
+        <rect x="41" y="26" width="28" height="168" rx="3" fill="var(--text)" />
+        <rect x="111" y="26" width="28" height="168" rx="3" fill="var(--text)" />
+        <rect x="69" y="96" width="42" height="28" rx="3" fill="var(--text)" />
+      </g>`;
+
+      // ── Signal path ──
+      if (c >= 0.3) {
+        const spOp = Math.min(0.72, (c - 0.3) / 0.7 * 0.72);
+        const dLen = (3 + sl * 4).toFixed(1), dGap = (2 + sl * 2).toFixed(1);
+        out += `<g opacity="${spOp.toFixed(3)}" fill="none" stroke="var(--amber)" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M 55 194 L 55 110 L 69 110 L 111 110 L 125 110 L 125 194" stroke-width="1.3" stroke-dasharray="${dLen} ${dGap}" />
+          <path d="M 55 26 L 55 96" stroke-width="0.9" stroke-opacity="0.5" />
+          <path d="M 125 26 L 125 96" stroke-width="0.9" stroke-opacity="0.5" />
+        </g>`;
+        if (c >= 0.55) {
+          const aOp = Math.min(0.8, (c - 0.55) * 2.2);
+          out += `<g opacity="${aOp.toFixed(3)}" fill="var(--amber)">
+            <polygon points="55,194 51,184 59,184" />
+            <polygon points="125,194 121,184 129,184" />
+          </g>`;
+        }
+      }
+
+      // ── Lux nodes ──
+      if (c >= 0.22 && lv > 0) {
+        const nOp = Math.min(0.9, (c - 0.22) / 0.78 * 0.95);
+        const tR = 2.5 + lv * 3.8, jR = 2 + lv * 2.6;
+        const nodes = [
+          {x:55,  y:26,  k:"t"}, {x:125, y:26,  k:"t"},
+          {x:55,  y:194, k:"t"}, {x:125, y:194, k:"t"},
+          {x:69,  y:110, k:"j"}, {x:111, y:110, k:"j"},
+        ];
+        let lx = "";
+        nodes.forEach(n => {
+          const nr = n.k === "t" ? tR : jR;
+          lx += `<circle cx="${n.x}" cy="${n.y}" r="${(nr*2.3).toFixed(1)}" fill="var(--amber)" opacity="${(nOp*lv*0.28).toFixed(3)}" />`;
+          lx += `<circle cx="${n.x}" cy="${n.y}" r="${nr.toFixed(1)}" fill="var(--amber)" opacity="${nOp.toFixed(3)}" />`;
+        });
+        if (substrate === "serif") {
+          [{x:48,y:26},{x:62,y:26},{x:48,y:194},{x:62,y:194},{x:118,y:26},{x:132,y:26},{x:118,y:194},{x:132,y:194}].forEach(n => {
+            lx += `<circle cx="${n.x}" cy="${n.y}" r="${(jR*0.65).toFixed(1)}" fill="var(--amber)" opacity="${(nOp*0.55).toFixed(3)}" />`;
+          });
+        }
+        out += `<g filter="url(#lt-glow)">${lx}</g>`;
+      }
+
+      // ── Intertwine arcs ──
+      if (c >= 0.62 && it >= 0.35) {
+        const iOp = Math.min(0.68, (c - 0.62) * (it - 0.35) * 2.8);
+        out += `<g fill="none" stroke="var(--purple)" stroke-linecap="round" opacity="${iOp.toFixed(3)}">
+          <path d="M 33 20 Q 90 68 147 20" stroke-width="0.9" />
+          <path d="M 33 200 Q 90 152 147 200" stroke-width="0.9" />
+          <path d="M 41 110 Q 67 90 90 110 Q 113 130 139 110" stroke-width="0.7" stroke-opacity="0.7" />
+        </g>`;
+      }
+
+      // ── Lumera field state ──
+      if (substrate === "lumera" && c >= 0.48) {
+        const lfOp = Math.min(0.72, (c - 0.48) * 1.38);
+        out += `<g opacity="${lfOp.toFixed(3)}">
+          <circle cx="90" cy="26" r="7" fill="none" stroke="var(--purple)" stroke-width="0.8" />
+          <circle cx="90" cy="194" r="7" fill="none" stroke="var(--purple)" stroke-width="0.8" />
+          <line x1="90" y1="26" x2="90" y2="194" stroke="var(--purple)" stroke-width="0.4" stroke-opacity="0.32" />
+          <circle cx="90" cy="110" r="5" fill="var(--purple)" fill-opacity="0.42" />
+        </g>`;
+        if (c >= 0.84) {
+          const sigOp = Math.min(0.7, (c - 0.84) / 0.16 * 0.7);
+          out += `<g opacity="${sigOp.toFixed(3)}" stroke="var(--purple)" fill="none" stroke-width="0.6">
+            <path d="M 90 48 L 116 88 L 90 78 L 64 88 Z" />
+            <path d="M 90 172 L 116 132 L 90 142 L 64 132 Z" />
+          </g>`;
+        }
+      }
+
+      const subLabel = (LT_SUBSTRATES.find(s => s.id === state.substrate) || {}).label || "";
+      const modeLabel = (LT_MODES.find(m => m.id === state.mode) || {}).label || "";
+      return `<svg class="lt-specimen-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+        <defs><filter id="lt-glow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="${(1.2 + lv*2).toFixed(1)}" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter></defs>
+        ${out}
+        <text x="10" y="15" font-size="7" fill="var(--dim)" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" letter-spacing="0.2em">SPECIMEN</text>
+        <text x="${W-10}" y="15" font-size="7" fill="var(--amber)" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" letter-spacing="0.14em" text-anchor="end">${subLabel.toUpperCase()} · ${modeLabel.toUpperCase()}</text>
+      </svg>`;
+    }
+
+    function ltPassportHtml(state) {
+      const { substrate, mode, chisel, ghost, readability, counterProtection, intertwine, lux, fieldDensity, semanticLoad, constraint } = state;
+      const law = ltHardLaw(state);
+      const subLabel   = (LT_SUBSTRATES.find(s => s.id === substrate)   || {}).label || substrate;
+      const modeLabel  = (LT_MODES.find(m => m.id === mode)             || {}).label || mode;
+      const constLabel = (LT_CONSTRAINTS.find(cc => cc.id === constraint) || {}).label || constraint;
+      const ghostBeh   = ltGhostBehavior(ghost, chisel);
+      const cells = [
+        { key: "Substrate",   val: subLabel.toUpperCase(),  warn: false,            hot: false },
+        { key: "Mode",        val: modeLabel.toUpperCase(), warn: false,            hot: false },
+        { key: "Constraint",  val: constLabel.toUpperCase(),warn: false,            hot: false },
+        { key: "Chisel",      val: chisel,                  warn: chisel >= 8,      hot: chisel >= 9 },
+        { key: "Ghost",       val: ghost,                   warn: ghost >= 7,       hot: ghost >= 9 },
+        { key: "Readability", val: readability,             warn: readability <= 3, hot: readability <= 1 },
+        { key: "Counter Prot",val: counterProtection,       warn: counterProtection <= 3, hot: false },
+        { key: "Intertwine",  val: intertwine,              warn: intertwine >= 7,  hot: intertwine >= 9 },
+        { key: "Lux",         val: lux,                     warn: lux >= 7,         hot: lux >= 9 },
+        { key: "Field Den.",  val: fieldDensity,            warn: false,            hot: false },
+        { key: "Semantic",    val: semanticLoad,            warn: false,            hot: false },
+        { key: "Law",         val: law.label,               warn: law.pass === "warn", hot: law.pass === "fail" },
+      ];
+      return `
+        <div class="lt-passport">
+          <div class="lt-passport-head">
+            <span class="lt-pp-title">Type Passport</span>
+            <span class="lt-pp-ghost">Ghost · ${ghostBeh}</span>
+          </div>
+          <div class="lt-passport-grid">
+            ${cells.map(cell => `
+              <div class="lt-pp-cell ${cell.hot ? "is-hot" : cell.warn ? "is-warn" : ""}">
+                <div class="lt-pp-key">${cell.key}</div>
+                <div class="lt-pp-val">${escapeHtml(String(cell.val))}</div>
+              </div>`).join("")}
+          </div>
+          <div class="lt-substrate-strip">
+            <div class="lt-ss-label">Substrate · ${subLabel}</div>
+            <div class="lt-ss-desc">${ltSubstrateDesc(substrate)}</div>
+          </div>
+        </div>`;
+    }
+
+    function ltLawHtml(state) {
+      const law = ltHardLaw(state);
+      const cls = law.pass === "pass" ? "law-pass" : law.pass === "warn" ? "law-warn" : "law-fail";
+      const guidance = law.pass === "fail" ? " · Raise Chisel or lower Ghost / Intertwine / Lux" : "";
+      return `
+        <div class="lt-law-check ${cls}">
+          <div class="lt-law-head">
+            <span class="lt-law-title">Hard Law</span>
+            <span class="lt-law-status">${law.label}</span>
+          </div>
+          <div class="lt-law-detail">Expressive ${law.expressive} · Explainable ${law.explainable}${parseFloat(law.excess) > 0 ? " · Excess +" + law.excess : ""}${guidance}</div>
+          <div class="lt-law-principle">Nothing may become more expressive than it is explainable.</div>
+        </div>`;
+    }
+
+    function viewType() {
+      const state = LT_STATE;
+      const { substrate, mode, chisel, constraint } = state;
+      const subBtns = LT_SUBSTRATES.map(s => `
+        <button class="lt-param-btn${s.id === substrate ? " is-active" + (s.id === "lumera" ? " is-lumera" : "") : ""}" data-lt-substrate="${s.id}">
+          ${s.label}<span class="lt-btn-hint">${s.hint}</span>
+        </button>`).join("");
+      const modeBtns = LT_MODES.map(m => `
+        <button class="lt-param-btn${m.id === mode ? " is-active" : ""}" data-lt-mode="${m.id}">${m.label}</button>`).join("");
+      const constBtns = LT_CONSTRAINTS.map(cc => `
+        <button class="lt-param-btn${cc.id === constraint ? " is-active" : ""}" data-lt-constraint="${cc.id}">${cc.label}</button>`).join("");
+      const chiselPct = chisel * 10;
+      const chiselSlider = `
+        <div class="lt-slider-row">
+          <span class="lt-slider-label">Chisel Level</span>
+          <span class="lt-slider-val" data-lt-display="chisel">${chisel}</span>
+          <input type="range" min="0" max="10" step="1" value="${chisel}" data-lt-param="chisel"
+            style="background:linear-gradient(to right,var(--amber) ${chiselPct}%,var(--border) ${chiselPct}%)" aria-label="Chisel Level" />
+        </div>`;
+      const paramSliders = LT_PARAMS.map(p => {
+        const val = state[p.key], pct = val * 10;
+        return `
+          <div class="lt-slider-row">
+            <span class="lt-slider-label">${p.label}</span>
+            <span class="lt-slider-val" data-lt-display="${p.key}">${val}</span>
+            <input type="range" min="0" max="10" step="1" value="${val}" data-lt-param="${p.key}"
+              style="background:linear-gradient(to right,var(--amber) ${pct}%,var(--border) ${pct}%)" aria-label="${p.label}" />
+          </div>`;
+      }).join("");
+      return `
+        <section class="splash">
+          <h1>Type Engine ${crestSvg("type")}</h1>
+          <h2>Lumera · Behavioral Typography</h2>
+          <p>Substrate + behavioral permissions + readability constraints + ghost-field interaction.</p>
+        </section>
+        <div class="module">
+          <header><span class="title">Substrate</span><span class="meta">type base</span></header>
+          <div class="body"><div class="lt-substrate-grid">${subBtns}</div></div>
+        </div>
+        <div class="module">
+          <header><span class="title">Mode</span><span class="meta">output intent</span></header>
+          <div class="body"><div class="lt-mode-grid">${modeBtns}</div></div>
+        </div>
+        <div class="module">
+          <header><span class="title">Specimen</span><span class="meta" id="lt-specimen-meta">${substrate.toUpperCase()} · ${mode.toUpperCase()} · Chisel ${chisel}</span></header>
+          <div class="body lt-specimen-body" style="padding:0;overflow:hidden" id="lt-specimen-body">
+            ${renderTypeSpecimen(state)}
+          </div>
+        </div>
+        <div class="module">
+          <header><span class="title">Chisel</span><span class="meta" id="lt-chisel-meta">${ltChiselDesc(chisel)}</span></header>
+          <div class="body">${chiselSlider}</div>
+        </div>
+        <div class="module">
+          <header><span class="title">Parameters</span><span class="meta">behavioral field</span></header>
+          <div class="body"><div class="lt-param-rail">${paramSliders}</div></div>
+        </div>
+        <div class="module">
+          <header><span class="title">Production Constraint</span><span class="meta">output target</span></header>
+          <div class="body"><div class="lt-constraint-grid">${constBtns}</div></div>
+        </div>
+        <div id="lt-passport-container">${ltPassportHtml(state)}</div>
+        <div id="lt-law-container">${ltLawHtml(state)}</div>
+        <p class="sig">Lumera Type Engine · Behavioral Typography · Penumbra GC Drop</p>
+      `;
+    }
+
+    function wireTypeView() {
+      if (activeView !== "type") return;
+      document.querySelectorAll("input[data-lt-param]").forEach(input => {
+        input.addEventListener("input", () => {
+          const param = input.dataset.ltParam;
+          const val = parseInt(input.value, 10);
+          LT_STATE[param] = val;
+          saveLTState();
+          const disp = document.querySelector(`[data-lt-display="${param}"]`);
+          if (disp) disp.textContent = val;
+          input.style.background = `linear-gradient(to right,var(--amber) ${val*10}%,var(--border) ${val*10}%)`;
+          if (param === "chisel") {
+            const chMeta = document.getElementById("lt-chisel-meta");
+            if (chMeta) chMeta.textContent = ltChiselDesc(val);
+            const spMeta = document.getElementById("lt-specimen-meta");
+            if (spMeta) spMeta.textContent = LT_STATE.substrate.toUpperCase() + " · " + LT_STATE.mode.toUpperCase() + " · Chisel " + val;
+          }
+          const specBody = document.getElementById("lt-specimen-body");
+          if (specBody) specBody.innerHTML = renderTypeSpecimen(LT_STATE);
+          const ppCont = document.getElementById("lt-passport-container");
+          if (ppCont) ppCont.innerHTML = ltPassportHtml(LT_STATE);
+          const lawCont = document.getElementById("lt-law-container");
+          if (lawCont) lawCont.innerHTML = ltLawHtml(LT_STATE);
+        });
+      });
+      document.querySelectorAll("[data-lt-substrate]").forEach(btn => {
+        btn.addEventListener("click", () => { LT_STATE.substrate = btn.dataset.ltSubstrate; saveLTState(); render(); });
+      });
+      document.querySelectorAll("[data-lt-mode]").forEach(btn => {
+        btn.addEventListener("click", () => { LT_STATE.mode = btn.dataset.ltMode; saveLTState(); render(); });
+      });
+      document.querySelectorAll("[data-lt-constraint]").forEach(btn => {
+        btn.addEventListener("click", () => { LT_STATE.constraint = btn.dataset.ltConstraint; saveLTState(); render(); });
+      });
+    }
+
+    const VIEWS = { home: viewHome, cloud: viewCloud, list: viewList, capture: viewCapture, distill: viewDistill, flow: viewFlow, export: viewExport, type: viewType };
     let activeView = "home";
 
     // ── Themes ─────────────────────────────────────────────────────────────
@@ -2809,12 +3303,12 @@
 
     // ── Patch Beacon ───────────────────────────────────────────────────────
     const APP_PATCH = {
-      id: "redline-06-1-refinement-closure-01",
-      title: "Redline #06.1",
-      summary: "Refinement closure pass: progressive disclosure on field notes, timestamp contrast, behavioral node sizing, quieter ambient, compass ring.",
-      surface: "cloud",
-      surfaceSelectors: [".cf-text", ".cf-meta", ".compass-btn"],
-      surfaceLabel: "Cloud / Refinement Closure #01"
+      id: "redline-07-lumera-type-engine-v0",
+      title: "Redline #07 — Type Engine",
+      summary: "Lumera Behavioral Typography Engine. Substrate · Mode · 8-parameter rail · Live specimen with behavioral layers · Type Passport · Hard Law check. State persisted to bxc.lt-state.",
+      surface: "type",
+      surfaceSelectors: [".lt-law-check", ".lt-passport"],
+      surfaceLabel: "Type Engine / Lumera"
     };
     const PATCH_KEY = "bxc.last-seen-patch";
 
@@ -2958,6 +3452,7 @@
       document.querySelectorAll(".flow-card[data-flow-id]").forEach(el => {
         el.addEventListener("click", () => openFlowDrawer(el.dataset.flowId));
       });
+      if (activeView === "type") wireTypeView();
       window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     }
 
@@ -3182,6 +3677,7 @@
       else if (a === "dice")    rollDice();
       // Function zone — Flow View live, others stub
       else if (a === "flow")    setView("flow");
+      else if (a === "type")    setView("type");
       // Account zone
       else if (a === "settings") openSettings();
       // All other items (remaining function-zone + non-Settings account items) — stub
