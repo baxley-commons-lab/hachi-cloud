@@ -1049,7 +1049,7 @@
       backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       border-top: 1px solid var(--border);
       padding-bottom: var(--safe-bottom);
-      display: grid; grid-template-columns: repeat(5, 1fr);
+      display: grid; grid-template-columns: repeat(6, 1fr);
     }
     .botnav button {
       min-height: var(--tap); padding: 10px 0 8px;
@@ -1187,6 +1187,47 @@
     .list-row-sigils { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
     .list-row-sigil { font-size: 10px; color: var(--dim); }
 
+    /* ── Growth Map / Grove Card ──────────────────────────────────────── */
+    .grove-map-wrap {
+      border-radius: 10px; overflow: hidden;
+      background: color-mix(in srgb, var(--surface) 55%, var(--bg));
+      border: 1px solid var(--border-soft);
+    }
+    .grove-map-svg { display: block; width: 100%; height: auto; }
+    .grove-map-svg .gm-node-label {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      pointer-events: none;
+    }
+    .grove-layer-legend {
+      margin-top: 10px; padding: 10px 12px;
+      background: color-mix(in srgb, var(--surface-2) 35%, transparent);
+      border: 1px solid var(--border-soft); border-radius: 10px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .grove-layer-title { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim); margin-bottom: 2px; }
+    .grove-layer-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); }
+    .grove-layer-dot { width: 22px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+    .grove-layer-dot.is-dashed {
+      background: none;
+      border-top: 2px dashed var(--seed-green);
+      height: 0; margin-top: 1px;
+    }
+    .grove-status-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;
+    }
+    .grove-node-chip {
+      padding: 8px 10px;
+      background: var(--surface); border: 1px solid var(--border-soft); border-radius: 8px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .gnc-domain { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+    .gnc-title  { font-size: 11px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gnc-vit    { font-size: 9px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+    .gnc-dot    { display: inline-block; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .gnc-dot.is-alive  { background: var(--seed-green); box-shadow: 0 0 4px color-mix(in srgb, var(--seed-green) 60%, transparent); }
+    .gnc-dot.is-steady { background: var(--amber); }
+    .gnc-dot.is-dormant{ background: var(--surface-3); }
+
     /* Toast */
     .toast {
       position: fixed; left: 50%; bottom: calc(96px + var(--safe-bottom)); transform: translate(-50%, 12px);
@@ -1257,6 +1298,10 @@
     <button data-view="distill" aria-selected="false">
       <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M9 3 H13 L13 8 L17 16 a2 2 0 0 1 -2 3 H7 a2 2 0 0 1 -2 -3 L9 8 Z"/><line x1="9" y1="3" x2="13" y2="3" stroke-width="1.6"/></svg></span>
       Distill
+    </button>
+    <button data-view="grove" aria-selected="false">
+      <span class="nav-icon"><svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="11" y1="19" x2="11" y2="11"/><line x1="11" y1="14" x2="7" y2="10"/><line x1="11" y1="14" x2="15" y2="10"/><line x1="11" y1="11" x2="8" y2="7"/><line x1="11" y1="11" x2="14" y2="7"/></svg></span>
+      Grove
     </button>
   </nav>
 
@@ -1937,6 +1982,141 @@
       return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">${defs}${edges}${nodes}</svg>`;
     }
 
+    // ── Growth Map (Grove Card) ────────────────────────────────────────────
+    function computeGrowthLayout(notes, links, width, height) {
+      const rsOf = id => links.reduce((n, l) => n + (l.s === id || l.t === id ? 1 : 0), 0);
+      const vitOf = n => {
+        let v = rsOf(n.id) * 2;
+        if (n.sigils.includes("seed"))   v += 1.5;
+        if (n.sigils.includes("kplate")) v += 1.0;
+        if (n.sigils.includes("lab"))    v += 0.5;
+        return Math.max(v, 0.1);
+      };
+      const maxVit = Math.max(...notes.map(n => vitOf(n)));
+      const withV  = notes.map(n => ({ ...n, vit: vitOf(n), vitNorm: vitOf(n) / maxVit }));
+      const sorted = [...withV].sort((a, b) => b.vit - a.vit);
+
+      const top = sorted.filter(n => n.vitNorm >= 0.65);
+      const mid = sorted.filter(n => n.vitNorm >= 0.35 && n.vitNorm < 0.65);
+      const low = sorted.filter(n => n.vitNorm < 0.35);
+
+      const pad = 30;
+      const topY = height * 0.15, midY = height * 0.42, lowY = height * 0.64;
+      const positions = [];
+
+      function spreadTier(tier, cy, xMin, xMax) {
+        if (!tier.length) return;
+        const step = (xMax - xMin) / tier.length;
+        tier.forEach((n, i) => {
+          const rng = seededRng(n.id * 53 + 11);
+          const jx = (rng() - 0.5) * step * 0.32;
+          const jy = (rng() - 0.5) * 16;
+          positions.push({
+            id: n.id,
+            x: Math.max(pad, Math.min(width - pad, xMin + step * (i + 0.5) + jx)),
+            y: Math.max(topY * 0.7, Math.min(lowY + 30, cy + jy)),
+            vit: n.vit,
+            vitNorm: n.vitNorm,
+            tier: n.vitNorm >= 0.65 ? "alive" : n.vitNorm >= 0.35 ? "steady" : "dormant",
+            sigils: n.sigils,
+            domain: n.domain,
+          });
+        });
+      }
+
+      spreadTier(top, topY, pad, width - pad);
+      spreadTier(mid, midY, pad * 1.3, width - pad * 1.3);
+      spreadTier(low, lowY, pad * 1.6, width - pad * 1.6);
+      return positions;
+    }
+
+    function renderGrowthMapSVG({ width = 320, height = 400 } = {}) {
+      const layout  = computeGrowthLayout(NOTES, LINKS, width, height);
+      const pmap    = new Map(layout.map(p => [p.id, p]));
+      const trunkX  = width / 2;
+      const trunkBase = height * 0.84;
+      const trunkTop  = height * 0.46;
+
+      // Mycelium: shared-sigil pairs that have no direct LINK
+      const explicit = new Set(LINKS.map(l => `${Math.min(l.s,l.t)}-${Math.max(l.s,l.t)}`));
+      const myceliumPaths = [];
+      for (let i = 0; i < NOTES.length; i++) {
+        for (let j = i + 1; j < NOTES.length; j++) {
+          const a = NOTES[i], b = NOTES[j];
+          if (explicit.has(`${Math.min(a.id,b.id)}-${Math.max(a.id,b.id)}`)) continue;
+          if (!a.sigils.some(s => b.sigils.includes(s))) continue;
+          const pa = pmap.get(a.id), pb = pmap.get(b.id);
+          if (!pa || !pb) continue;
+          const rngM = seededRng(a.id * b.id * 17 + 3);
+          const cx = (pa.x + pb.x) / 2 + (rngM() - 0.5) * 50;
+          const cy = (pa.y + pb.y) / 2 + (rngM() - 0.5) * 35;
+          myceliumPaths.push(`<path d="M${pa.x.toFixed(1)} ${pa.y.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${pb.x.toFixed(1)} ${pb.y.toFixed(1)}" />`);
+        }
+      }
+
+      // Branch lines: cubic bezier from trunk to each node
+      const branchSvg = layout.map(p => {
+        const rootY = trunkTop + (1 - p.vitNorm) * (trunkBase - trunkTop) * 0.72;
+        const c1x = trunkX, c1y = rootY - 28;
+        const c2x = p.x,    c2y = p.y + 26;
+        const col = p.tier === "alive" ? "var(--seed-green)" : p.tier === "steady" ? "var(--amber)" : "var(--surface-3)";
+        const sw  = (0.7 + p.vitNorm * 1.1).toFixed(1);
+        const op  = (0.25 + p.vitNorm * 0.42).toFixed(2);
+        return `<path d="M${trunkX} ${rootY.toFixed(1)} C${c1x} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p.x.toFixed(1)} ${p.y.toFixed(1)}" stroke="${col}" stroke-width="${sw}" opacity="${op}" fill="none" stroke-linecap="round" />`;
+      }).join("");
+
+      // Constellation links (LINKS)
+      const constLinks = LINKS.map(l => {
+        const a = pmap.get(l.s), b = pmap.get(l.t);
+        if (!a || !b) return "";
+        const sw = l.strength === "strong" ? 1.6 : l.strength === "medium" ? 1.1 : 0.7;
+        const op = l.strength === "strong" ? 0.55 : l.strength === "medium" ? 0.38 : 0.22;
+        return `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="var(--rose)" stroke-width="${sw}" stroke-opacity="${op}" stroke-linecap="round" />`;
+      }).join("");
+
+      // Star nodes
+      const starNodes = layout.map(p => {
+        const r = 4.5 + p.vitNorm * 7;
+        const glowR = r * 2.4;
+        const col  = p.tier === "alive" ? "var(--seed-green)" : p.tier === "steady" ? "var(--amber)" : "var(--dim)";
+        const glowOp = (0.08 + p.vitNorm * 0.16).toFixed(2);
+        const fillOp = (0.55 + p.vitNorm * 0.45).toFixed(2);
+        const rngS = seededRng(p.id * 97 + 31);
+        // Short rays for star effect
+        const rays = [0, Math.PI * 0.5, Math.PI, Math.PI * 1.5].map(a => {
+          const rl = r * (0.8 + rngS() * 0.5);
+          return `<line x1="0" y1="0" x2="${(Math.cos(a)*rl).toFixed(1)}" y2="${(Math.sin(a)*rl).toFixed(1)}" stroke="${col}" stroke-width="0.65" stroke-opacity="${(0.28 + p.vitNorm * 0.36).toFixed(2)}" stroke-linecap="round" />`;
+        }).join("");
+        const label  = (p.domain || "").substring(0, 8).toUpperCase();
+        const labelY = (r + 10).toFixed(1);
+        const idY    = (r + 18).toFixed(1);
+        return `<g class="hit" transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})" data-note-id="${p.id}">
+          <circle r="20" fill="transparent" pointer-events="all"/>
+          <circle r="${glowR.toFixed(1)}" fill="${col}" opacity="${glowOp}" />
+          ${rays}
+          <circle r="${r.toFixed(1)}" fill="${col}" opacity="${fillOp}" />
+          <circle r="${(r * 0.38).toFixed(1)}" fill="var(--bg)" opacity="0.65" />
+          <text class="gm-node-label" text-anchor="middle" y="${labelY}" font-size="7" fill="var(--muted)" opacity="0.85">${escapeHtml(label)}</text>
+          <text class="gm-node-label" text-anchor="middle" y="${idY}" font-size="6" fill="var(--dim)" opacity="0.7">#${p.id}</text>
+        </g>`;
+      }).join("");
+
+      // Trunk base seed mark
+      const seedMark = `<polygon points="${trunkX},${(trunkBase+5).toFixed(1)} ${(trunkX+5).toFixed(1)},${trunkBase} ${trunkX},${(trunkBase-5).toFixed(1)} ${(trunkX-5).toFixed(1)},${trunkBase}" fill="var(--surface-3)" stroke="var(--border)" stroke-width="0.8" opacity="0.5" />`;
+
+      const defs = `<defs><filter id="gm-glow" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+
+      return `<svg class="grove-map-svg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+        ${defs}
+        <g stroke="var(--seed-green)" fill="none" stroke-dasharray="2 6" stroke-width="0.75" opacity="0.14">${myceliumPaths.join("")}</g>
+        <line x1="${trunkX}" y1="${trunkBase}" x2="${trunkX}" y2="${trunkTop}" stroke="var(--surface-3)" stroke-width="1.4" opacity="0.28" />
+        <g>${branchSvg}</g>
+        <g>${constLinks}</g>
+        <g>${starNodes}</g>
+        ${seedMark}
+      </svg>`;
+    }
+
     // ── Card Crest + visual helpers (R#06) ─────────────────────────────────
     // Card Crest = Grove Card identity badge (per GC-HACHI-CARD-CREST-NOTE-TO-VISUAL-01).
     // Renders a small hexagonal mark beside the splash h1 of each view.
@@ -1945,7 +2125,8 @@
       cloud:   '<circle cx="11" cy="11" r="3" /><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="0.9" />',
       list:    '<rect x="4" y="6"  width="14" height="1.6" rx="0.8" /><rect x="4" y="10" width="14" height="1.6" rx="0.8" /><rect x="4" y="14" width="14" height="1.6" rx="0.8" />',
       capture: '<circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.2" /><circle cx="11" cy="11" r="2" />',
-      distill: '<path d="M8 4 H14 L13 9 L17 16 H5 L9 9 Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />'
+      distill: '<path d="M8 4 H14 L13 9 L17 16 H5 L9 9 Z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />',
+      grove:   '<line x1="11" y1="19" x2="11" y2="13" stroke-width="1.3" stroke-linecap="round"/><line x1="11" y1="15" x2="7.5" y2="11.5" stroke-width="1.1" stroke-linecap="round"/><line x1="11" y1="15" x2="14.5" y2="11.5" stroke-width="1.1" stroke-linecap="round"/><line x1="11" y1="12" x2="8.5" y2="9" stroke-width="1.1" stroke-linecap="round"/><line x1="11" y1="12" x2="13.5" y2="9" stroke-width="1.1" stroke-linecap="round"/>'
     };
     function crestSvg(viewId) {
       const inner = CREST_GLYPHS[viewId] || CREST_GLYPHS.home;
@@ -2160,6 +2341,87 @@
             ${NOTES.map(n => cloudFeedRowHtml(n)).join("")}
           </div>
         </div>
+      `;
+    }
+
+    function viewGrove() {
+      const rsOf = id => LINKS.reduce((n, l) => n + (l.s === id || l.t === id ? 1 : 0), 0);
+      const vitOf = n => {
+        let v = rsOf(n.id) * 2;
+        if (n.sigils.includes("seed"))   v += 1.5;
+        if (n.sigils.includes("kplate")) v += 1.0;
+        if (n.sigils.includes("lab"))    v += 0.5;
+        return Math.max(v, 0.1);
+      };
+      const maxVit = Math.max(...NOTES.map(n => vitOf(n)));
+      const withV  = NOTES.map(n => ({
+        ...n,
+        vit: vitOf(n),
+        vitNorm: vitOf(n) / maxVit,
+        tier: vitOf(n) / maxVit >= 0.65 ? "alive" : vitOf(n) / maxVit >= 0.35 ? "steady" : "dormant",
+      })).sort((a, b) => b.vit - a.vit);
+
+      const aliveCount   = withV.filter(n => n.tier === "alive").length;
+      const dormantCount = withV.filter(n => n.tier === "dormant").length;
+
+      // Build mycelium count (shared-sigil non-linked pairs)
+      const explicit = new Set(LINKS.map(l => `${Math.min(l.s,l.t)}-${Math.max(l.s,l.t)}`));
+      let myceliumCount = 0;
+      for (let i = 0; i < NOTES.length; i++) {
+        for (let j = i + 1; j < NOTES.length; j++) {
+          const a = NOTES[i], b = NOTES[j];
+          if (explicit.has(`${Math.min(a.id,b.id)}-${Math.max(a.id,b.id)}`)) continue;
+          if (a.sigils.some(s => b.sigils.includes(s))) myceliumCount++;
+        }
+      }
+
+      const meta = pageMetaStripHtml([
+        { key: "Grove",     val: "#GROVE-01",    icon: "asteroid" },
+        { key: "Status",    val: "CONVERGING",   icon: "", dot: true, valCls: "is-active" },
+        { key: "Branches",  val: `${aliveCount} alive`, icon: "type" },
+        { key: "Threads",   val: `${LINKS.length}+${myceliumCount}`, icon: "rs", iconCls: "is-rose", valCls: "is-rose" },
+      ]);
+
+      const nodeChips = withV.map(n => {
+        const dotCls  = n.tier === "alive" ? "is-alive" : n.tier === "steady" ? "is-steady" : "is-dormant";
+        const tierLbl = n.tier === "alive" ? "Growing" : n.tier === "steady" ? "Steady" : "Dormant";
+        const short   = n.text.length > 38 ? n.text.substring(0, 38) + "…" : n.text;
+        return `
+          <div class="grove-node-chip">
+            <div class="gnc-domain">${escapeHtml(n.domain)}</div>
+            <div class="gnc-title" title="${escapeHtml(n.text)}">${escapeHtml(short)}</div>
+            <div class="gnc-vit"><span class="gnc-dot ${dotCls}"></span>${tierLbl} · #${n.id}</div>
+          </div>`;
+      }).join("");
+
+      return `
+        <section class="splash">
+          <h1>Growth Map ${crestSvg("grove")}</h1>
+          <h2>Grove Card · Alive branches. Hidden threads.</h2>
+          <p>Not a roadmap. Where attention is flowing, branches are overgrown, and dormant ideas wait.</p>
+        </section>
+        ${meta}
+        <div class="module">
+          <header><span class="title">Growth Map</span><span class="meta">tree · constellation · mycelium</span></header>
+          <div class="body">
+            <div class="grove-map-wrap">
+              ${renderGrowthMapSVG({ width: 320, height: 410 })}
+            </div>
+            <div class="grove-layer-legend">
+              <div class="grove-layer-title">Map layers</div>
+              <div class="grove-layer-row"><span class="grove-layer-dot" style="background:var(--seed-green)"></span>Tree — branch vitality &amp; visible growth</div>
+              <div class="grove-layer-row"><span class="grove-layer-dot" style="background:var(--rose)"></span>Constellation — active connections (Red Strings)</div>
+              <div class="grove-layer-row"><span class="grove-layer-dot is-dashed"></span>Mycelium — hidden threads (shared sigils, no explicit link)</div>
+            </div>
+          </div>
+        </div>
+        <div class="module list-section">
+          <header><span class="title">Node Vitality</span><span class="meta">${aliveCount} growing · ${dormantCount} dormant</span></header>
+          <div class="body">
+            <div class="grove-status-grid">${nodeChips}</div>
+          </div>
+        </div>
+        <div class="sig">Grove Card · Growth Map Interface · Hachi Codex</div>
       `;
     }
 
@@ -2743,7 +3005,7 @@
       setView("export");
     }
 
-    const VIEWS = { home: viewHome, cloud: viewCloud, list: viewList, capture: viewCapture, distill: viewDistill, flow: viewFlow, export: viewExport };
+    const VIEWS = { home: viewHome, cloud: viewCloud, grove: viewGrove, list: viewList, capture: viewCapture, distill: viewDistill, flow: viewFlow, export: viewExport };
     let activeView = "home";
 
     // ── Themes ─────────────────────────────────────────────────────────────
