@@ -22,13 +22,13 @@ pulled, so future sessions can register it instead of forgetting it.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | GC-SOURCE-WELL-001 | Repository Continuity | `source-well/GC-SOURCE-WELL-001.md` | Candidate | [Notion](https://app.notion.com/p/38f1b7d9700a81dc8d37ebd63b75b839) | Grove Card | Yes | Paired with `-002`. Body is blank in Notion; properties only. |
 | GC-SOURCE-WELL-002 | Session Provenance IDs | `source-well/GC-SOURCE-WELL-002.md` | Candidate | [Notion](https://app.notion.com/p/38f1b7d9700a819cac84ee8d63de4106) | Grove Card | Yes | Defines the session record pattern and the ID map below. |
-| SW-001 | Source Well | — | — | — | Source Well | No | Referenced from `GC-SOURCE-WELL-002` ID map. |
-| REPLIT-001 | Initial Replit Build Sequence | — | — | — | Replit Build | No | Referenced from `GC-SOURCE-WELL-002` ID map. |
-| LAW-BC-01 | Descendant Rule | — | — | — | Law (Baxley Commons) | No | Referenced from `GC-SOURCE-WELL-002` ID map. |
-| LAW-BC-02 | Source Well Rule | — | — | — | Law (Baxley Commons) | No | Referenced from `GC-SOURCE-WELL-002` ID map. |
-| ARB-004 | Mission | — | — | — | ARB (provisional) | No | Referenced from `GC-SOURCE-WELL-002` ID map. Type label to be confirmed on first pull. |
-| ARB-005 | Ceiling | — | — | — | ARB (provisional) | No | Referenced from `GC-SOURCE-WELL-002` ID map. Type label to be confirmed on first pull. |
-| CC-001 | Claude Code Session | — | — | — | Claude Code Session | No | Referenced from `GC-SOURCE-WELL-002` ID map. |
+| SW-001 | Source Well | `source-well/SW-001.md` | Active | — | Source Well (repo-canonical) | Yes | Constitution. Root of continuity. Repo is canonical; intentionally no Notion mirror. |
+| REPLIT-001 | Initial Replit Build Sequence | — | — | [Notion](https://app.notion.com/p/38f1b7d9700a8068b233e23ae8e1d131) | Replit Build | No | Reclassified from a Notion page formerly titled `< Source well >`; its content is the Replit build sequence, not the Source Well. |
+| LAW-BC-01 | Descendant Rule | — | — | — | Governing Law | No | Referenced from `GC-SOURCE-WELL-002` ID map. The descendant rule is the operational basis of SW-001. |
+| LAW-BC-02 | Source Well Rule | — | — | [Notion](https://app.notion.com/p/38d1b7d9700a8142bb38cc903f18bd61) | Governing Law | No | Referenced from `GC-SOURCE-WELL-002` ID map. |
+| ARB-004 | Mission | — | — | — | Arboretum | No | Referenced from `GC-SOURCE-WELL-002` ID map. |
+| ARB-005 | Ceiling | — | — | — | Arboretum | No | Referenced from `GC-SOURCE-WELL-002` ID map. |
+| CC-001 | Claude Code Session | — | — | — | Claude Code Session | No | Referenced from `GC-SOURCE-WELL-002` ID map. Template card for the session record pattern. |
 
 ## How to update
 
@@ -36,11 +36,14 @@ pulled, so future sessions can register it instead of forgetting it.
 - When a card references a new unresolved ID, add a placeholder row immediately. Do not let the pointer leak unnamed.
 - Keep `Type` family labels consistent with the prefix taxonomy below.
 
-## Prefix taxonomy (working)
+## Prefix taxonomy
 
 - `GC-*` — Grove Card
-- `SW-*` — Source Well
-- `LAW-*` — Law
-- `ARB-*` — provisional, confirm on first pull
+- `SW-*` — Source Well (repo-canonical; SW-001 is the constitution)
+- `LAW-*` — Governing Law (e.g. `LAW-BC-*` for Baxley Commons laws)
+- `ARB-*` — Arboretum
 - `REPLIT-*` — Replit Build
 - `CC-*` — Claude Code Session
+- `RQ-*` — RainQ
+
+A standalone `TAXONOMY.md` is planned (see SW-001 § "What lives in /source-well/"); this section is the working source until it lands.
